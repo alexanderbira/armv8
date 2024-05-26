@@ -7,13 +7,16 @@
 
 #include "register.h"
 
-Register createRegister() {
+/// Creates a fresh register, properly initialised at startup.
+/// @return A fresh register.
+Register createReg() {
     Register reg;
-    initRegister(&reg);
+    initReg(&reg);
     return reg;
 };
 
-void initRegister(Register* reg) {
+/// Initialises a register to desired state at startup.
+void initReg(Register* reg) {
     // All registers are initialised to zero.
     for (int i = 0; i < 31; i++) {
         reg->gprs[i] = 0;
