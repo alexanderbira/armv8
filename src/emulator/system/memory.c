@@ -61,7 +61,7 @@ uint32_t readMem32(void *mem, size_t addr) {
     uint8_t *ptr = (uint8_t *) mem + addr;
     uint32_t res = ptr[0];
     for (int i = 1; i < sizeof(uint32_t); i++) {
-        res |= (ptr[i] << i * 8);
+        res |= ((uint32_t) ptr[i] << i * 8);
     }
     return res;
 }
@@ -76,7 +76,7 @@ uint64_t readMem64(void *mem, size_t addr) {
     uint8_t *ptr = (uint8_t *) mem + addr;
     uint64_t res = ptr[0];
     for (int i = 1; i < sizeof(uint64_t); i++) {
-        res |= (ptr[i] << i * 8);
+        res |= ((uint64_t) ptr[i] << i * 8);
     }
     return res;
 }
