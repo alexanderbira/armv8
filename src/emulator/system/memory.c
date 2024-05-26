@@ -8,14 +8,26 @@
 #include "memory.h"
 
 /// Allocates a chunk of virtual memory preloaded with the contents of the given file handler.
+/// @pre No errors occurred when the file handler [fd] was created.
 /// @param size The size of the memory to allocate.
 /// @param fd File handler of initial contents.
 /// @return Generic pointer to memory.
 void *allocMemFromFile(int fd) {
-    // TODO: Zero out rest of memory.
+    // Get statistics on the file.
+    struct stat sb;
+    assert(fstat(fd, &sb) == 0);
 
+    // Must have enough space to store file.
+    assert(sb.st_size <= MEMORY_SIZE);
+
+    // Allocate and read file into memory.
     void *memory = mmap(NULL, MEMORY_SIZE, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, fd, 0);
     assert(memory != NULL);
+
+    // Zero out rest of memory.
+    uint8_t *ptr = memory + sb.st_size;
+    while (ptr != memory + MEMORY_SIZE) *ptr++ = 0;
+
     return memory;
 }
 
@@ -23,7 +35,14 @@ void *allocMemFromFile(int fd) {
 /// @param size The size of the memory to allocate.
 /// @return Generic pointer to memory.
 void *allocMem() {
-    return allocMemFromFile(-1);
+    void *memory = mmap(NULL, MEMORY_SIZE, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+    assert(memory != NULL);
+
+    // Zero out rest of memory.
+    uint8_t *ptr = memory;
+    while (ptr != memory + MEMORY_SIZE) *ptr++ = 0;
+
+    return memory;
 }
 
 /// Reads 32-bits from virtual memory.

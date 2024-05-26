@@ -10,6 +10,7 @@
 
 #include <stdlib.h>
 #include <sys/mman.h>
+#include <sys/stat.h>
 #include <assert.h>
 
 #include "../../defs/const.h"
