@@ -20,6 +20,8 @@ void *allocMemFromFile(int fd);
 
 void *allocMem(void);
 
+void freeMem(void *mem);
+
 uint32_t readMem32(void *mem, size_t addr);
 
 uint64_t readMem64(void *mem, size_t addr);

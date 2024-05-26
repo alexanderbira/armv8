@@ -45,6 +45,12 @@ void *allocMem() {
     return memory;
 }
 
+/// Frees the given chunk of virtual memory.
+/// @param mem Generic pointer to virtual memory to free.
+void freeMem(void *mem) {
+    assert(munmap(mem, MEMORY_SIZE) == 0);
+}
+
 /// Reads 32-bits from virtual memory.
 /// @param mem The address of the virtual memory.
 /// @param addr The address within the virtual memory.
