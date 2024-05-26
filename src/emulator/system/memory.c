@@ -1,0 +1,91 @@
+///
+/// memory.h
+/// Structure, manipulation, allocation, and freeing of the virtual memory.
+///
+/// Created by Lancelot Liu on 26/05/2024.
+///
+
+#include "memory.h"
+
+/// Allocates a chunk of virtual memory preloaded with the contents of the given file handler.
+/// @param size The size of the memory to allocate.
+/// @param fd File handler of initial contents.
+/// @return Generic pointer to memory.
+void *allocMemFromFile(size_t size, int fd) {
+    // TODO: Zero out rest of memory.
+
+    void *memory = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, fd, 0);
+    assert(memory != NULL);
+    return memory;
+}
+
+/// Allocates a chunk of blank virtual memory.
+/// @param size The size of the memory to allocate.
+/// @return Generic pointer to memory.
+void *allocMem(size_t size) {
+    return allocMemFromFile(size, -1);
+}
+
+/// Reads 32-bits from virtual memory.
+/// @param mem The address of the virtual memory.
+/// @param addr The address within the virtual memory.
+/// @return The 32-bit value at mem + addr.
+uint32_t readMem32(void *mem, size_t addr) {
+    // TODO: Check not out of bounds.
+
+    uint8_t *ptr = (uint8_t *) mem + addr;
+    return (uint32_t) ptr[0]
+           || (uint32_t) ptr[1] << 8
+           || (uint32_t) ptr[2] << 16
+           || (uint32_t) ptr[3] << 24;
+}
+
+/// Reads 64-bits from virtual memory.
+/// @param mem The address of the virtual memory.
+/// @param addr The address within the virtual memory.
+/// @return The 64-bit value at mem + addr.
+uint64_t readMem64(void *mem, size_t addr) {
+    // TODO: Check not out of bounds.
+
+    uint8_t *ptr = (uint8_t *) mem + addr;
+    return (uint64_t) ptr[0]
+           || (uint64_t) ptr[1] << 8
+           || (uint64_t) ptr[2] << 16
+           || (uint64_t) ptr[3] << 24
+           || (uint64_t) ptr[4] << 32
+           || (uint64_t) ptr[5] << 40
+           || (uint64_t) ptr[6] << 48
+           || (uint64_t) ptr[7] << 56;
+}
+
+/// Writes 32-bits to virtual memory.
+/// @param mem The address of the virtual memory.
+/// @param addr The address within the virtual memory.
+/// @param value The value to write.
+void writeMem32(void *mem, size_t addr, uint32_t value) {
+    // TODO: Check not out of bounds.
+
+    uint8_t *ptr = (uint8_t *) mem + addr;
+    ptr[0] = (uint8_t) value;
+    ptr[1] = (uint8_t) (value >> 8);
+    ptr[2] = (uint8_t) (value >> 16);
+    ptr[3] = (uint8_t) (value >> 24);
+}
+
+/// Writes 64-bits from virtual memory.
+/// @param mem The address of the virtual memory.
+/// @param addr The address within the virtual memory.
+/// @param value The value to write.
+void writeMem64(void *mem, size_t addr, uint64_t value) {
+    // TODO: Check not out of bounds.
+
+    uint8_t *ptr = (uint8_t *) mem + addr;
+    ptr[0] = (uint8_t) value;
+    ptr[1] = (uint8_t) (value >> 8);
+    ptr[2] = (uint8_t) (value >> 16);
+    ptr[3] = (uint8_t) (value >> 24);
+    ptr[4] = (uint8_t) (value >> 32);
+    ptr[5] = (uint8_t) (value >> 40);
+    ptr[6] = (uint8_t) (value >> 48);
+    ptr[7] = (uint8_t) (value >> 56);
+}
