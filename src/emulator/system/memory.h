@@ -9,6 +9,7 @@
 #define EMULATOR_MEMORY_H
 
 #include <stdlib.h>
+#include <stdint.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <assert.h>
