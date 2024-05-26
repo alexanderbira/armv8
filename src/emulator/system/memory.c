@@ -11,10 +11,10 @@
 /// @param size The size of the memory to allocate.
 /// @param fd File handler of initial contents.
 /// @return Generic pointer to memory.
-void *allocMemFromFile(size_t size, int fd) {
+void *allocMemFromFile(int fd) {
     // TODO: Zero out rest of memory.
 
-    void *memory = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, fd, 0);
+    void *memory = mmap(NULL, MEMORY_SIZE, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, fd, 0);
     assert(memory != NULL);
     return memory;
 }
@@ -22,8 +22,8 @@ void *allocMemFromFile(size_t size, int fd) {
 /// Allocates a chunk of blank virtual memory.
 /// @param size The size of the memory to allocate.
 /// @return Generic pointer to memory.
-void *allocMem(size_t size) {
-    return allocMemFromFile(size, -1);
+void *allocMem() {
+    return allocMemFromFile(-1);
 }
 
 /// Reads 32-bits from virtual memory.
@@ -31,7 +31,7 @@ void *allocMem(size_t size) {
 /// @param addr The address within the virtual memory.
 /// @return The 32-bit value at mem + addr.
 uint32_t readMem32(void *mem, size_t addr) {
-    // TODO: Check not out of bounds.
+    assert(addr + 32 <= MEMORY_SIZE);
 
     uint8_t *ptr = (uint8_t *) mem + addr;
     return (uint32_t) ptr[0]
@@ -45,7 +45,7 @@ uint32_t readMem32(void *mem, size_t addr) {
 /// @param addr The address within the virtual memory.
 /// @return The 64-bit value at mem + addr.
 uint64_t readMem64(void *mem, size_t addr) {
-    // TODO: Check not out of bounds.
+    assert(addr + 64 <= MEMORY_SIZE);
 
     uint8_t *ptr = (uint8_t *) mem + addr;
     return (uint64_t) ptr[0]
@@ -63,7 +63,7 @@ uint64_t readMem64(void *mem, size_t addr) {
 /// @param addr The address within the virtual memory.
 /// @param value The value to write.
 void writeMem32(void *mem, size_t addr, uint32_t value) {
-    // TODO: Check not out of bounds.
+    assert(addr + 32 <= MEMORY_SIZE);
 
     uint8_t *ptr = (uint8_t *) mem + addr;
     ptr[0] = (uint8_t) value;
@@ -77,7 +77,7 @@ void writeMem32(void *mem, size_t addr, uint32_t value) {
 /// @param addr The address within the virtual memory.
 /// @param value The value to write.
 void writeMem64(void *mem, size_t addr, uint64_t value) {
-    // TODO: Check not out of bounds.
+    assert(addr + 64 <= MEMORY_SIZE);
 
     uint8_t *ptr = (uint8_t *) mem + addr;
     ptr[0] = (uint8_t) value;

@@ -12,9 +12,11 @@
 #include <sys/mman.h>
 #include <assert.h>
 
-void *allocMemFromFile(size_t size, int fd);
+#include "../../defs/const.h"
 
-void *allocMem(size_t size);
+void *allocMemFromFile(int fd);
+
+void *allocMem(void);
 
 uint32_t readMem32(void *mem, size_t addr);
 
