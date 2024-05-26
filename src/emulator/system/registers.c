@@ -5,19 +5,19 @@
 /// Created by Lancelot Liu on 26/05/2024.
 ///
 
-#include "register.h"
+#include "registers.h"
 
 /// Creates a fresh register, properly initialised at startup.
 /// @return A fresh register.
-Register createReg() {
-    Register reg;
+Registers createReg() {
+    Registers reg;
     initReg(&reg);
     return reg;
 };
 
 /// Initialises a register to desired state at startup.
 /// @param reg Pointer to the register.
-void initReg(Register* reg) {
+void initReg(Registers *reg) {
     // All registers are initialised to zero.
     for (int i = 0; i < 31; i++) {
         reg->gprs[i] = 0;
@@ -34,7 +34,7 @@ void initReg(Register* reg) {
 /// @param reg Pointer to the register.
 /// @param id The ID of the register to access.
 /// @return The value of the register, or 0 if [id] is out of range.
-uint64_t getReg(Register* reg, int id) {
+uint64_t getReg(Registers *reg, int id) {
     if (id < 1 || id > 31) return 0;
     return reg->gprs[id - 1];
 }
@@ -42,21 +42,21 @@ uint64_t getReg(Register* reg, int id) {
 /// Gets the zero register as a 64-bit value. Always returns 0.
 /// @param reg Pointer to the register.
 /// @return 0
-uint64_t getRegZR(Register* reg) {
+uint64_t getRegZR(Registers *reg) {
     return 0;
 }
 
 /// Gets the program counter.
 /// @param reg Pointer to the register.
 /// @return The value of the program counter.
-uint64_t getRegPC(Register* reg) {
+uint64_t getRegPC(Registers *reg) {
     return reg->pc;
 }
 
 /// Gets the stack pointer as a 64-bit value.
 /// @param reg Pointer to the register.
 /// @return The value of the stack pointer.
-uint64_t getRegSP(Register* reg) {
+uint64_t getRegSP(Registers *reg) {
     return reg->sp;
 }
 
@@ -64,7 +64,7 @@ uint64_t getRegSP(Register* reg) {
 /// @param reg Pointer to the register.
 /// @param field The field required.
 /// @return The value of the PState flag [field].
-bool getRegState(Register* reg, PStateField field) {
+bool getRegState(Registers *reg, PStateField field) {
     switch (field) {
         case N: return reg->pstate.ng;
         case Z: return reg->pstate.zr;
@@ -77,7 +77,7 @@ bool getRegState(Register* reg, PStateField field) {
 /// @param reg Pointer to the register.
 /// @param id The ID of the register to access.
 /// @param value The value to write.
-void setReg64(Register* reg, int id, uint64_t value) {
+void setReg64(Registers *reg, int id, uint64_t value) {
     if (id < 1 || id > 31) return;
     reg->gprs[id - 1] = value;
 }
@@ -87,7 +87,7 @@ void setReg64(Register* reg, int id, uint64_t value) {
 /// @param reg Pointer to the register.
 /// @param id The ID of the register to access.
 /// @param value The value to write.
-void setReg32(Register *reg, int id, uint32_t value) {
+void setReg32(Registers *reg, int id, uint32_t value) {
     if (id < 1 || id > 31) return;
     reg->gprs[id - 1] = value;
 }
@@ -95,37 +95,37 @@ void setReg32(Register *reg, int id, uint32_t value) {
 /// Sets the value of zero register from a 64-bit value. Always a no-op.
 /// @param reg Pointer to the register.
 /// @param value The value to write. Always ignored.
-void setRegZR64(Register* reg, uint64_t value) {}
+void setRegZR64(Registers *reg, uint64_t value) {}
 
 /// Sets the value of zero register from a 32-bit value. Always a no-op.
 /// @param reg Pointer to the register.
 /// @param value The value to write. Always ignored.
-void setRegZR32(Register* reg, uint32_t value) {}
+void setRegZR32(Registers *reg, uint32_t value) {}
 
 /// Sets the value of the program counter.
 /// @param reg Pointer to the register.
 /// @param value The value to write.
-void setRegPC(Register* reg, uint64_t value) {
+void setRegPC(Registers *reg, uint64_t value) {
     reg->pc = value;
 }
 
 /// Increments the program counter by 4.
 /// @param reg Pointer to the register.
-void incRegPC(Register* reg) {
+void incRegPC(Registers *reg) {
     reg->pc += 0x4;
 }
 
 /// Sets the value of stack pointer from a 64-bit value.
 /// @param reg Pointer to the register.
 /// @param value The value to write.
-void setRegSP64(Register* reg, uint64_t value) {
+void setRegSP64(Registers *reg, uint64_t value) {
     reg->sp = value;
 }
 
 /// Sets the value of stack pointer from a 32-bit value.
 /// @param reg Pointer to the register.
 /// @param value The value to write.
-void setRegSP32(Register* reg, uint32_t value) {
+void setRegSP32(Registers *reg, uint32_t value) {
     reg->sp = value;
 }
 
@@ -133,7 +133,7 @@ void setRegSP32(Register* reg, uint32_t value) {
 /// @param reg Pointer to the register.
 /// @param field The field required.
 /// @param state The value to write.
-void setRegState(Register* reg, PStateField field, bool state) {
+void setRegState(Registers *reg, PStateField field, bool state) {
     switch (field) {
         case N: reg->pstate.ng = state; break;
         case Z: reg->pstate.zr = state; break;
@@ -145,6 +145,6 @@ void setRegState(Register* reg, PStateField field, bool state) {
 /// Sets the value of all PState flags.
 /// @param reg Pointer to the register.
 /// @param state The states to write.
-void setRegStates(Register* reg, PState state) {
+void setRegStates(Registers *reg, PState state) {
     reg->pstate = state;
 }
