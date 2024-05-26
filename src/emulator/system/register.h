@@ -30,6 +30,21 @@ struct PState {
     bool ov;
 };
 
+/// An enum representing the PSTATE fields of the processor.
+typedef enum {
+    /// Marker for Negative condition flag.
+    N,
+
+    /// Marker for Zero condition flag (last result was zero).
+    Z,
+
+    /// Marker for Carry condition flag (last result had carry-out set).
+    C,
+
+    /// Marker for oVerflow condition flag (last result overflowed).
+    V
+} PStateField;
+
 /// A struct representing, virtually, a machine's register contents.
 struct Register {
     /// General purpose registers.
@@ -48,8 +63,38 @@ struct Register {
     PState pstate;
 };
 
-Register createRegister(void);
+Register createReg(void);
 
-void initRegister(Register* reg);
+void initReg(Register* reg);
+
+uint64_t getReg(Register* reg, int id);
+
+uint64_t getRegZR(Register* reg);
+
+uint64_t getRegPC(Register* reg);
+
+uint64_t getRegSP(Register* reg);
+
+bool getRegState(Register* reg, PStateField field);
+
+void setReg64(Register* reg, int id, uint64_t value);
+
+void setReg32(Register* reg, int id, uint32_t value);
+
+void setRegZR64(Register* reg, uint64_t value);
+
+void setRegZR32(Register* reg, uint32_t value);
+
+void setRegPC(Register* reg, uint64_t value);
+
+void incRegPC(Register* reg);
+
+void setRegSP64(Register* reg, uint64_t value);
+
+void setRegSP32(Register* reg, uint32_t value);
+
+void setRegState(Register* reg, PStateField field, bool state);
+
+void setRegStates(Register* reg, PState state);
 
 #endif //EMULATOR_REGISTER_H
