@@ -16,6 +16,7 @@ Register createReg() {
 };
 
 /// Initialises a register to desired state at startup.
+/// @param reg Pointer to the register.
 void initReg(Register* reg) {
     // All registers are initialised to zero.
     for (int i = 0; i < 31; i++) {
@@ -109,6 +110,7 @@ void setRegPC(Register* reg, uint64_t value) {
 }
 
 /// Increments the program counter by 4.
+/// @param reg Pointer to the register.
 void incRegPC(Register* reg) {
     reg->pc += 0x4;
 }
@@ -127,6 +129,10 @@ void setRegSP32(Register* reg, uint32_t value) {
     reg->sp = value;
 }
 
+/// Sets the value of a particular PState flags.
+/// @param reg Pointer to the register.
+/// @param field The field required.
+/// @param state The value to write.
 void setRegState(Register* reg, PStateField field, bool state) {
     switch (field) {
         case N: reg->pstate.ng = state; break;
@@ -136,6 +142,9 @@ void setRegState(Register* reg, PStateField field, bool state) {
     }
 }
 
+/// Sets the value of all PState flags.
+/// @param reg Pointer to the register.
+/// @param state The states to write.
 void setRegStates(Register* reg, PState state) {
     reg->pstate = state;
 }
