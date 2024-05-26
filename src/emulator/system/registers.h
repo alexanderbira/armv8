@@ -12,7 +12,7 @@
 #include <stdbool.h>
 
 /// A struct representing the PSTATE fields of the processor.
-typedef struct PState {
+typedef struct {
     /// Negative condition flag.
     bool ng;
 
@@ -42,7 +42,7 @@ typedef enum {
 } PStateField;
 
 /// A struct representing, virtually, a machine's register contents.
-typedef struct Register {
+typedef struct {
     /// General purpose registers.
     uint64_t gprs[31];
 
@@ -57,40 +57,40 @@ typedef struct Register {
 
     /// Program state register. Contains boolean flags.
     PState pstate;
-} Register;
+} Registers;
 
-Register createReg(void);
+Registers createReg(void);
 
-void initReg(Register* reg);
+void initReg(Registers *reg);
 
-uint64_t getReg(Register* reg, int id);
+uint64_t getReg(Registers *reg, int id);
 
-uint64_t getRegZR(Register* reg);
+uint64_t getRegZR(Registers *reg);
 
-uint64_t getRegPC(Register* reg);
+uint64_t getRegPC(Registers *reg);
 
-uint64_t getRegSP(Register* reg);
+uint64_t getRegSP(Registers *reg);
 
-bool getRegState(Register* reg, PStateField field);
+bool getRegState(Registers *reg, PStateField field);
 
-void setReg64(Register* reg, int id, uint64_t value);
+void setReg64(Registers *reg, int id, uint64_t value);
 
-void setReg32(Register* reg, int id, uint32_t value);
+void setReg32(Registers *reg, int id, uint32_t value);
 
-void setRegZR64(Register* reg, uint64_t value);
+void setRegZR64(Registers *reg, uint64_t value);
 
-void setRegZR32(Register* reg, uint32_t value);
+void setRegZR32(Registers *reg, uint32_t value);
 
-void setRegPC(Register* reg, uint64_t value);
+void setRegPC(Registers *reg, uint64_t value);
 
-void incRegPC(Register* reg);
+void incRegPC(Registers *reg);
 
-void setRegSP64(Register* reg, uint64_t value);
+void setRegSP64(Registers *reg, uint64_t value);
 
-void setRegSP32(Register* reg, uint32_t value);
+void setRegSP32(Registers *reg, uint32_t value);
 
-void setRegState(Register* reg, PStateField field, bool state);
+void setRegState(Registers *reg, PStateField field, bool state);
 
-void setRegStates(Register* reg, PState state);
+void setRegStates(Registers *reg, PState state);
 
 #endif //EMULATOR_REGISTER_H
