@@ -33,5 +33,14 @@ assemble
 *.nav
 *.toc
 
+# === Compilation Remnants ===
+*
+!/**/
+!*.*
+*.dsYM/
+
 # === IntelliJ IDEs ===
 .idea
+
+# === macOS Files ===
+.DS_Store
