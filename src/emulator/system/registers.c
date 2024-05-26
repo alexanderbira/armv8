@@ -18,7 +18,7 @@ Registers createReg() {
 
 /// Initialises a register to desired state at startup.
 /// @param reg Pointer to the register.
-void initReg(Registers *reg) {
+static void initReg(Registers *reg) {
     // All registers are initialised to zero.
     for (int i = 0; i < 31; i++) {
         reg->gprs[i] = 0;

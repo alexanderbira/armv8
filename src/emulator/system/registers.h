@@ -61,7 +61,7 @@ typedef struct {
 
 Registers createReg(void);
 
-void initReg(Registers *reg);
+static void initReg(Registers *reg);
 
 uint64_t getReg(Registers *reg, uint8_t id);
 
