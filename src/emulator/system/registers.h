@@ -63,7 +63,7 @@ Registers createReg(void);
 
 void initReg(Registers *reg);
 
-uint64_t getReg(Registers *reg, int id);
+uint64_t getReg(Registers *reg, uint8_t id);
 
 uint64_t getRegZR(Registers *reg);
 
@@ -73,11 +73,11 @@ uint64_t getRegSP(Registers *reg);
 
 bool getRegState(Registers *reg, PStateField field);
 
-void setReg64(Registers *reg, int id, uint64_t value);
+void setReg64(Registers *reg, uint8_t id, uint64_t value);
 
-void setReg32(Registers *reg, int id, uint32_t value);
+void setReg32(Registers *reg, uint8_t id, uint32_t value);
 
-void setRegZR64(Registers *reg, uint64_t value);
+void setRegZR64(__attribute__((unused)) Registers *reg, __attribute__((unused)) uint64_t value);
 
 void setRegZR32(Registers *reg, uint32_t value);
 
