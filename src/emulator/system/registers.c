@@ -5,6 +5,7 @@
 /// Created by Lancelot Liu on 26/05/2024.
 ///
 
+#include <assert.h>
 #include "registers.h"
 
 /// Creates a fresh register, properly initialised at startup.
@@ -34,15 +35,15 @@ void initReg(Registers *reg) {
 /// @param reg Pointer to the register.
 /// @param id The ID of the register to access.
 /// @return The value of the register, or 0 if [id] is out of range.
-uint64_t getReg(Registers *reg, int id) {
-    if (id < 1 || id > 31) return 0;
-    return reg->gprs[id - 1];
+uint64_t getReg(Registers *reg, uint8_t id) {
+    assert(id < 31);
+    return reg->gprs[id];
 }
 
 /// Gets the zero register as a 64-bit value. Always returns 0.
 /// @param reg Pointer to the register.
 /// @return 0
-uint64_t getRegZR(Registers *reg) {
+uint64_t getRegZR(__attribute__((unused)) Registers *reg) {
     return 0;
 }
 
@@ -73,34 +74,33 @@ bool getRegState(Registers *reg, PStateField field) {
     }
 }
 
-/// Sets the value of register X[id] from a 64-bit value. Will ignore [id] out of bounds.
+/// Sets the value of register X[id] from a 64-bit value.
 /// @param reg Pointer to the register.
 /// @param id The ID of the register to access.
 /// @param value The value to write.
-void setReg64(Registers *reg, int id, uint64_t value) {
-    if (id < 1 || id > 31) return;
-    reg->gprs[id - 1] = value;
+void setReg64(Registers *reg, uint8_t id, uint64_t value) {
+    assert(id < 31);
+    reg->gprs[id] = value;
 }
 
 /// Sets the value of register W[id] from a 32-bit value. (I.e., the lower 32 bits of X[id].)
-/// Will ignore [id] out of bounds.
 /// @param reg Pointer to the register.
 /// @param id The ID of the register to access.
 /// @param value The value to write.
-void setReg32(Registers *reg, int id, uint32_t value) {
-    if (id < 1 || id > 31) return;
-    reg->gprs[id - 1] = value;
+void setReg32(Registers *reg, uint8_t id, uint32_t value) {
+    assert(id < 31);
+    reg->gprs[id] = value;
 }
 
 /// Sets the value of zero register from a 64-bit value. Always a no-op.
 /// @param reg Pointer to the register.
 /// @param value The value to write. Always ignored.
-void setRegZR64(Registers *reg, uint64_t value) {}
+void setRegZR64(__attribute__((unused)) Registers *reg, __attribute__((unused)) uint64_t value) {}
 
 /// Sets the value of zero register from a 32-bit value. Always a no-op.
 /// @param reg Pointer to the register.
 /// @param value The value to write. Always ignored.
-void setRegZR32(Registers *reg, uint32_t value) {}
+void setRegZR32(__attribute__((unused)) Registers *reg, __attribute__((unused)) uint32_t value) {}
 
 /// Sets the value of the program counter.
 /// @param reg Pointer to the register.
