@@ -11,12 +11,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-typedef struct PState PState;
-
-typedef struct Register Register;
-
 /// A struct representing the PSTATE fields of the processor.
-struct PState {
+typedef struct PState {
     /// Negative condition flag.
     bool ng;
 
@@ -28,7 +24,7 @@ struct PState {
 
     /// Overflow condition flag (last result overflowed).
     bool ov;
-};
+} PState;
 
 /// An enum representing the PSTATE fields of the processor.
 typedef enum {
@@ -46,7 +42,7 @@ typedef enum {
 } PStateField;
 
 /// A struct representing, virtually, a machine's register contents.
-struct Register {
+typedef struct Register {
     /// General purpose registers.
     uint64_t gprs[31];
 
@@ -61,7 +57,7 @@ struct Register {
 
     /// Program state register. Contains boolean flags.
     PState pstate;
-};
+} Register;
 
 Register createReg(void);
 
