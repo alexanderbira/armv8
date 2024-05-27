@@ -79,6 +79,8 @@ bool getRegState(Registers *reg, PStateField field) {
         case Z: return reg->pstate.zr;
         case C: return reg->pstate.cr;
         case V: return reg->pstate.ov;
+        // TODO: Change after error handling protocol settled.
+        default: return false;
     }
 }
 
