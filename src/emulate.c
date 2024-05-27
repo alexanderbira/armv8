@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include <sys/fcntl.h>
 
 #include "emulator/system/registers.h"
 #include "emulator/system/memory.h"
@@ -9,11 +8,9 @@ int main(int argc, char **argv) {
     // Check that [argv] is valid, i.e., has 2-3 args.
     if (argc < 2 || argc > 3) return EXIT_FAILURE;
 
-    int fileIn = open(argv[1], O_RDONLY);
-
     // Initialise registers and memory.
     Registers reg = createReg();
-    Memory mem = allocMemFromFile(fileIn);
+    Memory mem = allocMemFromFile(argv[1]);
 
     // TODO: Execution cycle, with halt
 

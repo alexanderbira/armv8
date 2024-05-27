@@ -11,7 +11,10 @@
 /// @pre No errors occurred when the file handler [fd] was created.
 /// @param fd File handler of initial contents.
 /// @return Generic pointer to memory.
-Memory allocMemFromFile(int fd) {
+Memory allocMemFromFile(char *path) {
+    // Open the file
+    int fd = open(path, O_RDONLY);
+
     // Get statistics on the file.
     struct stat sb;
     assert(fstat(fd, &sb) == 0);

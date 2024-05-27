@@ -10,6 +10,7 @@
 
 #include <stdlib.h>
 #include <stdint.h>
+#include <sys/fcntl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <string.h>
@@ -20,7 +21,7 @@
 
 typedef void* Memory;
 
-Memory allocMemFromFile(int fd);
+Memory allocMemFromFile(char *path);
 
 Memory allocMem(void);
 
