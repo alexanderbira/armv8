@@ -8,7 +8,7 @@
 #ifndef MASKS_H
 #define MASKS_H
 
-#include <stdint.h>
+#include "instructions.h"
 
 /// Calls B(x) with x as a string
 /// @example \code{.c}b(1011) == B("1011") == 0xB\endcode
@@ -38,5 +38,9 @@
 typedef uint32_t Mask;
 
 Mask bitMask(int msb, int lsb);
+
+uint32_t B(const char *s);
+
+Component decompose(Instruction word, Mask mask);
 
 #endif //MASKS_H

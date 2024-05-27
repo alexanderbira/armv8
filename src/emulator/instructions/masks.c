@@ -5,12 +5,12 @@
 /// Created by Billy Highley on 27/05/2024.
 ///
 
-#include "instructions.h"
+#include "masks.h"
 
 /// Converts a binary string to its uint32_t representation.
 /// @param s Binary string.
 /// @return  32-bit (unsigned) integer representation.
-static inline uint32_t B(const char *s) {
+uint32_t B(const char *s) {
     uint32_t i = 0;
     while (*s) {
         i <<= 1; i += *s++ - '0';
