@@ -12,6 +12,8 @@
 #include <stdint.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <string.h>
+#include <unistd.h>
 #include <assert.h>
 
 #include "../../defs/const.h"

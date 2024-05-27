@@ -19,13 +19,14 @@ Memory allocMemFromFile(int fd) {
     // Must have enough space to store file.
     assert(sb.st_size <= MEMORY_SIZE);
 
-    // Allocate and read file into memory.
-    Memory mem = mmap(NULL, MEMORY_SIZE, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, fd, 0);
+    // Allocate memory.
+    Memory mem = mmap(NULL, MEMORY_SIZE, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
     assert(mem != NULL);
 
-    // Zero out rest of memory.
-    uint8_t *ptr = (uint8_t *) mem + sb.st_size;
-    while (ptr != (uint8_t *) mem + MEMORY_SIZE) *ptr++ = 0;
+    // Zero out rest of memory, then read file into beginning.
+    memset(mem, 0, MEMORY_SIZE);
+    ssize_t bytes_read = pread(fd, mem, sb.st_size, 0);
+    assert(bytes_read == sb.st_size);
 
     return mem;
 }
