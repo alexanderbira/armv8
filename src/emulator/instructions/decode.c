@@ -11,13 +11,13 @@
 /// @param word The instruction to process.
 void decode(Instruction word) {
     Component op0 = decompose(word, OP0_MASK);
-    if      ((op0 & DP_IMM_OP0_MASK) == DP_IMM_OP0_CODE)
+    if      ((op0 & OP0_IMM_M) == OP0_IMM_C)
             processImmediate(word);
-    else if ((op0 & DP_REG_OP0_MASK) == DP_REG_OP0_CODE)
+    else if ((op0 & OP0_REG_M) == OP0_REG_C)
             processRegister(word);
-    else if ((op0 & LOAD_STORE_OP0_MASK) == LOAD_STORE_OP0_CODE)
+    else if ((op0 & OP0_LS_M)  == OP0_LS_C)
             processLoadStore(word);
-    else if ((op0 & BRANCH_OP0_MASK) == BRANCH_OP0_CODE)
+    else if ((op0 & OP0_BR_M)  == OP0_BR_C)
             processBranch(word);
     else    printf("Unknown op0: %d", op0);
 }

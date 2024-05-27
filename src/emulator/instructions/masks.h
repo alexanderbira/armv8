@@ -10,22 +10,33 @@
 
 #include <stdint.h>
 
+/// Calls B(x) with x as a string
+/// @example \code{.c}b(1011) == B("1011") == 0xB\endcode
 #define b(x) B(#x)
 
-#define OP0_MASK bitMask(28, 25)
+/// OP0 Mask
+#define OP0_M bitMask(28, 25)
 
-#define DP_IMM_OP0_MASK     b(1110)
-#define DP_REG_OP0_MASK     b(0111)
-#define LOAD_STORE_OP0_MASK b(0101)
-#define BRANCH_OP0_MASK     b(1110)
+/// OP0 Immediate Mask
+#define OP0_IMM_M b(1110)
+/// OP0 Register Mask
+#define OP0_REG_M b(0111)
+/// OP0 Load/Store Mask
+#define OP0_LS_M  b(0101)
+/// OP0 Branch Mask
+#define OP0_BR_M  b(1110)
 
-#define DP_IMM_OP0_CODE     b(1000)
-#define DP_REG_OP0_CODE     b(0101)
-#define LOAD_STORE_OP0_CODE b(0100)
-#define BRANCH_OP0_CODE     b(1010)
+/// OP0 Immediate Code
+#define OP0_IMM_C b(1000)
+/// OP0 Register Code
+#define OP0_REG_C b(0101)
+/// OP0 Load/Store Code
+#define OP0_LS_C  b(0100)
+/// OP0 Branch Code
+#define OP0_BR_C  b(1010)
 
 typedef uint32_t Mask;
 
-Mask bitMask(int, int);
+Mask bitMask(int msb, int lsb);
 
 #endif //MASKS_H
