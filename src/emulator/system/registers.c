@@ -8,14 +8,6 @@
 #include <assert.h>
 #include "registers.h"
 
-/// Creates a fresh register, properly initialised at startup.
-/// @return A fresh register.
-Registers createReg() {
-    Registers reg;
-    initReg(&reg);
-    return reg;
-};
-
 /// Initialises a register to desired state at startup.
 /// @param reg Pointer to the register.
 static void initReg(Registers *reg) {
@@ -28,6 +20,14 @@ static void initReg(Registers *reg) {
 
     // All flags are cleared on init except the zero-flag.
     reg->pstate = (PState){false, true, false, false};
+}
+
+/// Creates a fresh register, properly initialised at startup.
+/// @return A fresh register.
+Registers createReg(void) {
+    Registers reg;
+    initReg(&reg);
+    return reg;
 }
 
 /// Gets the register X[id] as a 64-bit value.
