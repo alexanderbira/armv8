@@ -1,6 +1,6 @@
 ///
 /// decode.h
-/// Links instruction process functions and system resources for decoding.
+/// Delegate the work to the correct instruction handler
 ///
 /// Created by Billy Highley on 27/05/2024.
 ///
@@ -9,7 +9,7 @@
 #define DECODE_H
 
 #include <stdio.h>
-#include "masks.h"
+#include "op0.h"
 #include "../system/registers.h"
 #include "../system/memory.h"
 

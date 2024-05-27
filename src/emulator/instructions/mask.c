@@ -5,7 +5,7 @@
 /// Created by Billy Highley on 27/05/2024.
 ///
 
-#include "masks.h"
+#include "mask.h"
 
 /// Converts a binary string to its uint32_t representation.
 /// @param s Binary string.

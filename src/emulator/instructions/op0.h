@@ -1,18 +1,14 @@
 ///
-/// masks.h
-/// Masks, types, and mask functions
+/// op0.h
+/// Masks and codes for op0
 ///
 /// Created by Alexander Biraben-Renard and Billy Highley on 27/05/2024.
 ///
 
-#ifndef MASKS_H
-#define MASKS_H
+#ifndef OP0_H
+#define OP0_H
 
-#include "instructions.h"
-
-/// Calls B(x) with x as a string
-/// @example \code{.c}b(1011) == B("1011") == 0xB\endcode
-#define b(x) B(#x)
+#include "mask.h"
 
 /// OP0 Mask
 #define OP0_M bitMask(28, 25)
@@ -35,12 +31,4 @@
 /// OP0 Branch Code
 #define OP0_BR_C  b(1010)
 
-typedef uint32_t Mask;
-
-Mask bitMask(int msb, int lsb);
-
-uint32_t B(const char *s);
-
-Component decompose(Instruction word, Mask mask);
-
-#endif //MASKS_H
+#endif //OP0_H
