@@ -16,7 +16,7 @@
 
 #include "../../defs/const.h"
 
-typealias (void *) Memory;
+typedef void* Memory;
 
 Memory allocMemFromFile(int fd);
 
