@@ -19,7 +19,7 @@ void dumpRegs(Registers *reg) {
     char cFlag = getRegState(reg, C) ? 'C' : '-';
     char vFlag = getRegState(reg, V) ? 'V' : '-';
 
-    fprintf(stdout, "PSTATE : %d%d%d%d\n", nFlag, zFlag, cFlag, vFlag);
+    fprintf(stdout, "PSTATE : %c%c%c%c\n", nFlag, zFlag, cFlag, vFlag);
 }
 
 
