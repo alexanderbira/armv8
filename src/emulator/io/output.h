@@ -12,6 +12,7 @@
 #include <stdio.h>
 
 #include "../system/registers.h"
+#include "../system/memory.h"
 
 void dumpRegs(Registers *reg);
 

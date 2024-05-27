@@ -23,6 +23,10 @@ void dumpRegs(Registers *reg) {
 }
 
 
-void dumpMem(void *mem) {
-
+void dumpMem(Memory mem) {
+    fprintf(stdout, "Non-zero memory:\n");
+    for (int addr = 0; addr < MEMORY_SIZE; addr += 0x4) {
+        uint32_t curr = readMem32(mem, addr);
+        if (curr) fprintf(stdout, "0x%08x: 0x%08x\n", addr, curr);
+    }
 }
