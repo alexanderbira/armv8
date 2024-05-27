@@ -34,7 +34,7 @@ static void initReg(Registers *reg) {
 /// @param reg Pointer to the register.
 /// @param id The ID of the register to access.
 /// @return The value of the register, or 0 if [id] is out of range.
-uint64_t getReg64(Registers *reg, size_t id) {
+Reg64 getReg64(Registers *reg, size_t id) {
     assert(id < 31);
     return reg->gprs[id];
 }
@@ -43,7 +43,7 @@ uint64_t getReg64(Registers *reg, size_t id) {
 /// @param reg Pointer to the register.
 /// @param id The ID of the register to access.
 /// @return The value of the register, or 0 if [id] is out of range.
-uint32_t getReg32(Registers *reg, size_t id) {
+Reg32 getReg32(Registers *reg, size_t id) {
     assert(id < 31);
     return reg->gprs[id];
 }
@@ -51,21 +51,21 @@ uint32_t getReg32(Registers *reg, size_t id) {
 /// Gets the program counter.
 /// @param reg Pointer to the register.
 /// @return The value of the program counter.
-uint64_t getRegPC(Registers *reg) {
+Reg64 getRegPC(Registers *reg) {
     return reg->pc;
 }
 
 /// Gets the stack pointer as a 64-bit value.
 /// @param reg Pointer to the register.
 /// @return The value of the stack pointer.
-uint64_t getRegSP64(Registers *reg) {
+Reg64 getRegSP64(Registers *reg) {
     return reg->sp;
 }
 
 /// Gets the stack pointer as a 32-bit value.
 /// @param reg Pointer to the register.
 /// @return The value of the stack pointer.
-uint32_t getRegSP32(Registers *reg) {
+Reg32 getRegSP32(Registers *reg) {
     return reg->sp;
 }
 
@@ -86,7 +86,7 @@ bool getRegState(Registers *reg, PStateField field) {
 /// @param reg Pointer to the register.
 /// @param id The ID of the register to access.
 /// @param value The value to write.
-void setReg64(Registers *reg, size_t id, uint64_t value) {
+void setReg64(Registers *reg, size_t id, Reg64 value) {
     assert(id < 31);
     reg->gprs[id] = value;
 }
@@ -95,7 +95,7 @@ void setReg64(Registers *reg, size_t id, uint64_t value) {
 /// @param reg Pointer to the register.
 /// @param id The ID of the register to access.
 /// @param value The value to write.
-void setReg32(Registers *reg, size_t id, uint32_t value) {
+void setReg32(Registers *reg, size_t id, Reg32 value) {
     assert(id < 31);
     reg->gprs[id] = value;
 }
@@ -103,7 +103,7 @@ void setReg32(Registers *reg, size_t id, uint32_t value) {
 /// Sets the value of the program counter.
 /// @param reg Pointer to the register.
 /// @param value The value to write.
-void setRegPC(Registers *reg, uint64_t value) {
+void setRegPC(Registers *reg, Reg64 value) {
     reg->pc = value;
 }
 
@@ -116,14 +116,14 @@ void incRegPC(Registers *reg) {
 /// Sets the value of stack pointer from a 64-bit value.
 /// @param reg Pointer to the register.
 /// @param value The value to write.
-void setRegSP64(Registers *reg, uint64_t value) {
+void setRegSP64(Registers *reg, Reg64 value) {
     reg->sp = value;
 }
 
 /// Sets the value of stack pointer from a 32-bit value.
 /// @param reg Pointer to the register.
 /// @param value The value to write.
-void setRegSP32(Registers *reg, uint32_t value) {
+void setRegSP32(Registers *reg, Reg32 value) {
     reg->sp = value;
 }
 
