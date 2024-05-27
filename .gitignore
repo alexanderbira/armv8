@@ -38,7 +38,6 @@ assemble
 !/**/
 !*.*
 *.dsYM/
-*.o
 
 # === CBuild ===
 .cbuild
