@@ -35,7 +35,16 @@ static void initReg(Registers *reg) {
 /// @param reg Pointer to the register.
 /// @param id The ID of the register to access.
 /// @return The value of the register, or 0 if [id] is out of range.
-uint64_t getReg(Registers *reg, uint8_t id) {
+uint64_t getReg64(Registers *reg, size_t id) {
+    assert(id < 31);
+    return reg->gprs[id];
+}
+
+/// Gets the register X[id] as a 32-bit value, i.e. W[id].
+/// @param reg Pointer to the register.
+/// @param id The ID of the register to access.
+/// @return The value of the register, or 0 if [id] is out of range.
+uint32_t getReg32(Registers *reg, size_t id) {
     assert(id < 31);
     return reg->gprs[id];
 }
@@ -43,7 +52,14 @@ uint64_t getReg(Registers *reg, uint8_t id) {
 /// Gets the zero register as a 64-bit value. Always returns 0.
 /// @param reg Pointer to the register.
 /// @return 0
-uint64_t getRegZR(__attribute__((unused)) Registers *reg) {
+uint64_t getRegZR64(__attribute__((unused)) Registers *reg) {
+    return 0;
+}
+
+/// Gets the zero register as a 32-bit value. Always returns 0.
+/// @param reg Pointer to the register.
+/// @return 0
+uint32_t getRegZR32(__attribute__((unused)) Registers *reg) {
     return 0;
 }
 
@@ -57,7 +73,14 @@ uint64_t getRegPC(Registers *reg) {
 /// Gets the stack pointer as a 64-bit value.
 /// @param reg Pointer to the register.
 /// @return The value of the stack pointer.
-uint64_t getRegSP(Registers *reg) {
+uint64_t getRegSP64(Registers *reg) {
+    return reg->sp;
+}
+
+/// Gets the stack pointer as a 32-bit value.
+/// @param reg Pointer to the register.
+/// @return The value of the stack pointer.
+uint32_t getRegSP32(Registers *reg) {
     return reg->sp;
 }
 
@@ -78,7 +101,7 @@ bool getRegState(Registers *reg, PStateField field) {
 /// @param reg Pointer to the register.
 /// @param id The ID of the register to access.
 /// @param value The value to write.
-void setReg64(Registers *reg, uint8_t id, uint64_t value) {
+void setReg64(Registers *reg, size_t id, uint64_t value) {
     assert(id < 31);
     reg->gprs[id] = value;
 }
@@ -87,7 +110,7 @@ void setReg64(Registers *reg, uint8_t id, uint64_t value) {
 /// @param reg Pointer to the register.
 /// @param id The ID of the register to access.
 /// @param value The value to write.
-void setReg32(Registers *reg, uint8_t id, uint32_t value) {
+void setReg32(Registers *reg, size_t id, uint32_t value) {
     assert(id < 31);
     reg->gprs[id] = value;
 }
