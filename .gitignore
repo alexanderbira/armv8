@@ -39,6 +39,10 @@ assemble
 !*.*
 *.dsYM/
 
+# === Testing Binary Object Files ===
+# If you need these, get them yourself!
+*.bin
+
 # === CBuild ===
 .cbuild
 
