@@ -5,7 +5,7 @@
 /// Created by Billy Highley on 27/05/2024.
 ///
 
-#include <stdio.h>
+#include "decode.h"
 
 /// Delegates decoding and execution to the corresponding process function.
 /// @param word The instruction to process.
