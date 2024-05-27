@@ -20,25 +20,25 @@ Memory allocMemFromFile(int fd) {
     assert(sb.st_size <= MEMORY_SIZE);
 
     // Allocate and read file into memory.
-    Memory mem = mmap(NULL, MEMORY_SIZE, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, fd, 0);
+    Memory mem = mmap(NULL, MEMORY_SIZE, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, fd, 0);
     assert(mem != NULL);
 
     // Zero out rest of memory.
-    uint8_t *ptr = mem + sb.st_size;
-    while (ptr != mem + MEMORY_SIZE) *ptr++ = 0;
+    uint8_t *ptr = (uint8_t *) mem + sb.st_size;
+    while (ptr != (uint8_t *) mem + MEMORY_SIZE) *ptr++ = 0;
 
     return mem;
 }
 
 /// Allocates a chunk of blank virtual memory.
 /// @return Generic pointer to memory.
-Memory allocMem() {
-    Memory mem = mmap(NULL, MEMORY_SIZE, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+Memory allocMem(void) {
+    Memory mem = mmap(NULL, MEMORY_SIZE, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
     assert(mem != NULL);
 
     // Zero out rest of memory.
     uint8_t *ptr = mem;
-    while (ptr != mem + MEMORY_SIZE) *ptr++ = 0;
+    while (ptr != (uint8_t *) mem + MEMORY_SIZE) *ptr++ = 0;
 
     return mem;
 }
