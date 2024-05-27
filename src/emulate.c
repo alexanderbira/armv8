@@ -10,17 +10,18 @@ int main(int argc, char **argv) {
     if (argc < 2 || argc > 3) return EXIT_FAILURE;
 
     int fileIn = open(argv[1], O_RDONLY);
+    FILE *fileOut = stdout;
+    if (argc == 3) fileOut = fopen(argv[2], "w");
 
+    // Initialise registers and memory.
     Registers reg = createReg();
     Memory mem = allocMemFromFile(fileIn);
-
-    // TODO: Instantiate memory from input file
 
     // TODO: Execution cycle, with halt
 
     // Dump contents of register and memory.
-    dumpRegs(&reg);
-    dumpMem(mem);
+    dumpRegs(&reg, fileOut);
+    dumpMem(mem, fileOut);
 
     return EXIT_SUCCESS;
 }
