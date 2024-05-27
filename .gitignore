@@ -39,6 +39,9 @@ assemble
 !*.*
 *.dsYM/
 
+# === CBuild ===
+.cbuild
+
 # === IntelliJ IDEs ===
 .idea
 
