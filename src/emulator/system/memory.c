@@ -11,7 +11,10 @@
 /// @pre No errors occurred when the file handler [fd] was created.
 /// @param fd File handler of initial contents.
 /// @return Generic pointer to memory.
-Memory allocMemFromFile(int fd) {
+Memory allocMemFromFile(char *path) {
+    // Open the file
+    int fd = open(path, O_RDONLY);
+
     // Get statistics on the file.
     struct stat sb;
     assert(fstat(fd, &sb) == 0);
@@ -19,26 +22,27 @@ Memory allocMemFromFile(int fd) {
     // Must have enough space to store file.
     assert(sb.st_size <= MEMORY_SIZE);
 
-    // Allocate and read file into memory.
-    Memory mem = mmap(NULL, MEMORY_SIZE, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, fd, 0);
+    // Allocate memory.
+    Memory mem = mmap(NULL, MEMORY_SIZE, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
     assert(mem != NULL);
 
-    // Zero out rest of memory.
-    uint8_t *ptr = mem + sb.st_size;
-    while (ptr != mem + MEMORY_SIZE) *ptr++ = 0;
+    // Zero out rest of memory, then read file into beginning.
+    memset(mem, 0, MEMORY_SIZE);
+    ssize_t bytes_read = pread(fd, mem, sb.st_size, 0);
+    assert(bytes_read == sb.st_size);
 
     return mem;
 }
 
 /// Allocates a chunk of blank virtual memory.
 /// @return Generic pointer to memory.
-Memory allocMem() {
-    Memory mem = mmap(NULL, MEMORY_SIZE, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+Memory allocMem(void) {
+    Memory mem = mmap(NULL, MEMORY_SIZE, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
     assert(mem != NULL);
 
     // Zero out rest of memory.
     uint8_t *ptr = mem;
-    while (ptr != mem + MEMORY_SIZE) *ptr++ = 0;
+    while (ptr != (uint8_t *) mem + MEMORY_SIZE) *ptr++ = 0;
 
     return mem;
 }

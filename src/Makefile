@@ -1,14 +1,15 @@
 CC       ?= gcc
+# No -D_POSIX_SOURCE as that interferes with MAP_ANONYMOUS in <sys/mman.h>!
 CFLAGS   ?= -std=c17 -g\
-	-D_POSIX_SOURCE -D_DEFAULT_SOURCE\
+	-D_DEFAULT_SOURCE\
 	-Wall -Werror -pedantic
-CXXFLAGS ?= -Iemulator/instructions/ -Iemulator/io/ -Iemulator/system
-VPATH    ?= emulator/instructions/:emulator/io/:emulator/system
+CXXFLAGS ?= -Idefs/ -Iemulator/instructions/ -Iemulator/io/ -Iemulator/system
+VPATH    ?= defs/:emulator/instructions/:emulator/io/:emulator/system
 
 .SUFFIXES: .c .o
 .PHONY: all clean
 
-EMULATE_OBJS = emulate.o registers.o output.o
+EMULATE_OBJS = emulate.o registers.o memory.o output.o
 
 all: assemble emulate
 
