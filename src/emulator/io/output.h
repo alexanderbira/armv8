@@ -8,6 +8,7 @@
 #ifndef EMULATOR_OUTPUT_H
 #define EMULATOR_OUTPUT_H
 
+#include <inttypes.h>
 #include <stdio.h>
 
 #include "../system/registers.h"

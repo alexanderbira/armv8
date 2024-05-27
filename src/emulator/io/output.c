@@ -10,9 +10,9 @@
 void dumpRegs(Registers *reg) {
     fprintf(stdout, "Registers:\n");
     for (int i = 0; i < 31; i++) {
-        fprintf(stdout, "X%02d    = %016llx\n", i, getReg64(reg, i));
+        fprintf(stdout, "X%02d    = %016" PRIx64 "\n", i, getReg64(reg, i));
     }
-    fprintf(stdout, "PC     = %016llx\n", getRegPC(reg));
+    fprintf(stdout, "PC     = %016" PRIx64 "\n", getRegPC(reg));
 
     char nFlag = getRegState(reg, N) ? 'N' : '-';
     char zFlag = getRegState(reg, Z) ? 'Z' : '-';
