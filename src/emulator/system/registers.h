@@ -48,7 +48,8 @@ typedef struct {
     uint64_t gprs[31];
 
     /// Zero register. Always returns zero, ignores writes.
-    uint64_t zr;
+    /// -- Not required since we will hardcode the value. --
+    /// uint64_t zr;
 
     /// Program counter. Contains address of *current* instruction.
     uint64_t pc;
@@ -64,23 +65,21 @@ Registers createReg(void);
 
 static void initReg(Registers *reg);
 
-uint64_t getReg(Registers *reg, size_t id);
+uint64_t getReg64(Registers *reg, size_t id);
 
-uint64_t getRegZR(Registers *reg);
+uint32_t getReg32(Registers *reg, size_t id);
 
 uint64_t getRegPC(Registers *reg);
 
-uint64_t getRegSP(Registers *reg);
+uint64_t getRegSP64(Registers *reg);
+
+uint32_t getRegSP32(Registers *reg);
 
 bool getRegState(Registers *reg, PStateField field);
 
 void setReg64(Registers *reg, size_t id, uint64_t value);
 
 void setReg32(Registers *reg, size_t id, uint32_t value);
-
-void setRegZR64(__attribute__((unused)) Registers *reg, __attribute__((unused)) uint64_t value);
-
-void setRegZR32(Registers *reg, uint32_t value);
 
 void setRegPC(Registers *reg, uint64_t value);
 

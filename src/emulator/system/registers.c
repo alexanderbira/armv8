@@ -19,11 +19,10 @@ Registers createReg() {
 /// Initialises a register to desired state at startup.
 /// @param reg Pointer to the register.
 static void initReg(Registers *reg) {
-    // All registers are initialised to zero.
+    // All registers are initialised to zero. Zero register not in struct.
     for (int i = 0; i < 31; i++) {
         reg->gprs[i] = 0;
     }
-    reg->zr = 0;
     reg->pc = 0;
     reg->sp = 0;
 
@@ -47,20 +46,6 @@ uint64_t getReg64(Registers *reg, size_t id) {
 uint32_t getReg32(Registers *reg, size_t id) {
     assert(id < 31);
     return reg->gprs[id];
-}
-
-/// Gets the zero register as a 64-bit value. Always returns 0.
-/// @param reg Pointer to the register.
-/// @return 0
-uint64_t getRegZR64(__attribute__((unused)) Registers *reg) {
-    return 0;
-}
-
-/// Gets the zero register as a 32-bit value. Always returns 0.
-/// @param reg Pointer to the register.
-/// @return 0
-uint32_t getRegZR32(__attribute__((unused)) Registers *reg) {
-    return 0;
 }
 
 /// Gets the program counter.
@@ -114,16 +99,6 @@ void setReg32(Registers *reg, size_t id, uint32_t value) {
     assert(id < 31);
     reg->gprs[id] = value;
 }
-
-/// Sets the value of zero register from a 64-bit value. Always a no-op.
-/// @param reg Pointer to the register.
-/// @param value The value to write. Always ignored.
-void setRegZR64(__attribute__((unused)) Registers *reg, __attribute__((unused)) uint64_t value) {}
-
-/// Sets the value of zero register from a 32-bit value. Always a no-op.
-/// @param reg Pointer to the register.
-/// @param value The value to write. Always ignored.
-void setRegZR32(__attribute__((unused)) Registers *reg, __attribute__((unused)) uint32_t value) {}
 
 /// Sets the value of the program counter.
 /// @param reg Pointer to the register.
