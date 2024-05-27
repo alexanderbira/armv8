@@ -5,6 +5,6 @@
 #ifndef CONST_H
 #define CONST_H
 
-#define MEMORY_SIZE (2 * 1024 * 1024) // 2MB
+#define MEMORY_SIZE (2 << 20) // 2MB
 
 #endif //CONST_H

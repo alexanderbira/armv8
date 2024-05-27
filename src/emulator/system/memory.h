@@ -16,18 +16,20 @@
 
 #include "../../defs/const.h"
 
-void *allocMemFromFile(int fd);
+typealias (void *) Memory;
 
-void *allocMem(void);
+Memory allocMemFromFile(int fd);
 
-void freeMem(void *mem);
+Memory allocMem(void);
 
-uint32_t readMem32(void *mem, size_t addr);
+void freeMem(Memory mem);
 
-uint64_t readMem64(void *mem, size_t addr);
+uint32_t readMem32(Memory mem, size_t addr);
 
-void writeMem32(void *mem, size_t addr, uint32_t value);
+uint64_t readMem64(Memory mem, size_t addr);
 
-void writeMem64(void *mem, size_t addr, uint64_t value);
+void writeMem32(Memory mem, size_t addr, uint32_t value);
+
+void writeMem64(Memory mem, size_t addr, uint64_t value);
 
 #endif //EMULATOR_MEMORY_H
