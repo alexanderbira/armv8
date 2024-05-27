@@ -12,6 +12,12 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+/// Alias for uint64_t, the size of a virtual X register.
+typedef uint64_t Reg64;
+
+/// Alias for uint32_t, the size of a virtual W register.
+typedef uint32_t Reg32;
+
 /// A struct representing the PSTATE fields of the processor.
 typedef struct {
     /// Negative condition flag.
@@ -45,17 +51,17 @@ typedef enum {
 /// A struct representing, virtually, a machine's register contents.
 typedef struct {
     /// General purpose registers.
-    uint64_t gprs[31];
+    Reg64 gprs[31];
 
     /// Zero register. Always returns zero, ignores writes.
     /// -- Not required since we will hardcode the value. --
     /// uint64_t zr;
 
     /// Program counter. Contains address of *current* instruction.
-    uint64_t pc;
+    Reg64 pc;
 
     /// Stack pointer.
-    uint64_t sp;
+    Reg64 sp;
 
     /// Program state register. Contains boolean flags.
     PState pstate;
@@ -65,29 +71,29 @@ Registers createReg(void);
 
 static void initReg(Registers *reg);
 
-uint64_t getReg64(Registers *reg, size_t id);
+Reg64 getReg64(Registers *reg, size_t id);
 
-uint32_t getReg32(Registers *reg, size_t id);
+Reg32 getReg32(Registers *reg, size_t id);
 
-uint64_t getRegPC(Registers *reg);
+Reg64 getRegPC(Registers *reg);
 
-uint64_t getRegSP64(Registers *reg);
+Reg64 getRegSP64(Registers *reg);
 
-uint32_t getRegSP32(Registers *reg);
+Reg32 getRegSP32(Registers *reg);
 
 bool getRegState(Registers *reg, PStateField field);
 
-void setReg64(Registers *reg, size_t id, uint64_t value);
+void setReg64(Registers *reg, size_t id, Reg64 value);
 
-void setReg32(Registers *reg, size_t id, uint32_t value);
+void setReg32(Registers *reg, size_t id, Reg32 value);
 
-void setRegPC(Registers *reg, uint64_t value);
+void setRegPC(Registers *reg, Reg64 value);
 
 void incRegPC(Registers *reg);
 
-void setRegSP64(Registers *reg, uint64_t value);
+void setRegSP64(Registers *reg, Reg64 value);
 
-void setRegSP32(Registers *reg, uint32_t value);
+void setRegSP32(Registers *reg, Reg32 value);
 
 void setRegState(Registers *reg, PStateField field, bool state);
 
