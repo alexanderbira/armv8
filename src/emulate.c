@@ -14,12 +14,13 @@ int main(int argc, char **argv) {
 
     // TODO: Execution cycle, with halt
 
-    // Dump contents of register and memory.
+    // Dump contents of register and memory, then free memory.
     FILE *fileOut = stdout;
     if (argc == 3) fileOut = fopen(argv[2], "w");
 
     dumpRegs(&reg, fileOut);
     dumpMem(mem, fileOut);
+    freeMem(mem);
 
     return EXIT_SUCCESS;
 }
