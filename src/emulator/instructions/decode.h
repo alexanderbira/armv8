@@ -11,7 +11,6 @@
 #include <stdio.h>
 #include "../system/registers.h"
 #include "../system/memory.h"
-
 #include "mask.h"
 
 /// OP0 Mask
@@ -35,6 +34,11 @@
 /// OP0 Branch Code
 #define OP0_BR_C  B(1010)
 
-void decode(Instruction word, Registers regs, Memory mem);
+void processImmediate(Instruction word, Registers *regs);
+void processRegister(Instruction word, Registers *regs);
+void processLoadStore(Instruction word, Registers *regs, Memory mem);
+void processBranch(Instruction word, Registers *regs, Memory mem);
+
+void decode(Instruction word, Registers *regs, Memory mem);
 
 #endif //DECODE_H
