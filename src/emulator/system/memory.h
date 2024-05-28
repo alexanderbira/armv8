@@ -8,6 +8,7 @@
 #ifndef EMULATOR_MEMORY_H
 #define EMULATOR_MEMORY_H
 
+#include <stdbool.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <sys/fcntl.h>
@@ -19,7 +20,10 @@
 
 #include "../../defs/const.h"
 
+/// Type definition representing virtual memory.
 typedef void* Memory;
+
+/// Type definition representing
 
 Memory allocMemFromFile(char *path);
 
@@ -27,12 +31,8 @@ Memory allocMem(void);
 
 void freeMem(Memory mem);
 
-uint32_t readMem32(Memory mem, size_t addr);
+uint64_t readMem(Memory mem, bool as64, size_t addr);
 
-uint64_t readMem64(Memory mem, size_t addr);
-
-void writeMem32(Memory mem, size_t addr, uint32_t value);
-
-void writeMem64(Memory mem, size_t addr, uint64_t value);
+void writeMem(Memory mem, bool as64, size_t addr, uint64_t value);
 
 #endif //EMULATOR_MEMORY_H

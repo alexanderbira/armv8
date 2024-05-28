@@ -53,60 +53,35 @@ void freeMem(Memory mem) {
     assert(munmap(mem, MEMORY_SIZE) == 0);
 }
 
-/// Reads 32-bits from virtual memory.
+/// Reads 64/32-bits from virtual memory. If 32-bits is selected, higher bits will be set to 0.
 /// @param mem The address of the virtual memory.
-/// @param addr The address within the virtual memory.
-/// @return The 32-bit value at mem + addr.
-uint32_t readMem32(Memory mem, size_t addr) {
-    assert(addr + sizeof(uint32_t) <= MEMORY_SIZE);
-
-    // Read virtual memory as little-endian.
-    uint8_t *ptr = (uint8_t *) mem + addr;
-    uint32_t res = ptr[0];
-    for (int i = 1; i < sizeof(uint32_t); i++) {
-        res |= ((uint32_t) ptr[i] << i * 8);
-    }
-    return res;
-}
-
-/// Reads 64-bits from virtual memory.
-/// @param mem The address of the virtual memory.
+/// @param as64 Whether to read 64 or 32 bits.
 /// @param addr The address within the virtual memory.
 /// @return The 64-bit value at mem + addr.
-uint64_t readMem64(Memory mem, size_t addr) {
+uint64_t readMem(Memory mem, bool as64, size_t addr) {
     assert(addr + sizeof(uint64_t) <= MEMORY_SIZE);
+    size_t readSize = as64 ? sizeof(uint64_t) : sizeof(uint32_t);
 
     // Read virtual memory as little-endian.
     uint8_t *ptr = (uint8_t *) mem + addr;
     uint64_t res = ptr[0];
-    for (int i = 1; i < sizeof(uint64_t); i++) {
+    for (int i = 1; i < readSize; i++) {
         res |= ((uint64_t) ptr[i] << i * 8);
     }
     return res;
 }
 
-/// Writes 32-bits to virtual memory.
+/// Writes 64/32-bits to virtual memory. If 32-bits is selected, the higher bits of [value] will be ignored.
 /// @param mem The address of the virtual memory.
+/// @param as64 Whether to write 64 or 32 bits.
 /// @param addr The address within the virtual memory.
 /// @param value The value to write.
-void writeMem32(Memory mem, size_t addr, uint32_t value) {
-    assert(addr + sizeof(uint32_t) <= MEMORY_SIZE);
-
-    uint8_t *ptr = (uint8_t *) mem + addr;
-    for (int i = 0; i < sizeof(uint32_t); i++) {
-        ptr[i] = (uint8_t)(value >> 8 * i);
-    }
-}
-
-/// Writes 64-bits to virtual memory.
-/// @param mem The address of the virtual memory.
-/// @param addr The address within the virtual memory.
-/// @param value The value to write.
-void writeMem64(Memory mem, size_t addr, uint64_t value) {
+void writeMem(Memory mem, bool as64, size_t addr, uint64_t value) {
     assert(addr + sizeof(uint64_t) <= MEMORY_SIZE);
+    size_t writeSize = as64 ? sizeof(uint64_t) : sizeof(uint32_t);
 
     uint8_t *ptr = (uint8_t *) mem + addr;
-    for (int i = 0; i < sizeof(uint64_t); i++) {
+    for (int i = 0; i < writeSize; i++) {
         ptr[i] = (uint8_t)(value >> 8 * i);
     }
 }
