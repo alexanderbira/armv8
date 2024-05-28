@@ -33,7 +33,3 @@ int main(int argc, char **argv) {
     return EXIT_SUCCESS;
 }
 
-/// Function to "process" an empty line.
-/// @param line The line to "process".
-/// @return Always 0, since no instruction is ever all 0s.
-uint32_t procEmpty(const char *line) { return 0; }
