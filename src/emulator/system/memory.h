@@ -17,7 +17,7 @@
 #include <unistd.h>
 #include <assert.h>
 
-#include "../../defs/const.h"
+#include "../../common/const.h"
 
 typedef void* Memory;
 
