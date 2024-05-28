@@ -17,9 +17,13 @@
 /// The function signature of a line processor.
 typedef uint32_t (*LineProcessor)(const char *line);
 
-/// Functions corresponding to each [AsmType].
-const LineProcessor procTable[] = {
+int main(int argc, char **argv);
 
+uint32_t procEmpty(const char *line);
+
+/// Functions corresponding to each [AsmType].
+const LineProcessor procTable[4] = {
+        procEmpty,
 };
 
 #endif //ASSEMBLER_ASSEMBLE_H
