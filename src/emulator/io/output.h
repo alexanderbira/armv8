@@ -14,7 +14,7 @@
 #include "../system/registers.h"
 #include "../system/memory.h"
 
-void dumpRegs(Registers *reg, FILE *fileOut);
+void dumpRegs(Regs *reg, FILE *fileOut);
 
 void dumpMem(Memory mem, FILE *fileOut);
 

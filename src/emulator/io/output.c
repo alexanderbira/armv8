@@ -7,10 +7,10 @@
 
 #include "output.h"
 
-void dumpRegs(Registers *reg, FILE *fileOut) {
+void dumpRegs(Regs *reg, FILE *fileOut) {
     fprintf(fileOut, "Registers:\n");
-    for (int i = 0; i < 31; i++) {
-        fprintf(fileOut, "X%02d    = %016" PRIx64 "\n", i, getReg64(reg, i));
+    for (int i = 0; i < NUM_GPRS; i++) {
+        fprintf(fileOut, "X%02d    = %016" PRIx64 "\n", i, getReg(reg, i));
     }
     fprintf(fileOut, "PC     = %016" PRIx64 "\n", getRegPC(reg));
 
@@ -26,7 +26,7 @@ void dumpRegs(Registers *reg, FILE *fileOut) {
 void dumpMem(Memory mem, FILE *fileOut) {
     fprintf(fileOut, "Non-zero memory:\n");
     for (int addr = 0; addr < MEMORY_SIZE; addr += 0x4) {
-        uint32_t curr = readMem32(mem, addr);
+        uint32_t curr = readMem(mem, false, addr);
         if (curr) fprintf(fileOut, "0x%08x: 0x%08x\n", addr, curr);
     }
 }
