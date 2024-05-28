@@ -10,9 +10,12 @@
 
 #include "instructions.h"
 
-/// Calls B(x) with x as a string
-/// @example \code{.c}b(1011) == B("1011") == 0xB\endcode
-#define b(x) B(#x)
+/// Calls b(x) with x as a string
+/// @example \code{.c}B(1011) == b("1011") == 0xB\endcode
+#define B(x) b(#x)
+
+/// Calls bitMask(msb, lsb)
+#define BitMask(msb, lsb) bitMask(msb, lsb)
 
 typedef uint32_t Mask;
 
@@ -29,7 +32,7 @@ static inline Mask bitMask(int msb, int lsb) {
 /// Converts a binary string to its uint32_t representation.
 /// @param s Binary string.
 /// @return  32-bit (unsigned) integer representation.
-static inline uint32_t B(const char *s) {
+static inline uint32_t b(const char *s) {
     uint32_t i = 0;
     while (*s) {
         i <<= 1; i += *s++ - '0';
@@ -37,18 +40,6 @@ static inline uint32_t B(const char *s) {
     return i;
 }
 
-/// Applies the given mask to an instruction and returns the bits
-/// shifted so that the LSB is right-aligned to yield the component.
-/// @param word The instruction to mask.
-/// @param mask The mask to use on the instruction.
-/// @return The shifted bit pattern extracted by the mask.
-/// @example \code{.c}decompose(10111, 11100) == 00101\endcode
-Component decompose(Instruction word, Mask mask) {
-    uint32_t bits = word & mask;
-    while (!(mask & 1) && (mask >>= 1)) {
-        bits >>= 1;
-    }
-    return bits;
-}
+Component decompose(Instruction word, Mask mask);
 
 #endif //MASK_H

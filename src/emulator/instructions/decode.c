@@ -13,10 +13,10 @@ void decode(Instruction word, Registers regs, Memory mem) {
     Component op0 = decompose(word, OP0_M);
 
     if      ((op0 & OP0_IMM_M) == OP0_IMM_C)
-            processImmediate(word, regs, mem);
+            processImmediate(word, regs);
 
     else if ((op0 & OP0_REG_M) == OP0_REG_C)
-            processRegister(word, regs, mem);
+            processRegister(word, regs);
 
     else if ((op0 & OP0_LS_M)  == OP0_LS_C)
             processLoadStore(word, regs, mem);
