@@ -8,12 +8,14 @@
 #ifndef EMULATOR_OUTPUT_H
 #define EMULATOR_OUTPUT_H
 
+#include <inttypes.h>
 #include <stdio.h>
 
 #include "../system/registers.h"
+#include "../system/memory.h"
 
-void dumpRegs(Registers *reg);
+void dumpRegs(Registers regs, FILE *fileOut);
 
-void dumpMem(void *mem);
+void dumpMem(Memory mem, FILE *fileOut);
 
 #endif //EMULATOR_OUTPUT_H
