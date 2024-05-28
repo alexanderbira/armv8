@@ -59,8 +59,8 @@ void freeMem(Memory mem) {
 /// @param addr The address within the virtual memory.
 /// @return The 64-bit value at mem + addr.
 uint64_t readMem(Memory mem, bool as64, size_t addr) {
-    assert(addr + sizeof(uint64_t) <= MEMORY_SIZE);
     size_t readSize = as64 ? sizeof(uint64_t) : sizeof(uint32_t);
+    assert(addr + readSize <= MEMORY_SIZE);
 
     // Read virtual memory as little-endian.
     uint8_t *ptr = (uint8_t *) mem + addr;
@@ -77,8 +77,8 @@ uint64_t readMem(Memory mem, bool as64, size_t addr) {
 /// @param addr The address within the virtual memory.
 /// @param value The value to write.
 void writeMem(Memory mem, bool as64, size_t addr, uint64_t value) {
-    assert(addr + sizeof(uint64_t) <= MEMORY_SIZE);
     size_t writeSize = as64 ? sizeof(uint64_t) : sizeof(uint32_t);
+    assert(addr + writeSize <= MEMORY_SIZE);
 
     uint8_t *ptr = (uint8_t *) mem + addr;
     for (int i = 0; i < writeSize; i++) {
