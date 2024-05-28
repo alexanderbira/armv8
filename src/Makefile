@@ -3,8 +3,8 @@ CC       ?= gcc
 CFLAGS   ?= -std=c17 -g\
 	-D_DEFAULT_SOURCE\
 	-Wall -Werror -pedantic
-CXXFLAGS ?= -Idefs/ -Iemulator/instructions/ -Iemulator/io/ -Iemulator/system
-VPATH    ?= defs/:emulator/instructions/:emulator/io/:emulator/system
+CXXFLAGS ?= -Icommon/ -Iemulator/instructions/ -Iemulator/io/ -Iemulator/system
+VPATH    ?= common/:emulator/instructions/:emulator/io/:emulator/system
 
 .SUFFIXES: .c .o
 .PHONY: all clean
