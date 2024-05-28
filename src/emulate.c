@@ -9,7 +9,7 @@ int main(int argc, char **argv) {
     if (argc < 2 || argc > 3) return EXIT_FAILURE;
 
     // Initialise registers and memory.
-    Registers reg = createReg();
+    Regs reg = createReg();
     Memory mem = allocMemFromFile(argv[1]);
 
     // TODO: Execution cycle, with halt
