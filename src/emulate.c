@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "emulator/system/registers.h"
 #include "emulator/system/memory.h"
