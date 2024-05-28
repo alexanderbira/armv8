@@ -12,6 +12,8 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+#include "../../defs/const.h"
+
 /// Alias for uint64_t, the size of a virtual X register.
 typedef uint64_t Reg;
 
@@ -48,7 +50,7 @@ typedef enum {
 /// A struct representing, virtually, a machine's register contents.
 typedef struct {
     /// General purpose registers.
-    Reg gprs[31];
+    Reg gprs[NUM_GPRS];
 
     /// Zero register. Always returns zero, ignores writes.
     /// -- Not required since we will hardcode the value. --
