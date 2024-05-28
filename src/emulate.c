@@ -9,7 +9,7 @@ int main(int argc, char **argv) {
     if (argc < 2 || argc > 3) return EXIT_FAILURE;
 
     // Initialise registers and memory.
-    Regs reg = createReg();
+    Regs_s regs = createRegs();
     Memory mem = allocMemFromFile(argv[1]);
 
     // TODO: Execution cycle, with halt
@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
     FILE *fileOut = stdout;
     if (argc == 3) fileOut = fopen(argv[2], "w");
 
-    dumpRegs(&reg, fileOut);
+    dumpRegs(&regs, fileOut);
     dumpMem(mem, fileOut);
     freeMem(mem);
 

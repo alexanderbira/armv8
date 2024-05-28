@@ -13,9 +13,7 @@
 #include <stddef.h>
 
 #include "../../defs/const.h"
-
-/// Alias for uint64_t, the size of a virtual X register.
-typedef uint64_t Reg;
+#include "bitData.h"
 
 /// A struct representing the PSTATE fields of the processor.
 typedef struct {
@@ -50,42 +48,45 @@ typedef enum {
 /// A struct representing, virtually, a machine's register contents.
 typedef struct {
     /// General purpose registers.
-    Reg gprs[NUM_GPRS];
+    BitData gprs[NUM_GPRS];
 
     /// Zero register. Always returns zero, ignores writes.
     /// -- Not required since we will hardcode the value. --
     /// uint64_t zr;
 
     /// Program counter. Contains address of *current* instruction.
-    Reg pc;
+    BitData pc;
 
     /// Stack pointer.
-    Reg sp;
+    BitData sp;
 
     /// Program state register. Contains boolean flags.
     PState pstate;
-} Regs;
+} Regs_s;
 
-Regs createReg(void);
+/// Type definition representing a pointer to the registers struct.
+typedef Regs_s* Registers;
 
-Reg getReg(Regs *reg, size_t id);
+Regs_s createRegs(void);
 
-Reg getRegPC(Regs *reg);
+BitData getReg(Registers regs, size_t id);
 
-Reg getRegSP(Regs *reg);
+BitData getRegPC(Registers regs);
 
-bool getRegState(Regs *reg, PStateField field);
+BitData getRegSP(Registers regs);
 
-void setReg(Regs *reg, size_t id, bool as64, Reg value);
+bool getRegState(Registers regs, PStateField field);
 
-void setRegPC(Regs *reg, Reg value);
+void setReg(Registers regs, size_t id, bool as64, BitData value);
 
-void incRegPC(Regs *reg);
+void setRegPC(Registers regs, BitData value);
 
-void setRegSP(Regs *reg, bool as64, Reg value);
+void incRegPC(Registers regs);
 
-void setRegState(Regs *reg, PStateField field, bool state);
+void setRegSP(Registers regs, bool as64, BitData value);
 
-void setRegStates(Regs *reg, PState state);
+void setRegState(Registers regs, PStateField field, bool state);
+
+void setRegStates(Registers regs, PState state);
 
 #endif //EMULATOR_REGISTER_H

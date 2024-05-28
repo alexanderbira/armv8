@@ -7,17 +7,17 @@
 
 #include "output.h"
 
-void dumpRegs(Regs *reg, FILE *fileOut) {
+void dumpRegs(Registers regs, FILE *fileOut) {
     fprintf(fileOut, "Registers:\n");
     for (int i = 0; i < NUM_GPRS; i++) {
-        fprintf(fileOut, "X%02d    = %016" PRIx64 "\n", i, getReg(reg, i));
+        fprintf(fileOut, "X%02d    = %016" PRIx64 "\n", i, getReg(regs, i));
     }
-    fprintf(fileOut, "PC     = %016" PRIx64 "\n", getRegPC(reg));
+    fprintf(fileOut, "PC     = %016" PRIx64 "\n", getRegPC(regs));
 
-    char nFlag = getRegState(reg, N) ? 'N' : '-';
-    char zFlag = getRegState(reg, Z) ? 'Z' : '-';
-    char cFlag = getRegState(reg, C) ? 'C' : '-';
-    char vFlag = getRegState(reg, V) ? 'V' : '-';
+    char nFlag = getRegState(regs, N) ? 'N' : '-';
+    char zFlag = getRegState(regs, Z) ? 'Z' : '-';
+    char cFlag = getRegState(regs, C) ? 'C' : '-';
+    char vFlag = getRegState(regs, V) ? 'V' : '-';
 
     fprintf(fileOut, "PSTATE : %c%c%c%c\n", nFlag, zFlag, cFlag, vFlag);
 }

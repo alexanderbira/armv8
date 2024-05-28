@@ -58,7 +58,7 @@ void freeMem(Memory mem) {
 /// @param as64 Whether to read 64 or 32 bits.
 /// @param addr The address within the virtual memory.
 /// @return The 64-bit value at mem + addr.
-uint64_t readMem(Memory mem, bool as64, size_t addr) {
+BitData readMem(Memory mem, bool as64, size_t addr) {
     size_t readSize = as64 ? sizeof(uint64_t) : sizeof(uint32_t);
     assert(addr + readSize <= MEMORY_SIZE);
 
@@ -76,7 +76,7 @@ uint64_t readMem(Memory mem, bool as64, size_t addr) {
 /// @param as64 Whether to write 64 or 32 bits.
 /// @param addr The address within the virtual memory.
 /// @param value The value to write.
-void writeMem(Memory mem, bool as64, size_t addr, uint64_t value) {
+void writeMem(Memory mem, bool as64, size_t addr, BitData value) {
     size_t writeSize = as64 ? sizeof(uint64_t) : sizeof(uint32_t);
     assert(addr + writeSize <= MEMORY_SIZE);
 

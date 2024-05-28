@@ -19,11 +19,10 @@
 #include <assert.h>
 
 #include "../../defs/const.h"
+#include "bitData.h"
 
 /// Type definition representing virtual memory.
 typedef void* Memory;
-
-/// Type definition representing
 
 Memory allocMemFromFile(char *path);
 
@@ -31,8 +30,8 @@ Memory allocMem(void);
 
 void freeMem(Memory mem);
 
-uint64_t readMem(Memory mem, bool as64, size_t addr);
+BitData readMem(Memory mem, bool as64, size_t addr);
 
-void writeMem(Memory mem, bool as64, size_t addr, uint64_t value);
+void writeMem(Memory mem, bool as64, size_t addr, BitData value);
 
 #endif //EMULATOR_MEMORY_H
