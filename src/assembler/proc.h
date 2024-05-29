@@ -12,12 +12,15 @@
 
 #include "../common/const.h"
 
-uint32_t procEmpty(const char *line);
+/// The function signature of a line processor.
+typedef BitInst (*LineProcessor)(const char *line);
 
-uint32_t procDirective(const char *line);
+BitInst procEmpty(const char *line);
 
-uint32_t procLabel(const char *line);
+BitInst procDirective(const char *line);
 
-uint32_t procInst(const char *line);
+BitInst procLabel(const char *line);
+
+BitInst procInst(const char *line);
 
 #endif //ASSEMBLER_PROC_H

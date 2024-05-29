@@ -15,9 +15,6 @@
 #include "assembler/classify.h"
 #include "assembler/proc.h"
 
-/// The function signature of a line processor.
-typedef uint32_t (*LineProcessor)(const char *line);
-
 int main(int argc, char **argv);
 
 /// Functions corresponding to each [AsmType].

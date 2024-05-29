@@ -20,4 +20,7 @@ typedef uint64_t BitData;
 /// Alias for an instruction as a binary word.
 typedef uint32_t BitInst;
 
+/// Alias for the address of an instruction.
+typedef uint64_t BitAddr;
+
 #endif //CONST_H
