@@ -9,6 +9,7 @@
 #define ASSEMBLER_IMM_H
 
 #include "../../common/ir/imm.h"
+#include "../../common/const.h"
 
 Imm_IR asmToImm(char *line);
 

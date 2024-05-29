@@ -5,8 +5,8 @@
 /// Created by Lancelot Liu on 26/05/2024.
 ///
 
-#ifndef CONST_H
-#define CONST_H
+#ifndef COMMON_CONST_H
+#define COMMON_CONST_H
 
 /// The virtual memory size of the emulated machine.
 #define MEMORY_SIZE (2 << 20) // 2MB
@@ -23,4 +23,4 @@ typedef uint32_t BitInst;
 /// Alias for the address of an instruction.
 typedef uint64_t BitAddr;
 
-#endif //CONST_H
+#endif //COMMON_CONST_H

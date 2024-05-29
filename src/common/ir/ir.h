@@ -5,10 +5,12 @@
 /// Created by Lancelot Liu on 29/05/2024.
 ///
 
-#ifndef ASSEMBLER_IR_H
-#define ASSEMBLER_IR_H
+#ifndef COMMON_IR_H
+#define COMMON_IR_H
 
 #include "imm.h"
+#include "reg.h"
+#include "sdt.h"
 
 /// The type of instruction represented.
 typedef enum {
@@ -23,7 +25,9 @@ typedef struct {
     IRType type;
     union {
         Imm_IR imm;
+        Reg_IR reg;
+        SDT_IR sdt;
     } repr;
 } IR;
 
-#endif //ASSEMBLER_IR_H
+#endif //COMMON_IR_H

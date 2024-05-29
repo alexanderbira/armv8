@@ -5,8 +5,8 @@
 /// Created by Lancelot Liu on 29/05/2024.
 ///
 
-#ifndef IMM_H
-#define IMM_H
+#ifndef COMMON_IMM_H
+#define COMMON_IMM_H
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -67,4 +67,4 @@ typedef struct {
     uint8_t rd;
 } Imm_IR;
 
-#endif //IMM_H
+#endif //COMMON_IMM_H

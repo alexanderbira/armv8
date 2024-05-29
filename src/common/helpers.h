@@ -5,12 +5,12 @@
 /// Created by Lancelot Liu on 28/05/2024.
 ///
 
-#ifndef HELPERS_H
-#define HELPERS_H
+#ifndef COMMON_HELPERS_H
+#define COMMON_HELPERS_H
 
 #include <ctype.h>
 #include <string.h>
 
 void trim(char *str);
 
-#endif //HELPERS_H
+#endif //COMMON_HELPERS_H
