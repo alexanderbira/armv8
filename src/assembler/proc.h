@@ -10,6 +10,8 @@
 
 #include <stdint.h>
 
+#include "../common/const.h"
+
 uint32_t procEmpty(const char *line);
 
 uint32_t procDirective(const char *line);

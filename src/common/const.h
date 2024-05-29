@@ -17,4 +17,7 @@
 /// Alias for a chunk of data passed to and from the virtual registers or memory.
 typedef uint64_t BitData;
 
+/// Alias for an instruction as a binary word.
+typedef uint32_t BitInst;
+
 #endif //CONST_H
