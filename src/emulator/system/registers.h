@@ -12,8 +12,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "../../defs/const.h"
-#include "bitData.h"
+#include "../../common/const.h"
 
 /// A struct representing the PSTATE fields of the processor.
 typedef struct {

@@ -31,6 +31,8 @@ Memory allocMemFromFile(char *path) {
     ssize_t bytes_read = pread(fd, mem, sb.st_size, 0);
     assert(bytes_read == sb.st_size);
 
+    close(fd);
+
     return mem;
 }
 

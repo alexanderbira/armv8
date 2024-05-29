@@ -1,6 +1,6 @@
 ///
 /// decode.h
-/// Delegate the work to the correct instruction handler by inspecting op0
+/// Decode an instruction word to its intermediate representation (IR)
 ///
 /// Created by Billy Highley on 27/05/2024.
 ///
@@ -9,9 +9,9 @@
 #define DECODE_H
 
 #include <stdio.h>
-#include "../system/registers.h"
-#include "../system/memory.h"
+
 #include "mask.h"
+#include "../../common/ir/ir.h"
 
 /// OP0 Mask
 #define OP0_M BitMask(28, 25)
@@ -34,6 +34,6 @@
 /// OP0 Branch Code
 #define OP0_BR_C  B(1010)
 
-void decode(Instruction word, Registers regs, Memory mem);
+IR decode(Instruction word);
 
 #endif //DECODE_H
