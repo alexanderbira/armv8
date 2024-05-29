@@ -19,15 +19,17 @@ int main(int argc, char **argv) {
     FILE *fileIn = fopen(argv[1], "r");
     char line[256];
 
+    FILE *fileOut = fopen(argv[2], "wb");
+
     // TODO: Handle line too long... is it possible?
     while (fgets(line, sizeof(line), fileIn)) {
         // Note, line is trimmed by classification.
         AsmType type = classify(line);
+        BitInst inst = procTable[type](line);
 
-        // TODO: Call corresponding function.
-        // uint32_t inst = procTable[type](line);
-
-        // TODO: Write result to file.
+        // Write resulting instruction (if any) to file.
+        if (!inst) continue;
+        fwrite(&inst, sizeof(BitInst), 1, fileOut);
     }
 
     return EXIT_SUCCESS;
