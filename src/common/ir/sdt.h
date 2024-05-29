@@ -15,6 +15,12 @@ typedef struct {
     /// [1b] The bit-width of all the registers in the instruction: 0 for 32-bit, 1 for 64-bit.
     bool sf;
 
+    /// The type of the single data transfer instruction group instruction
+    enum {
+        SDT, /// The single data transfer instruction type in the single data transfer instruction group
+        LL   /// The load literal instruction type in the single data transfer instruction group
+    } sdtType;
+
     /// [19b] The parameters for the single data transfer instruction group.
     union {
 
