@@ -12,11 +12,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-/// Alias for uint64_t, the size of a virtual X register.
-typedef uint64_t Reg64;
-
-/// Alias for uint32_t, the size of a virtual W register.
-typedef uint32_t Reg32;
+#include "../../common/const.h"
 
 /// A struct representing the PSTATE fields of the processor.
 typedef struct {
@@ -51,50 +47,45 @@ typedef enum {
 /// A struct representing, virtually, a machine's register contents.
 typedef struct {
     /// General purpose registers.
-    Reg64 gprs[31];
+    BitData gprs[NUM_GPRS];
 
     /// Zero register. Always returns zero, ignores writes.
     /// -- Not required since we will hardcode the value. --
     /// uint64_t zr;
 
     /// Program counter. Contains address of *current* instruction.
-    Reg64 pc;
+    BitData pc;
 
     /// Stack pointer.
-    Reg64 sp;
+    BitData sp;
 
     /// Program state register. Contains boolean flags.
     PState pstate;
-} Registers;
+} Regs_s;
 
-Registers createReg(void);
+/// Type definition representing a pointer to the registers struct.
+typedef Regs_s* Registers;
 
-Reg64 getReg64(Registers *reg, size_t id);
+Regs_s createRegs(void);
 
-Reg32 getReg32(Registers *reg, size_t id);
+BitData getReg(Registers regs, size_t id);
 
-Reg64 getRegPC(Registers *reg);
+BitData getRegPC(Registers regs);
 
-Reg64 getRegSP64(Registers *reg);
+BitData getRegSP(Registers regs);
 
-Reg32 getRegSP32(Registers *reg);
+bool getRegState(Registers regs, PStateField field);
 
-bool getRegState(Registers *reg, PStateField field);
+void setReg(Registers regs, size_t id, bool as64, BitData value);
 
-void setReg64(Registers *reg, size_t id, Reg64 value);
+void setRegPC(Registers regs, BitData value);
 
-void setReg32(Registers *reg, size_t id, Reg32 value);
+void incRegPC(Registers regs);
 
-void setRegPC(Registers *reg, Reg64 value);
+void setRegSP(Registers regs, bool as64, BitData value);
 
-void incRegPC(Registers *reg);
+void setRegState(Registers regs, PStateField field, bool state);
 
-void setRegSP64(Registers *reg, Reg64 value);
-
-void setRegSP32(Registers *reg, Reg32 value);
-
-void setRegState(Registers *reg, PStateField field, bool state);
-
-void setRegStates(Registers *reg, PState state);
+void setRegStates(Registers regs, PState state);
 
 #endif //EMULATOR_REGISTER_H
