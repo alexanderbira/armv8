@@ -1,16 +1,15 @@
 ///
-/// loadStore.h
-/// Decode and execute a load and store instruction
+/// loadStoreDecode.h
+/// Decode a load and store instruction to its intermediate representation (IR)
 ///
 /// Created by Alexander Biraben-Renard on 27/05/2024.
 ///
 
-#ifndef LOADSANDSTORES_H
-#define LOADSANDSTORES_H
+#ifndef LOADSTOREDECODE_H
+#define LOADSTOREDECODE_H
 
 #include "../mask.h"
-#include "../../system/registers.h"
-#include "../../system/memory.h"
+#include "../../../common/ir/ir.h"
 
 /// Single data transfer mask - used for decomposing on the bits relevant to
 /// checking if a single data transfer instruction is well-formed
@@ -93,6 +92,6 @@
 #define SDT_PPI_I_M BitMask(1, 1)
 
 
-void processLoadStore(Instruction word, Registers regs, Memory mem);
+IR decodeLoadStore(Instruction word);
 
-#endif //LOADSANDSTORES_H
+#endif //LOADSTOREDECODE_H
