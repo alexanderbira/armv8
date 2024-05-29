@@ -2,8 +2,8 @@
 // Created by Alexander Biraben-Renard on 29/05/2024.
 //
 
-#ifndef SDT_H
-#define SDT_H
+#ifndef COMMON_SDT_H
+#define COMMON_SDT_H
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -54,4 +54,4 @@ typedef struct {
 
 } SDT_IR;
 
-#endif //SDT_H
+#endif //COMMON_SDT_H

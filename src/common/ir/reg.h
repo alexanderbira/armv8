@@ -5,8 +5,8 @@
 /// Created by Billy Highley on 29/05/2024.
 ///
 
-#ifndef REG_H
-#define REG_H
+#ifndef COMMON_REG_H
+#define COMMON_REG_H
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -129,4 +129,4 @@ typedef struct {
 
 } Reg_IR;
 
-#endif //REG_H
+#endif //COMMON_REG_H
