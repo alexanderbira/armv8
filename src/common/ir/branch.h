@@ -8,7 +8,6 @@
 #ifndef BRANCH_H
 #define BRANCH_H
 
-#include <stdbool.h>
 #include <stdint.h>
 
 /// The intermediate representation of a Branch instruction.
@@ -36,13 +35,13 @@ typedef struct {
 
             /// [4b] The condition for the conditional branch instruction.
             enum {
-                EQ, /// equal (Z == 1)
-                NE, /// not equal (Z == 0)
-                GE, /// signed greater or equal (N == V)
-                LT, /// signed less than (N != V)
-                GT, /// signed greater than (Z == 0 && N == V)
-                LE, /// signed less than or equal (!(Z == 0 && N == V))
-                AL  /// always any (pstate flag)
+                EQ = 0x0, /// equal (Z == 1)
+                NE = 0x1, /// not equal (Z == 0)
+                GE = 0xA, /// signed greater or equal (N == V)
+                LT = 0xB, /// signed less than (N != V)
+                GT = 0xC, /// signed greater than (Z == 0 && N == V)
+                LE = 0xD, /// signed less than or equal (!(Z == 0 && N == V))
+                AL = 0xE  /// always any (pstate flag)
             } cond;
 
         } conditional;
