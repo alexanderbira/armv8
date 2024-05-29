@@ -41,7 +41,7 @@ typedef struct {
             enum AddressingMode {
 
                 /// Transfer address: \code Xn + uoffset \endcode
-                REGISTER_OFFSET,
+                UNSIGNED_OFFSET,
 
                 /// Transfer address: \code Xn + simm9 \endcode
                 /// Write-back: \code Xn + simm9 \endcode
@@ -52,7 +52,7 @@ typedef struct {
                 POST_INDEXED,
 
                 /// Transfer address: \code Xn + Xm \endcode
-                UNSIGNED_OFFSET
+                REGISTER_OFFSET
 
             } addressingMode;
 
