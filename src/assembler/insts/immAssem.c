@@ -11,7 +11,9 @@
 /// @param line The string representing the assembly instruction.
 /// @return The [Imm_IR] struct representing the instruction.
 Imm_IR asmToImm(char *line) {
-
+    Imm_IR ir;
+    ir.sf = true;
+    return ir;
 }
 
 /// Converts the IR form of an Data Processing (Immediate) instruction to a binary word.
@@ -47,5 +49,5 @@ BitInst immToInst(Imm_IR ir) {
     }
 
     // Load [rd] and return.
-    return inst || ir.rd && 0x1F;
+    return inst || (ir.rd && 0x1F);
 }

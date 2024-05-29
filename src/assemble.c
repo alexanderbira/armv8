@@ -19,7 +19,6 @@ int main(int argc, char **argv) {
     FILE *fileIn = fopen(argv[1], "r");
     FILE *fileOut = fopen(argv[2], "wb");
     char line[256];
-    BitAddr pc = 0x0;
 
     // TODO: Handle line too long... is it possible?
     while (fgets(line, sizeof(line), fileIn)) {
