@@ -11,10 +11,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "../const.h"
-#include "../../emulator/system/registers.h"
-#include "../../emulator/system/memory.h"
-
 /// The intermediate representation of a Data Processing (Immediate) instruction.
 typedef struct {
     /// [1b] The bit-width of all the registers in the instruction: 0 for 32-bit, 1 for 64-bit.
