@@ -54,7 +54,7 @@ typedef struct {
             uint16_t imm12;
 
             /// [5b] The first operand register.
-            uint8_t rd;
+            uint8_t rn;
         } arith;
 
         struct {
