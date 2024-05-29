@@ -18,8 +18,7 @@
 #include <unistd.h>
 #include <assert.h>
 
-#include "../../defs/const.h"
-#include "bitData.h"
+#include "../../common/const.h"
 
 /// Type definition representing virtual memory.
 typedef void* Memory;
