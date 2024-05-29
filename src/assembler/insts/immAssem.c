@@ -10,9 +10,34 @@
 /// Converts the assembly form of an Data Processing (Immediate) instruction to IR form.
 /// @param line The string representing the assembly instruction.
 /// @return The [Imm_IR] struct representing the instruction.
+/// @pre The incoming [line] is a Data Processing (Immediate) assembly instruction.
 Imm_IR asmToImm(char *line) {
     Imm_IR ir;
-    ir.sf = true;
+    char *lineCopy = strcpy(malloc(strlen(line)), line);
+    // Getting the mnemonic.
+    char *mnemonic = strtok(lineCopy, " ");
+    // Setting opc and opi.
+    if (mnemonic[0] == 'm') {
+        switch (mnemonic[3]) {
+            case 'n':
+                ir.opc.wideMoveType = MOVN;
+                break;
+            case 'z':
+                ir.opc.wideMoveType = MOVZ;
+                break;
+            case 'k':
+                ir.opc.wideMoveType = MOVK;
+                break;
+        }
+        ir.opi = WIDE_MOVE;
+    } else {
+        if (mnemonic[0] == 'a') {
+            if (strlen(mnemonic) == 4) ir.opc.arithType = ADDS;
+            else ir.opc.arithType = ADD;
+        } else if (strlen(mnemonic) == 4) ir.opc.arithType = SUBS;
+        else ir.opc.arithType = SUB;
+        ir.opi = ARITH;
+    }
     return ir;
 }
 
