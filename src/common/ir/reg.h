@@ -20,6 +20,27 @@ typedef struct {
     /// [2b] The operation code, determining the operation to be performed. To access union, check [opi].
     union {
 
+        /// The opcode for arithmetic operations.
+        enum ArithType {
+
+            /// The operation code for add.
+            /// \code Rd := Rn + Op2 \endcode
+            ADD,
+
+            /// The operation code for add, setting flags.
+            /// \code Rd := Rn + Op2 \endcode
+            ADDS,
+
+            /// The operation code for subtract.
+            /// \code Rd := Rn - Op2 \endcode
+            SUB,
+
+            /// The operation code for subtract, setting flags.
+            /// \code Rd := Rn - Op2 \endcode
+            SUBS
+
+        } arith;
+
         /// Arithmetic and logical instructions, separated into standard and negated types.
         union {
 
@@ -65,7 +86,7 @@ typedef struct {
 
             } negated;
 
-        } arithmeticAndLogic;
+        } logic;
 
         /// Multiply operation codes.
         enum MultiplyType {
@@ -82,24 +103,25 @@ typedef struct {
 
     } opc;
 
-    /// [1b] Determines the type of instruction to perform (when combined with opr).
+    /// [1b] Type of instruction to perform (when combined with opr).
     bool M;
 
-    /// [4b] Determines the type of instruction to perform (when combined with M).
+    /// [4b] Type of instruction to perform (when combined with M).
     uint8_t opr;
 
-    /// The type of data processing operation, determined by interpreting the combination of M and opr.
+    /// Type of data processing operation. (Derived from [opr] and [M].)
     enum RegType { ARITHMETIC, BIT_LOGIC, MULTIPLY } group;
 
-    /// The type of shift to perform on Rm.
+    /// The type of shift to perform on Rm. (Derived from [opr].)
     enum ShiftType {
-
         LSL, ///< Logical shift left.
         LSR, ///< Logical shift right.
         ASR, ///< Arithmetic shift right.
         ROR  ///< Rotate right.
-
     } shift;
+
+    /// (Logical only) whether the shifted register is bitwise negated. (Derived from [opr].)
+    bool negated;
 
     /// [5b] The encoding of the second operand register.
     uint8_t rm;
