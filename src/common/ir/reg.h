@@ -27,7 +27,7 @@ typedef struct {
             enum StandardType {
 
                 /// The operation code for AND.
-                /// \code Rd := Rd & Op2 \endcode
+                /// \code Rd := Rn & Op2 \endcode
                 AND,
 
                 /// The operation code for (inclusive) OR.
@@ -48,7 +48,7 @@ typedef struct {
             enum NegatedType {
 
                 /// The operation code for bit clear.
-                /// \code Rd := Rd & ~Op2 \endcode
+                /// \code Rd := Rn & ~Op2 \endcode
                 BIC,
 
                 /// The operation code for (inclusive) OR NOT.
@@ -93,10 +93,12 @@ typedef struct {
 
     /// The type of shift to perform on Rm.
     enum ShiftType {
+
         LSL, ///< Logical shift left.
         LSR, ///< Logical shift right.
         ASR, ///< Arithmetic shift right.
         ROR  ///< Rotate right.
+
     } shift;
 
     /// [5b] The encoding of the second operand register.
