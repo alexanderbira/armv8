@@ -10,6 +10,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include "enums.h"
 
 /// The intermediate representation of a data processing (immediate) instruction.
 typedef struct {
@@ -18,28 +19,9 @@ typedef struct {
     bool sf;
 
     /// [2b] The operation code, determining the operation to be performed. To access union, check [opi].
-    union {
+    union OpcImm {
 
-        /// The opcode for arithmetic operations.
-        enum ArithType {
-
-            /// The operation code for add.
-            /// \code Rd := Rn + Op2 \endcode
-            ADD,
-
-            /// The operation code for add, setting flags.
-            /// \code Rd := Rn + Op2 \endcode
-            ADDS,
-
-            /// The operation code for subtract.
-            /// \code Rd := Rn - Op2 \endcode
-            SUB,
-
-            /// The operation code for subtract, setting flags.
-            /// \code Rd := Rn - Op2 \endcode
-            SUBS
-
-        } arithType;
+        enum ArithType arithType;
 
         /// The opcode for wide move operations.
         enum WideMoveType {
@@ -64,9 +46,9 @@ typedef struct {
     enum ImmType { ARITH = 0x2, WIDE_MOVE = 0x5 } opi;
 
     /// [18b] The value to be saved into the register.
-    union {
+    union OperandImm {
 
-        struct {
+        struct Arith {
             /// [1b] Determines whether to left shift imm12 by 12-bits.
             bool sh;
 
@@ -78,7 +60,7 @@ typedef struct {
 
         } arith;
 
-        struct {
+        struct WideMove {
 
             /// [2b] Encodes a logical left shift by hw * 16 bits.
             uint8_t hw;

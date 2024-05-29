@@ -18,7 +18,7 @@ typedef struct {
     bool sf;
 
     /// The type of the load and store instruction.
-    enum {
+    enum Ls {
 
         SDT, ///< The single data transfer instruction type.
         LL   ///< The load literal instruction type.
@@ -26,10 +26,10 @@ typedef struct {
     } ls;
 
     /// [19b] The constants for the load and store instruction group.
-    union {
+    union LsConsts {
 
         /// [19b] Single data transfer interpretation: constants struct.
-        struct {
+        struct Sdt {
 
             /// [1b] Determines whether addressing mode is unsigned offset (1 = unsigned offset).
             bool u;
@@ -38,7 +38,7 @@ typedef struct {
             bool l;
 
             /// The addressing mode.
-            enum {
+            enum AddressingMode {
 
                 /// Transfer address: \code Xn + uoffset \endcode
                 REGISTER_OFFSET,
@@ -57,13 +57,13 @@ typedef struct {
             } addressingMode;
 
             /// [12b] Interpretation of offset (depending on addressing mode).
-            union {
+            union Offset {
 
                 /// [5b] The code for register Xm, used for the register offset addressing mode.
                 uint8_t xm;
 
                 /// [10b] The parameters for the pre/post indexed addressing mode.
-                struct {
+                struct PrePostIndex {
 
                     /// [9b] The signed value used for the pre/post-indexed addressing mode.
                     int16_t simm9;
