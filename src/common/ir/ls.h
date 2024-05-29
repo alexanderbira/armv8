@@ -1,31 +1,31 @@
 ///
-/// sdt.h
-/// The intermediate representation of a Single Data Transfer instruction.
+/// ls.h
+/// The intermediate representation of a Load and Store instruction.
 ///
 /// Created by Alexander Biraben-Renard on 29/05/2024.
 ///
 
-#ifndef COMMON_SDT_H
-#define COMMON_SDT_H
+#ifndef COMMON_LS_H
+#define COMMON_LS_H
 
 #include <stdbool.h>
 #include <stdint.h>
 
-/// The intermediate representation of a single data transfer instruction.
+/// The intermediate representation of a load and store instruction.
 typedef struct {
 
     /// [1b] The bit-width of all the registers in the instruction: 0 for 32-bit, 1 for 64-bit.
     bool sf;
 
-    /// The type of the single data transfer instruction group instruction.
+    /// The type of the load and store instruction.
     enum {
 
         SDT, ///< The single data transfer instruction type.
         LL   ///< The load literal instruction type.
 
-    } sdtType;
+    } ls;
 
-    /// [19b] The parameters for the single data transfer instruction group.
+    /// [19b] The constants for the load and store instruction group.
     union {
 
         /// [19b] Single data transfer interpretation: constants struct.
@@ -81,16 +81,16 @@ typedef struct {
             /// [5b] The encoding of the base register.
             uint8_t xn;
 
-        } sdtType;
+        } sdt;
 
         /// [19b] Load literal interpretation: signed immediate value.
         int32_t simm19;
 
-    } sdtGroup;
+    } lsConsts;
 
     /// [5b] The encoding of the target register.
     uint8_t rt;
 
-} SDT_IR;
+} LS_IR;
 
-#endif //COMMON_SDT_H
+#endif //COMMON_LS_H
