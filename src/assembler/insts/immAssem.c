@@ -18,17 +18,12 @@ Imm_IR asmToImm(char *line) {
     // Getting the mnemonic.
     char *mnemonic = strtok(lineCopy, " ");
     char *rd = strtok(NULL, " ");
+    sscanf(rd, "%*c%hhu", &ir.rd);
     // Set sf
+
     if (rd[0] == 'x') ir.sf = 1;
     else ir.sf = 0;
-    sscanf(rd, "%*c%hhu", &ir.rd);
-    // op1 - rn if ARITH, imm if WIDE MOVE
-    char *op1 = strtok(NULL, " ");
-    // op2 - imm if ARITH, lsl (optional) if WIDE MOVE
-    char *op2 = strtok(NULL, " ");
-    // lsl (optional) if ARITH, NULL if WIDE MOVE
-    char *op3 = strtok(NULL, " ");
-    // Setting opc and opi.
+
     if (mnemonic[0] == 'm') {
         switch (mnemonic[3]) {
             case 'n':
@@ -41,10 +36,16 @@ Imm_IR asmToImm(char *line) {
                 ir.opc.wideMoveType = MOVK;
                 break;
         }
+
         ir.opi = WIDE_MOVE;
-        sscanf(op1, "%hu", &ir.operand.wideMove.imm16);
-        // TODO - Check later.
-        if (op2 != NULL) sscanf(op2, "%hhu", &ir.operand.wideMove.hw);
+        // Split remaining string into: imm and lsl value (if applicable)
+        char *imm = strtok(NULL, " ");
+        strtok(NULL, " "); char *shiftVal = strtok(NULL, " ");
+
+        sscanf(imm, "#%hu", &ir.operand.wideMove.imm16);
+        // TODO - Check later. Ask how hw works.
+        // Checking if shiftVal exists is the same as checking if there is a lsl
+        if (shiftVal != NULL) sscanf(shiftVal, "#%hhu", &ir.operand.wideMove.hw);
         else ir.operand.wideMove.hw = 0;
     } else {
         if (mnemonic[0] == 'a') {
@@ -52,11 +53,17 @@ Imm_IR asmToImm(char *line) {
             else ir.opc.arithType = ADD;
         } else if (strlen(mnemonic) == 4) ir.opc.arithType = SUBS;
         else ir.opc.arithType = SUB;
+
         ir.opi = ARITH;
-        sscanf(op1, "%*c%hhu", &ir.operand.arith.rn);
-        sscanf(op2, "%hu", &ir.operand.arith.imm12);
+        // Split remaining string into: Rn, imm and lsl value (if applicable)
+        char *rn = strtok(NULL, " ");
+        char *imm = strtok(NULL, " ");
+        strtok(NULL, " "); char *shiftval = strtok(NULL, " ");
+
+        sscanf(rn, "%*c%hhu", &ir.operand.arith.rn);
+        sscanf(imm, "#%hu", &ir.operand.arith.imm12);
         // TODO - Check later.
-        if (op3 != NULL) sscanf(op3, "%hhu", &ir.operand.arith.sh);
+        if (shiftval != NULL) sscanf(shiftval, "#%hhu", &ir.operand.arith.sh); //alternatively set directly to 12;
         else ir.operand.arith.sh = 0;
     }
     return ir;
