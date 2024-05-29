@@ -11,6 +11,7 @@
 #include "imm.h"
 #include "reg.h"
 #include "sdt.h"
+#include "branch.h"
 
 /// The type of instruction represented.
 typedef enum {
@@ -27,6 +28,7 @@ typedef struct {
         Imm_IR imm;
         Reg_IR reg;
         SDT_IR sdt;
+        Branch_IR branch;
     } repr;
 } IR;
 
