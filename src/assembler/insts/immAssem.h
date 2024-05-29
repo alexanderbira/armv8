@@ -10,6 +10,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "../../common/ir/imm.h"
 #include "../../common/const.h"

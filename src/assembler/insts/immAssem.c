@@ -6,6 +6,7 @@
 ///
 
 #include "immAssem.h"
+#include "../../common/ir/imm.h"
 
 /// Converts the assembly form of an Data Processing (Immediate) instruction to IR form.
 /// @param line The string representing the assembly instruction.
@@ -16,6 +17,17 @@ Imm_IR asmToImm(char *line) {
     char *lineCopy = strcpy(malloc(strlen(line)), line);
     // Getting the mnemonic.
     char *mnemonic = strtok(lineCopy, " ");
+    char *rd = strtok(NULL, " ");
+    // Set sf
+    if (rd[0] == 'x') ir.sf = 1;
+    else ir.sf = 0;
+    sscanf(rd, "%*c%hhu", &ir.rd);
+    // op1 - rn if ARITH, imm if WIDE MOVE
+    char *op1 = strtok(NULL, " ");
+    // op2 - imm if ARITH, lsl (optional) if WIDE MOVE
+    char *op2 = strtok(NULL, " ");
+    // lsl (optional) if ARITH, NULL if WIDE MOVE
+    char *op3 = strtok(NULL, " ");
     // Setting opc and opi.
     if (mnemonic[0] == 'm') {
         switch (mnemonic[3]) {
@@ -30,6 +42,10 @@ Imm_IR asmToImm(char *line) {
                 break;
         }
         ir.opi = WIDE_MOVE;
+        sscanf(op1, "%hu", &ir.operand.wideMove.imm16);
+        // TODO - Check later.
+        if (op2 != NULL) sscanf(op2, "%hhu", &ir.operand.wideMove.hw);
+        else ir.operand.wideMove.hw = 0;
     } else {
         if (mnemonic[0] == 'a') {
             if (strlen(mnemonic) == 4) ir.opc.arithType = ADDS;
@@ -37,6 +53,11 @@ Imm_IR asmToImm(char *line) {
         } else if (strlen(mnemonic) == 4) ir.opc.arithType = SUBS;
         else ir.opc.arithType = SUB;
         ir.opi = ARITH;
+        sscanf(op1, "%*c%hhu", &ir.operand.arith.rn);
+        sscanf(op2, "%hu", &ir.operand.arith.imm12);
+        // TODO - Check later.
+        if (op3 != NULL) sscanf(op3, "%hhu", &ir.operand.arith.sh);
+        else ir.operand.arith.sh = 0;
     }
     return ir;
 }
