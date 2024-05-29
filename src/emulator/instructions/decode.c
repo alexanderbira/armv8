@@ -9,7 +9,7 @@
 
 /// Delegates decoding and execution to the corresponding process function.
 /// @param word The instruction to process.
-void decode(Instruction word, Registers *regs, Memory mem) {
+void decode(Instruction word, Registers regs, Memory mem) {
     Component op0 = decompose(word, OP0_M);
 
     if      ((op0 & OP0_IMM_M) == OP0_IMM_C)
