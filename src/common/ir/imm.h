@@ -1,6 +1,6 @@
 ///
 /// imm.h
-/// The intermediate representation and functions to process a Data Processing (Immediate) instruction.
+/// The intermediate representation of a Data Processing (Immediate) instruction.
 ///
 /// Created by Lancelot Liu on 29/05/2024.
 ///
@@ -22,8 +22,8 @@ typedef struct {
 
     /// [2b] The operation code, determining the operation to be performed. To access union, check [opi].
     union {
-        /// The operation code for when the operation is arithmetic.
-        /// This ordinal values of these enums correspond to their bit masks.
+        /// The opcode for arithmetic operations.
+        /// The ordinal values of these enums correspond to their bit masks.
         enum ArithType {
             ADD,  ///< Rd := Rd + Op2
             ADDS, ///< Rd := Rd + Op2, set flags.
@@ -31,7 +31,7 @@ typedef struct {
             SUBS  ///< Rd := Rn - Op2, set flags.
         } arithType;
 
-        /// The operation code for when the operation is a wide move.
+        /// The opcode for wide move operations.
         /// This ordinal values of these enums correspond to their bit masks.
         enum WideMoveType {
             MOVN,       ///< Rd := ¬Op
@@ -70,9 +70,5 @@ typedef struct {
     /// arithmetic instruction encodes the stack pointer.
     uint8_t rd;
 } Imm_IR;
-
-BitInst immToInst(Imm_IR ir);
-
-void immProc(Imm_IR ir, Memory mem, Registers regs);
 
 #endif //IMM_H

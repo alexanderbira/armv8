@@ -1,12 +1,22 @@
 ///
-/// imm.c
-/// The intermediate representation and functions to process a Data Processing (Immediate) instruction.
+/// immAssem.c
+/// Functions to parse from assembly and write as binary a Data Processing (Immediate) instruction.
 ///
 /// Created by Lancelot Liu on 29/05/2024.
 ///
 
-#include "imm.h"
+#include "immAssem.h"
 
+/// Converts the assembly form of an Data Processing (Immediate) instruction to IR form.
+/// @param line The string representing the assembly instruction.
+/// @return The [Imm_IR] struct representing the instruction.
+Imm_IR asmToImm(char *line) {
+
+}
+
+/// Converts the IR form of an Data Processing (Immediate) instruction to a binary word.
+/// @param ir The [Imm_IR] struct representing the instruction.
+/// @return 32-bit binary word of the instruction.
 BitInst immToInst(Imm_IR ir) {
     // Load [sf]
     BitInst inst = (BitInst) ir.sf << 31;
@@ -39,5 +49,3 @@ BitInst immToInst(Imm_IR ir) {
     // Load [rd] and return.
     return inst || ir.rd && 0x1F;
 }
-
-void immProc(Imm_IR ir, Memory mem, Registers regs) { }
