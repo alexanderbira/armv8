@@ -1,6 +1,9 @@
-//
-// Created by Alexander Biraben-Renard on 29/05/2024.
-//
+///
+/// sdt.h
+/// The intermediate representation of a Single Data Transfer instruction.
+///
+/// Created by Alexander Biraben-Renard on 29/05/2024.
+///
 
 #ifndef COMMON_SDT_H
 #define COMMON_SDT_H
@@ -12,42 +15,55 @@ typedef struct {
     /// [1b] The bit-width of all the registers in the instruction: 0 for 32-bit, 1 for 64-bit.
     bool sf;
 
-    /// [1b] Unsigned offset flag. When this bit is set, the addressing mode is an Unsigned Offset.
-    bool u;
-
-    /// [1b] The type of data transfer. When 1, this is a load operation. Otherwise it is a store.
-    bool l;
-
-    /// The addressing mode
-    enum {
-        REGISTER_OFFSET, /// Transfer address = Xn + uoffset
-        PRE_INDEXED,     /// Transfer address = Xn + simm9, Write-back = Xn + simm9
-        POST_INDEXED,    /// Transfer address = Xn, Write-back = Xn + simm9
-        UNSIGNED_OFFSET  /// Transfer address = Xn + Xm
-    } addressingMode;
-
-    /// [12b] The offset. The meaning of the offset depends on the addressing mode.
+    /// [19b] The parameters for the single data transfer instruction group.
     union {
 
-        /// [5b] The code for register Xm. Used for the register offset addressing mode.
-        uint8_t xm;
-
-        /// [10b] The parameters for the pre/post indexed addressing mode.
+        /// [19b] The parameters for the single data transfer instruction type (not load literal).
         struct {
-            /// [9b] The signed value used for the pre/post-index addressing mode.
-            int16_t simm9;
 
-            /// [1b] Determines which of pre/post-indexing the addressing mode is using: 0 for post-indexed, 1 for pre-indexed.
-            bool i;
-        } prePostIndex;
+            /// [1b] Unsigned offset flag. When this bit is set, the addressing mode is an Unsigned Offset.
+            bool u;
 
-        /// [12b] The immediate constant for the unsigned offset addressing mode.
-        uint16_t uoffset;
+            /// [1b] The type of data transfer. When 1, this is a load operation. Otherwise it is a store.
+            bool l;
 
-    } offset;
+            /// The addressing mode
+            enum {
+                REGISTER_OFFSET, /// Transfer address = Xn + uoffset
+                PRE_INDEXED,     /// Transfer address = Xn + simm9, Write-back = Xn + simm9
+                POST_INDEXED,    /// Transfer address = Xn, Write-back = Xn + simm9
+                UNSIGNED_OFFSET  /// Transfer address = Xn + Xm
+            } addressingMode;
 
-    /// [5b] The base register.
-    uint8_t xn;
+            /// [12b] The offset. The meaning of the offset depends on the addressing mode.
+            union {
+
+                /// [5b] The code for register Xm. Used for the register offset addressing mode.
+                uint8_t xm;
+
+                /// [10b] The parameters for the pre/post indexed addressing mode.
+                struct {
+                    /// [9b] The signed value used for the pre/post-index addressing mode.
+                    int16_t simm9;
+
+                    /// [1b] Determines which of pre/post-indexing the addressing mode is using: 0 for post-indexed, 1 for pre-indexed.
+                    bool i;
+                } prePostIndexParams;
+
+                /// [12b] The immediate constant for the unsigned offset addressing mode.
+                uint16_t uoffset;
+
+            } offset;
+
+            /// [5b] The base register.
+            uint8_t xn;
+
+        } sdtType;
+
+        /// [19b] The signed immediate value for the load literal instruction type.
+        int32_t simm19;
+
+    } sdtGroup;
 
     /// [5b] The target register.
     uint8_t rt;
