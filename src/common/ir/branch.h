@@ -46,7 +46,7 @@ typedef struct {
             int32_t simm19;
 
             /// [4b] The condition for the conditional branch instruction.
-            enum {
+            enum BranchCondition {
 
                 /// Equal.
                 /// \code Z == 1 \endcode

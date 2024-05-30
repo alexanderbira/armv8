@@ -79,6 +79,6 @@ void handleLabel(const char *line, AssemblerState state) {
 /// @param line The line to "process".
 /// @return The resulting binary word.
 IR handleInstruction(const char *line, AssemblerState state) {
-    // TODO: Implement
+    return
     return 0;
 }

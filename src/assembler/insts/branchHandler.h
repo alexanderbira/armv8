@@ -15,6 +15,21 @@
 #include "../../common/ir/ir.h"
 #include "../../common/ir/branch.h"
 
+/// Constant mapping from condition names to enums.
+struct {
+    char *name;
+    enum BranchCondition condition;
+} const conditionMappings[] = {
+        {"eq", EQ},
+        {"ne", NE},
+        {"ge", GE},
+        {"lt", LT},
+        {"gt", GT},
+        {"le", LE},
+        {"al", AL},
+        {NULL}, // NULL terminate as ending because I'm lazy!
+};
+
 IR handleBranch(TokenisedLine line);
 
 BitInst immToInst(Branch_IR ir);

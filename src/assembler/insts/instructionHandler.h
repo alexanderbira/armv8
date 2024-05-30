@@ -20,6 +20,13 @@ typedef struct {
     char **operands;
 } TokenisedLine;
 
+typedef IR (*Handler)(const char *line, AssemblerState state);
+
+typedef struct {
+    char *mnemonic;
+    Handler handler;
+} HandlerEntry;
+
 HandlerEntry instructionHandlers[] = {
 
 };
