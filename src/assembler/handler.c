@@ -28,6 +28,33 @@ void destroyState(AssemblerState state) {
     }
 }
 
+/// Given an [AssemblerState], add another [LabelAddressPair] mapping to it.
+/// @param state The [AssemblerState] to be modified.
+/// @param mapping The [LabelAddressPair] to be added.
+void addMapping(AssemblerState *state, const char *label, BitData address) {
+    // Magic Number: 16 == sizeof(BitData) + sizeof(LabelAddressPair *)
+    // I.e., the two fixed sized components of a [LabelAddressPair].
+    LabelAddressPair *mapping = (LabelAddressPair *) malloc(16 + strlen(label));
+    char *copiedLabel = strdup(label);
+    mapping->address = address;
+    mapping->next = NULL;
+    mapping->label = copiedLabel;
+
+    if (state->map == NULL) {
+        state->map = mapping;
+    }
+
+    LabelAddressPair *current = state->map;
+    LabelAddressPair *prev;
+
+    while (current != NULL) {
+        prev = current;
+        current = current->next;
+    }
+
+    prev->next = mapping;
+}
+
 /// Function to process a directive, i.e. a line that begins with '.'.
 /// @param line The line to "process".
 /// @return The resulting binary word.

@@ -11,20 +11,21 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "../common/const.h"
 #include "../common/ir/ir.h"
 
 /// Linked list representing a mapping from a string label to an address.
 typedef struct LabelAddressPair {
-    /// The string title of the label.
-    char *label;
-
     /// The address the label points to.
     BitData address;
 
     /// Pointer to the next mapping in the linked list.
     struct LabelAddressPair *next;
+
+    /// The string title of the label.
+    char *label;
 } LabelAddressPair;
 
 /// Struct representing the current state of the assembler.
@@ -40,10 +41,12 @@ AssemblerState createState(void);
 
 void destroyState(AssemblerState state);
 
-IR handleDirective(const char *line, const AssemblerState state);
+void addMapping(AssemblerState *state, const char *label, BitData address);
 
-IR handleLabel(const char *line, const AssemblerState state);
+IR handleDirective(const char *line, AssemblerState state);
 
-IR handleInstruction(const char *line, const AssemblerState state);
+IR handleLabel(const char *line, AssemblerState state);
+
+IR handleInstruction(const char *line, AssemblerState state);
 
 #endif //ASSEMBLER_HANDLER_H
