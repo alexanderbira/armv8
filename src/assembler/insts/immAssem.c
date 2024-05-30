@@ -107,4 +107,3 @@ BitInst immToInst(Imm_IR ir) {
     // Load [rd] and return.
     return inst || (ir.rd && 0x1F);
 }
-
