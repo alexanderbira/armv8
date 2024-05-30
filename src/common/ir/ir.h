@@ -11,14 +11,15 @@
 #include "imm.h"
 #include "reg.h"
 #include "sdt.h"
+#include "branch.h"
 
 /// The type of instruction represented.
 typedef enum {
-    DPImm, ///< Data Processing (Immediate)
-    DPReg, ///< Data Processing (Register)
-    SDT,   ///< Single Data Transfer
-    LL,    ///< Load Literal
-    B,     ///< Branch
+    IMMEDIATE, ///< Data Processing (Immediate)
+    REGISTER, ///< Data Processing (Register)
+    SINGLE_DATA_TRANSFER,   ///< Single Data Transfer
+    LOAD_LITERAL,    ///< Load Literal
+    BRANCH,     ///< Branch
 } IRType;
 
 typedef struct {
@@ -27,6 +28,7 @@ typedef struct {
         Imm_IR imm;
         Reg_IR reg;
         SDT_IR sdt;
+        Branch_IR branch;
     } repr;
 } IR;
 
