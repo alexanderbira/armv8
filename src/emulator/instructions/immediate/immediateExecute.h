@@ -14,4 +14,6 @@
 #include "arithmeticImmExecute.h"
 #include "wideMoveExecute.h"
 
+void executeImmediate(Imm_IR immIR, Registers regs);
+
 #endif //IMMEDIATEEXECUTE_H
