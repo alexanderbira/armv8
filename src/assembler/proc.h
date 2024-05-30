@@ -10,17 +10,24 @@
 
 #include <stdint.h>
 
+#include "handler.h"
+#include "helpers.h"
 #include "../common/const.h"
 
-/// The function signature of a line processor.
-typedef BitInst (*LineProcessor)(const char *line);
+/// Struct representing the current state of the assembler.
+typedef struct {
+    /// The address of the current instruction being handled.
+    BitData address;
 
-BitInst procEmpty(const char *line);
+    // TODO: Add map (or similar) for labels and addresses.
+} AssemblerState;
 
-BitInst procDirective(const char *line);
+AssemblerState createState(void);
 
-BitInst procLabel(const char *line);
+IR handleDirective(const char *line, const AssemblerState state);
 
-BitInst procInst(const char *line);
+IR handleLabel(const char *line, const AssemblerState state);
+
+IR handleInstruction(const char *line, const AssemblerState state);
 
 #endif //ASSEMBLER_PROC_H
