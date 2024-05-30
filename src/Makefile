@@ -9,7 +9,7 @@ VPATH    ?= common/:common/ir/:emulator/instructions/:emulator/io/:emulator/syst
 .SUFFIXES: .c .o
 .PHONY: all clean
 
-COMMON_OBJS = helpers.o
+COMMON_OBJS = helpers.o error.o
 
 EMULATE_OBJS = emulate.o registers.o memory.o output.o
 
