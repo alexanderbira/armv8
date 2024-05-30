@@ -17,7 +17,6 @@ int main(int argc, char **argv) {
     if (argc != 3) return EXIT_FAILURE;
 
     FILE *fileIn = fopen(argv[1], "r");
-    FILE *fileOut = fopen(argv[2], "wb");
     char line[256];
     AssemblerState state = createState();
 
@@ -52,11 +51,14 @@ int main(int argc, char **argv) {
 
         // TODO: Append current IR to some dynamic array of all IRs.
     }
+    fclose(fileIn);
 
     // TODO: Final process all IRs, and write to file.
+    FILE *fileOut = fopen(argv[2], "wb");
     // Write resulting instruction (if any) to file.
     //    if (!inst) continue;
     //    fwrite(&inst, sizeof(BitInst), 1, fileOut);
+    fclose(fileOut);
 
     return EXIT_SUCCESS;
 }
