@@ -14,7 +14,7 @@
 #include <stdio.h>
 
 #include "assembler/handler.h"
-#include "assembler/proc.h"
+#include "assembler/helpers.h"
 
 int main(int argc, char **argv);
 

@@ -1,6 +1,6 @@
 ///
-/// classify.h
-/// Functions to categorise assembly instructions.
+/// handler.h
+/// Functions to turn assembly text into ARMv9 machine code.
 ///
 /// Created by Lancelot Liu on 28/05/2024.
 ///
@@ -8,17 +8,25 @@
 #ifndef ASSEMBLER_HANDLER_H
 #define ASSEMBLER_HANDLER_H
 
-#include <stdlib.h>
+#include <stdint.h>
 
+#include "../common/const.h"
 #include "../common/ir/ir.h"
 
-/// Function which takes a tokenised assembly instruction and returns its IR.
-typedef IR (*Handler)(char **);
-
-/// A mapping between an instruction mnemonic and its [Handler].
+/// Struct representing the current state of the assembler.
 typedef struct {
-    const char *mnemonic;
-    Handler handler;
-} HandlerEntry;
+    /// The address of the current instruction being handled.
+    BitData address;
+
+    // TODO: Add map (or similar) for labels and addresses.
+} AssemblerState;
+
+AssemblerState createState(void);
+
+IR handleDirective(const char *line, const AssemblerState state);
+
+IR handleLabel(const char *line, const AssemblerState state);
+
+IR handleInstruction(const char *line, const AssemblerState state);
 
 #endif //ASSEMBLER_HANDLER_H
