@@ -30,7 +30,7 @@ struct {
         {NULL}, // NULL terminate as ending because I'm lazy!
 };
 
-IR handleBranch(TokenisedLine line);
+IR handleBranch(TokenisedLine line, AssemblerState state);
 
 BitInst immToInst(Branch_IR ir);
 

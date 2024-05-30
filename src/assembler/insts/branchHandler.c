@@ -11,7 +11,7 @@
 /// @param line The [TokenisedLine] of the instruction.
 /// @return The IR form of the branch instruction.
 /// @pre [line]'s mnemonic is at least one of "b", "br", or "b.COND".
-IR handleBranch(TokenisedLine line) {
+IR handleBranch(TokenisedLine line, AssemblerState state) {
     // TODO: Assert 1 param
 
     Branch_IR branchIR;

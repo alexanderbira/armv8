@@ -15,6 +15,7 @@
 
 #include "../common/const.h"
 #include "../common/ir/ir.h"
+#include "insts/instructionHandler.h"
 
 /// Linked list representing a mapping from a string label to an address.
 typedef struct LabelAddressPair {

@@ -13,6 +13,7 @@
 #include "../../common/ir/ir.h"
 #include "../handler.h"
 #include "../helpers.h"
+#include "branchHandler.h"
 
 typedef struct {
     int parameterCount;
@@ -20,7 +21,7 @@ typedef struct {
     char **operands;
 } TokenisedLine;
 
-typedef IR (*Handler)(const char *line, AssemblerState state);
+typedef IR (*Handler)(TokenisedLine line, AssemblerState state);
 
 typedef struct {
     char *mnemonic;
@@ -28,7 +29,7 @@ typedef struct {
 } HandlerEntry;
 
 HandlerEntry instructionHandlers[] = {
-
+        {"b", handleBranch}
 };
 
 TokenisedLine tokenise(const char *line);

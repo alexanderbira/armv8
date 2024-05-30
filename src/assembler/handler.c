@@ -79,6 +79,8 @@ void handleLabel(const char *line, AssemblerState state) {
 /// @param line The line to "process".
 /// @return The resulting binary word.
 IR handleInstruction(const char *line, AssemblerState state) {
-    return
-    return 0;
+    TokenisedLine tokenisedLine = tokenise(line);
+    IR result = getParseFunction(tokenisedLine.mnemonic)(tokenisedLine, state);
+    state.address += 0x4;
+    return result;
 }
