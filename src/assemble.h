@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "assembler/classify.h"
+#include "assembler/handler.h"
 #include "assembler/proc.h"
 
 int main(int argc, char **argv);
