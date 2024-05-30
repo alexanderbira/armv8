@@ -1,12 +1,12 @@
 ///
-/// arithmeticExecute.h
-/// Executes an arithmetic instruction
+/// arithmeticImmExecute.h
+/// Executes an arithmetic (immediate) instruction
 ///
 /// Created by Billy Highley on 27/05/2024.
 ///
 
-#ifndef ARITHMETIC_H
-#define ARITHMETIC_H
+#ifndef ARITHMETICIMMEXECUTE_H
+#define ARITHMETICIMMEXECUTE_H
 
 #include "../mask.h"
 #include "../instructions.h"
@@ -21,6 +21,6 @@
 /// rn mask
 #define IMM_RN_M BitMask(9, 5)
 
-void arithmeticExecute(Imm_IR ir, Registers regs);
+void arithmeticImmExecute(Imm_IR ir, Registers regs);
 
-#endif //ARITHMETIC_H
+#endif //ARITHMETICIMMEXECUTE_H

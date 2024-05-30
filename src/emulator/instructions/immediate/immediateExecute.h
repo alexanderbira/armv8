@@ -11,7 +11,7 @@
 #include "../../../common/ir/ir.h"
 #include "../../system/registers.h"
 #include "../instructions.h"
-#include "arithmeticExecute.h"
+#include "arithmeticImmExecute.h"
 #include "wideMoveExecute.h"
 
 #endif //IMMEDIATEEXECUTE_H

@@ -13,7 +13,7 @@
 #include "../../system/registers.h"
 #include "../../system/memory.h"
 #include "../../../common/ir/ir.h"
-#include "arithmeticExecute.h"
+#include "arithmeticImmExecute.h"
 #include "wideMoveExecute.h"
 
 /// sf (bit-width specifier) mask

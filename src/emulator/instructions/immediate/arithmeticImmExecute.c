@@ -1,11 +1,11 @@
 ///
-/// arithmeticExecute.c
-/// Executes an arithmetic instruction
+/// arithmeticImmExecute.c
+/// Executes an arithmetic (immediate) instruction
 ///
 /// Created by Billy Highley on 27/05/2024.
 ///
 
-#include "arithmeticExecute.h"
+#include "arithmeticImmExecute.h"
 
 /// Determines whether signed overflow has occurred when performing a 64-bit addition
 /// @param src The value of the source register
@@ -46,7 +46,7 @@ bool underflow32(int32_t src, int32_t op2, int32_t res) {
 /// Execute an arithmetic type instruction
 /// @param immIR IR for an immediate (arithmetic) instruction
 /// @param regs Pointer to registers
-void arithmeticExecute(Imm_IR immIR, Registers regs) {
+void arithmeticImmExecute(Imm_IR immIR, Registers regs) {
 
     // Operand interpreted as an arithmetic type instruction
     struct Arith operand = immIR.operand.arith;

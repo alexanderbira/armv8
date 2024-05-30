@@ -17,7 +17,7 @@ void executeImmediate(Imm_IR immIR, Registers regs) {
 
         // Arithmetic instruction
         case ARITH: {
-            arithmeticExecute(immIR, regs);
+            arithmeticImmExecute(immIR, regs);
             break;
         }
 
