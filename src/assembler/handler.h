@@ -45,7 +45,7 @@ void addMapping(AssemblerState *state, const char *label, BitData address);
 
 IR handleDirective(const char *line, AssemblerState state);
 
-IR handleLabel(const char *line, AssemblerState state);
+void handleLabel(const char *line, AssemblerState state);
 
 IR handleInstruction(const char *line, AssemblerState state);
 

@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
                 }
             }
 
-            currentIR = handleLabel(trimmedLine, state);
+            handleLabel(trimmedLine, state);
         }
 
         // By default, return instruction.
