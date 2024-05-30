@@ -8,6 +8,10 @@
 #ifndef ASSEMBLER_IMM_H
 #define ASSEMBLER_IMM_H
 
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+
 #include "../../common/ir/imm.h"
 #include "../../common/const.h"
 

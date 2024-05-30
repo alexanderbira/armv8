@@ -68,7 +68,7 @@ typedef struct {
 
         struct {
             /// [1b] Determines whether to left shift imm12 by 12-bits.
-            bool sh;
+            uint8_t sh;
 
             /// [12b] 12-bit unsigned immediate value.
             uint16_t imm12;
