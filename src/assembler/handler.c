@@ -14,6 +14,20 @@ AssemblerState createState(void) {
     state.address = 0x0;
 }
 
+/// Destroys the given [AssemblerState]
+/// @param state The [AssemblerState] to be destroyed.
+void destroyState(AssemblerState state) {
+    LabelAddressPair *current = state.map;
+    LabelAddressPair *next;
+
+    while (current != NULL) {
+        next = current->next;
+        free(current->label);
+        free(current);
+        current = next;
+    }
+}
+
 /// Function to process a directive, i.e. a line that begins with '.'.
 /// @param line The line to "process".
 /// @return The resulting binary word.

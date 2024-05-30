@@ -8,20 +8,37 @@
 #ifndef ASSEMBLER_HANDLER_H
 #define ASSEMBLER_HANDLER_H
 
+#include <stddef.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 #include "../common/const.h"
 #include "../common/ir/ir.h"
+
+/// Linked list representing a mapping from a string label to an address.
+typedef struct LabelAddressPair {
+    /// The string title of the label.
+    char *label;
+
+    /// The address the label points to.
+    BitData address;
+
+    /// Pointer to the next mapping in the linked list.
+    struct LabelAddressPair *next;
+} LabelAddressPair;
 
 /// Struct representing the current state of the assembler.
 typedef struct {
     /// The address of the current instruction being handled.
     BitData address;
 
-    // TODO: Add map (or similar) for labels and addresses.
+    /// The mapping of string labels to addresses as a linked list.
+    LabelAddressPair *map;
 } AssemblerState;
 
 AssemblerState createState(void);
+
+void destroyState(AssemblerState state);
 
 IR handleDirective(const char *line, const AssemblerState state);
 
