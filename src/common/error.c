@@ -14,3 +14,9 @@ void assertFatal(bool condition, char message[]) {
         exit(-1);
     }
 }
+
+void throwFatal(char message[]) {
+    fprintf(stderr, "%s\n", message);
+    perror("Fatal Error");
+    exit(-1);
+}
