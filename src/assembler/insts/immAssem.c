@@ -69,6 +69,7 @@ Imm_IR asmToImm(char *line) {
         if (shiftval != NULL) sscanf(shiftval, "#%hhu", &sh);
         ir.operand.arith.sh = (sh == 12);
     }
+    free(lineCopy);
     return ir;
 }
 
