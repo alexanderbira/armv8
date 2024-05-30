@@ -22,9 +22,4 @@ typedef uint64_t BitData;
 /// Alias for an instruction as a binary word.
 typedef uint32_t BitInst;
 
-typedef union {
-    char *label;
-    int32_t immediate;
-} Literal;
-
 #endif //COMMON_CONST_H

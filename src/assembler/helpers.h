@@ -13,34 +13,40 @@
 #include "../common/const.h"
 #include "../common/ir/ir.h"
 
-/// Linked list representing a mapping from a string label to an address.
-typedef struct LabelAddressPair {
-    /// The address the label points to.
-    BitData address;
-
-    /// Pointer to the next mapping in the linked list.
-    struct LabelAddressPair *next;
-
-    /// The string title of the label.
-    char *label;
-} LabelAddressPair;
-
 /// Struct representing the current state of the assembler.
 typedef struct {
     /// The address of the current instruction being handled.
     BitData address;
 
     /// The mapping of string labels to addresses as a linked list.
-    LabelAddressPair *map;
+    struct LabelAddressPair {
+        /// The address the label points to.
+        BitData address;
+
+        /// Pointer to the next mapping in the linked list.
+        struct LabelAddressPair *next;
+
+        /// The string title of the label.
+        char *label;
+    } *map;
 } AssemblerState;
 
+/// A tokenised assembly instruction.
 typedef struct {
-    int parameterCount;
-    char *mnemonic;
-    char **operands;
+    int operandCount; /// The number of operands parsed.
+    char *mnemonic;   /// The instruction mnemonic.
+    char **operands;  /// The list of operands.
 } TokenisedLine;
 
+/// A function which processes a tokenised assembly instruction.
 typedef IR (*Handler)(TokenisedLine line, AssemblerState state);
+
+/// An intermediate representation of a <literal>, which is either a signed immediate
+/// or a label reference. This is needed since not all label references are backwards.
+typedef union {
+    char *label;
+    int32_t immediate;
+} Literal;
 
 char *trim(char *str, const char *except);
 
