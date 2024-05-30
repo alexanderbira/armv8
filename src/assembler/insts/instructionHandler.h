@@ -43,6 +43,8 @@ TokenisedLine tokenise(const char *line);
 
 Literal parseLiteral(const char *literal);
 
+uint8_t parseRegister(const char *name);
+
 Handler getParseFunction(const char *mnemonic);
 
 #endif //ASSEMBLER_INSTRUCTION_HANDLER_H

@@ -58,6 +58,19 @@ Literal parseLiteral(const char *literal) {
     return result;
 }
 
+uint8_t parseRegister(const char *name) {
+    uint8_t result;
+    if (sscanf(name + 1, "*" SCNx8, &result) == 1) {
+        char *number = strdup(name);
+        number++;
+        return sscanf(number, "x" SCNx8, &result);
+    } else if (!strcmp(name + 1, "sp") || !strcmp(name + 1, "zr")) {
+        return 0x1F;
+    } else {
+        // TODO: Throw error since invalid register name.
+    }
+}
+
 Handler getParseFunction(const char *mnemonic) {
     for (int i = 0; i < sizeof(instructionHandlers) / sizeof(HandlerEntry); i++) {
         if (!strcmp(instructionHandlers[i].mnemonic, mnemonic)) {

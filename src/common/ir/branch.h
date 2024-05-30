@@ -10,6 +10,8 @@
 
 #include <stdint.h>
 
+#include "../assembler/insts/instructionHandler.h"
+
 /// The intermediate representation of a branch instruction.
 typedef struct {
 
@@ -34,7 +36,7 @@ typedef struct {
     union {
 
         /// [26b] Used to encode the signed offset (simm26 * 4) to apply to the PC for the unconditional branch.
-        int32_t simm26;
+        Literal simm26;
 
         /// [5b] The encoding of Xn, the register containing the address to jump to for the register branch.
         uint8_t xn;
@@ -43,7 +45,7 @@ typedef struct {
         struct {
 
             /// [19b] Used to encode the signed offset (simm19 * 4) to apply to the PC for the conditional branch.
-            int32_t simm19;
+            Literal simm19;
 
             /// [4b] The condition for the conditional branch instruction.
             enum BranchCondition {

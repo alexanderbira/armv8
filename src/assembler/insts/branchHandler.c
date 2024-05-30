@@ -18,10 +18,10 @@ IR handleBranch(TokenisedLine line, AssemblerState state) {
 
     if (!strcmp(line.mnemonic, "b")) {
         branchIR.branchType = B;
-
+        branchIR.branch.conditional.simm26 = parseLiteral(line.operands[0]);
     } else if (!strcmp(line.mnemonic, "br")) {
         branchIR.branchType = BR;
-
+        branchIR.branch.xn = parseRegister(line.operands[0]);
     } else {
         branchIR.branchType = BCOND;
 
@@ -35,6 +35,8 @@ IR handleBranch(TokenisedLine line, AssemblerState state) {
                 break;
             }
         }
+
+        branchIR.branch.conditional.simm19 = parseLiteral(line.operands[0]);
     }
 
     IR ir;
