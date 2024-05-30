@@ -14,16 +14,16 @@
 void execute(IR ir, Registers regs, Memory mem) {
     switch (ir.type) {
         case DPImm:
-            executeImmediate(ir, regs);
+            executeImmediate(ir.repr.imm, regs);
             break;
         case DPReg:
-            executeRegister(ir, regs);
+            executeRegister(ir.repr.reg, regs);
             break;
         case LS:
-            executeLoadStore(ir, regs, mem);
+            executeLoadStore(ir.repr.ls, regs, mem);
             break;
         case Br:
-            executeBranch(ir, regs);
+            executeBranch(ir.repr.branch, regs);
             break;
     }
 }

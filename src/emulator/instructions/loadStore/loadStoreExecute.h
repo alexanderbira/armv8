@@ -12,6 +12,6 @@
 #include "../../system/registers.h"
 #include "../../system/memory.h"
 
-void executeLoadStore(IR ir, Registers regs, Memory mem);
+void executeLoadStore(LS_IR lsIr, Registers regs, Memory mem);
 
 #endif //LOADSTOREEXECUTE_H
