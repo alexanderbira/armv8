@@ -26,38 +26,35 @@ struct {
 /// @return The IR form of the branch instruction.
 /// @pre [line]'s mnemonic is at least one of "b", "br", or "b.COND".
 IR handleBranch(TokenisedLine line, AssemblerState state) {
-    assertFatal(line.parameterCount == 1, "[handleBranch] Incorrect number of operands!");
+    assertFatal(line.operandCount == 1, "[handleBranch] Incorrect number of operands!");
 
     Branch_IR branchIR;
     if (!strcmp(line.mnemonic, "b")) {
-        branchIR.branchType = B;
-        branchIR.branch.simm26 = parseLiteral(line.operands[0]);
+        Literal simm26 = parseLiteral(line.operands[0]);
+        branchIR = (Branch_IR) {B, .branch.simm26 = simm26};
     } else if (!strcmp(line.mnemonic, "br")) {
-        branchIR.branchType = BR;
-        branchIR.branch.xn = parseRegister(line.operands[0]);
+        uint8_t xn = parseRegister(line.operands[0]);
+        branchIR = (Branch_IR) {BR, .branch.xn = xn};
     } else {
-        branchIR.branchType = BCOND;
-
         // Get just the condition string.
-        char *condition = line.mnemonic;
-        condition += 2;
+        char *name = line.mnemonic;
+        name += 2;
 
         // Try to find the corresponding condition, else throw error.
         bool found = false;
+        enum BranchCondition condition = AL;
         for (int i = 0; conditionMappings[i].name != NULL; i++) {
-            if (!strcasecmp(conditionMappings[i].name, condition)) {
-                branchIR.branch.conditional.cond = conditionMappings[i].condition;
+            if (!strcasecmp(conditionMappings[i].name, name)) {
+                condition = conditionMappings[i].condition;
                 found = true;
                 break;
             }
         }
 
         assertFatal(found, "[branchHandler] Invalid condition code!");
-        branchIR.branch.conditional.simm19 = parseLiteral(line.operands[0]);
+        Literal simm19 = parseLiteral(line.operands[0]);
+        branchIR = (Branch_IR) {BCOND, .branch.conditional = {simm19, condition}};
     }
 
-    IR ir;
-    ir.type = BRANCH;
-    ir.repr.branch = branchIR;
-    return ir;
+    return (IR) {BRANCH, .repr.branch = branchIR};
 }

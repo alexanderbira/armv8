@@ -10,10 +10,8 @@
 
 #include <string.h>
 
-#include "../../common/const.h"
-#include "../../common/ir/ir.h"
-#include "../../common/ir/branch.h"
 #include "../../common/error.h"
+#include "../../common/ir/ir.h"
 #include "../helpers.h"
 
 IR handleBranch(TokenisedLine line, AssemblerState state);
