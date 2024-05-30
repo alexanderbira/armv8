@@ -8,6 +8,8 @@
 #ifndef ASSEMBLER_INSTRUCTION_HANDLER_H
 #define ASSEMBLER_INSTRUCTION_HANDLER_H
 
+#include <inttypes.h>
+#include <stdio.h>
 #include <string.h>
 
 #include "../../common/ir/ir.h"
@@ -28,11 +30,18 @@ typedef struct {
     Handler handler;
 } HandlerEntry;
 
+typedef union {
+    char *label;
+    int32_t immediate;
+} Literal;
+
 HandlerEntry instructionHandlers[] = {
         {"b", handleBranch}
 };
 
 TokenisedLine tokenise(const char *line);
+
+Literal parseLiteral(const char *literal);
 
 Handler getParseFunction(const char *mnemonic);
 

@@ -42,6 +42,22 @@ TokenisedLine tokenise(const char *line) {
     return result;
 }
 
+/// Parses a literal as either a signed immediate constant or a label.
+/// @param literal <literal> to be parsed.
+/// @return A union representing the literal.
+Literal parseLiteral(const char *literal) {
+    Literal result;
+
+    if (!strchr(literal, '#')) {
+        sscanf(literal, "#0x%" SCNx32, &result.immediate);
+    } else {
+        result.label = strdup(literal);
+        result.label++;
+    }
+
+    return result;
+}
+
 Handler getParseFunction(const char *mnemonic) {
     for (int i = 0; i < sizeof(instructionHandlers) / sizeof(HandlerEntry); i++) {
         if (!strcmp(instructionHandlers[i].mnemonic, mnemonic)) {
