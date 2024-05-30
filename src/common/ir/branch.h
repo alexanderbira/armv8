@@ -11,6 +11,34 @@
 #include <stdint.h>
 
 #include "../const.h"
+#include "types.h"
+
+/// Baseline mask for a Branch (Unconditional) instruction.
+#define BRANCH_UNCONDITIONAL          b(0001_0100_0000_0000_0000_0000_0000_0000)
+
+/// Number of bits in [simm26] in a Branch (Unconditional) instruction.
+#define BRANCH_UNCONDITIONAL_SIMM26_N 26
+
+/// Baseline mask for a Branch (Register) instruction.
+#define BRANCH_REGISTER               b(1101_0110_0001_1111_0000_0000_0000_0000)
+
+/// Number of bits to shift for [xn] in a Branch (Register) instruction.
+#define BRANCH_REGISTER_XN_S          5
+
+/// Number of bits in [xn] in a Branch (Register) instruction.
+#define BRANCH_REGISTER_XN_N          5
+
+/// Baseline mask for a Branch (Conditional) instruction.
+#define BRANCH_CONDITIONAL            b(0101_0100_0000_0000_0000_0000_0000_0000)
+
+/// Number of bits to shift for [simm19] in a Branch (Conditional) instruction.
+#define BRANCH_CONDITIONAL_SIMM19_S   5
+
+/// Number of bits in [simm19] in a Branch (Conditional) instruction.
+#define BRANCH_CONDITIONAL_SIMM19_N   19
+
+/// Number of bits in [cond] in a Branch (Conditional) instruction.
+#define BRANCH_CONDITIONAL_COND_N     4
 
 /// The intermediate representation of a branch instruction.
 typedef struct {
@@ -20,15 +48,15 @@ typedef struct {
 
         /// Unconditional : branch to the address encoded by literal.
         /// \code PC := PC + offset \endcode
-        B,
+        UNCONDITIONAL,
 
         /// Register: branch to the address in Xn.
         /// \code PC := Xn \endcode
-        BR,
+        REGISTER,
 
         /// Conditional: branch to literal when PSTATE satisfies cond.
         /// \code if cond, PC := PC + offset \endcode
-        BCOND
+        CONDITIONAL,
 
     } branchType;
 

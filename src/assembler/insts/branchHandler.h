@@ -14,6 +14,8 @@
 #include "../../common/ir/ir.h"
 #include "../helpers.h"
 
-IR handleBranch(TokenisedLine line, AssemblerState state);
+IR parseBranch(TokenisedLine line, AssemblerState state);
+
+BitInst writeBranch(IR ir, AssemblerState state);
 
 #endif //ASSEMBLER_BRANCH_HANDLER_H

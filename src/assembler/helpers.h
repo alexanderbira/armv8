@@ -8,9 +8,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <inttypes.h>
 
 #include "../common/const.h"
+#include "../common/error.h"
 #include "../common/ir/ir.h"
 
 /// Struct representing the current state of the assembler.
@@ -40,6 +42,14 @@ typedef struct {
 
 /// A function which processes a tokenised assembly instruction.
 typedef IR (*Handler)(TokenisedLine line, AssemblerState state);
+
+AssemblerState createState(void);
+
+void destroyState(AssemblerState state);
+
+void addMapping(AssemblerState *state, const char *label, BitData address);
+
+void getMapping(AssemblerState *state, const char *label, BitData *address);
 
 char *trim(char *str, const char *except);
 

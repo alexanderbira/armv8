@@ -15,13 +15,14 @@
 
 /// The type of instruction represented.
 typedef enum {
-    IMMEDIATE, ///< Data Processing (Immediate)
-    REGISTER, ///< Data Processing (Register)
-    SINGLE_DATA_TRANSFER,   ///< Single Data Transfer
-    LOAD_LITERAL,    ///< Load Literal
-    BRANCH,     ///< Branch
+    IMMEDIATE,            ///< Data Processing (Immediate)
+    // REGISTER,          ///< Data Processing (Register)
+    SINGLE_DATA_TRANSFER, ///< Single Data Transfer
+    LOAD_LITERAL,         ///< Load Literal
+    BRANCH,               ///< Branch
 } IRType;
 
+/// The general IR wrapper for all types of assembly instructions.
 typedef struct {
     IRType type;
     union {

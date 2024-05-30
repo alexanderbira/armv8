@@ -4,6 +4,74 @@
 
 #include "helpers.h"
 
+/// Creates a fresh [AssemblerState].
+/// @return A fresh [AssemblerState].
+AssemblerState createState(void) {
+    AssemblerState state;
+    state.address = 0x0;
+    return state;
+}
+
+/// Destroys the given [AssemblerState]
+/// @param state The [AssemblerState] to be destroyed.
+void destroyState(AssemblerState state) {
+    struct LabelAddressPair *current = state.map;
+    struct LabelAddressPair *next;
+
+    while (current != NULL) {
+        next = current->next;
+        free(current->label);
+        free(current);
+        current = next;
+    }
+}
+
+/// Given an [AssemblerState], add another [LabelAddressPair] mapping to it.
+/// @param state The [AssemblerState] to be modified.
+/// @param label The name of the label.
+/// @param address The address of the label.
+void addMapping(AssemblerState *state, const char *label, BitData address) {
+    // Magic Number: 16 == sizeof(BitData) + sizeof(LabelAddressPair *)
+    // I.e., the two fixed sized components of a [LabelAddressPair].
+    struct LabelAddressPair *mapping = (struct LabelAddressPair *) malloc(16 + strlen(label));
+    char *copiedLabel = strdup(label);
+    mapping->address = address;
+    mapping->next = NULL;
+    mapping->label = copiedLabel;
+
+    if (state->map == NULL) {
+        state->map = mapping;
+    }
+
+    struct LabelAddressPair *current = state->map;
+    struct LabelAddressPair *previous;
+
+    while (current != NULL) {
+        previous = current;
+        current = current->next;
+    }
+
+    previous->next = mapping;
+}
+
+/// Given a [label], searches for its address in the given [AssemblerState].
+/// @param state The [AssemblerState] to be modified.
+/// @param label The name of the label.
+/// @param address[out] Either a pointer to the address, or NULL if not found.
+void getMapping(AssemblerState *state, const char *label, BitData *address) {
+    struct LabelAddressPair *current = state->map;
+
+    while (current != NULL) {
+        if (current->label == label) {
+            address = &current->address;
+        }
+
+        current = current->next;
+    }
+
+    address = NULL;
+}
+
 /// Trims the specified ([except]) characters from the beginning and end of the given string ([str]).
 /// @param[in, out] str Pointer to the string to be trimmed.
 /// @param[in] except List of character(s) to trim.
@@ -97,16 +165,13 @@ TokenisedLine tokenise(const char *line) {
 /// @param literal <literal> to be parsed.
 /// @return A union representing the literal.
 Literal parseLiteral(const char *literal) {
-    Literal result;
-
     if (strchr(literal, '#')) {
-        sscanf(literal, "#0x%"
-        SCNx32, &result.immediate);
+        uint32_t result;
+        assertFatal(sscanf(literal, "#0x%" SCNx32, &result) != 1, "[parseLiteral] Unable to parse immediate!");
+        return (Literal) {false, .data.immediate = result};
     } else {
-        result.label = strdup(literal);
+        return (Literal) {true, strdup(literal)};
     }
-
-    return result;
 }
 
 uint8_t parseRegister(const char *name) {

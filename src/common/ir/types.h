@@ -12,9 +12,12 @@
 
 /// An intermediate representation of a <literal>, which is either a signed immediate
 /// or a label reference. This is needed since not all label references are backwards.
-typedef union {
-    char *label;
-    int32_t immediate;
+typedef struct {
+    bool isLabel;
+    union {
+        char *label;
+        int32_t immediate;
+    } data;
 } Literal;
 
 #endif //COMMON_TYPES_H
