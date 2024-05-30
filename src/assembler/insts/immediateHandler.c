@@ -1,11 +1,11 @@
 ///
-/// immAssem.c
+/// immediateHandler.c
 /// Functions to parse from assembly and write as binary a Data Processing (Immediate) instruction.
 ///
-/// Created by Lancelot Liu on 29/05/2024.
+/// Created by Jack Wong on 29/05/2024.
 ///
 
-#include "immAssem.h"
+#include "immediateHandler.h"
 #include "../../common/ir/imm.h"
 
 /// Converts the assembly form of an Data Processing (Immediate) instruction to IR form.

@@ -1,12 +1,12 @@
 ///
-/// immAssem.h
+/// immediateHandler.h
 /// Functions to parse from assembly and write as binary a Data Processing (Immediate) instruction.
 ///
 /// Created by Lancelot Liu on 29/05/2024.
 ///
 
-#ifndef ASSEMBLER_IMM_H
-#define ASSEMBLER_IMM_H
+#ifndef ASSEMBLER_IMMDIATE_HANDLER_H
+#define ASSEMBLER_IMMDIATE_HANDLER_H
 
 #include <string.h>
 #include <stdlib.h>
@@ -20,4 +20,4 @@ Imm_IR handleImmediate(TokenisedLine line);
 
 BitInst immToInst(Imm_IR ir);
 
-#endif //ASSEMBLER_IMM_H
+#endif //ASSEMBLER_IMMDIATE_HANDLER_H
