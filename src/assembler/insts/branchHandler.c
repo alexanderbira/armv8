@@ -44,7 +44,3 @@ IR handleBranch(TokenisedLine line, AssemblerState state) {
     ir.repr = branchIR;
     return ir;
 }
-
-BitInst immToInst(Branch_IR ir) {
-
-}

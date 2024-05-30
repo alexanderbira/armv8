@@ -9,15 +9,15 @@
 #include "../../common/ir/imm.h"
 
 /// Converts the assembly form of an Data Processing (Immediate) instruction to IR form.
-/// @param line The string representing the assembly instruction.
+/// @param line The [TokenisedLine] of the instruction.
 /// @return The [Imm_IR] struct representing the instruction.
 /// @pre The incoming [line] is a Data Processing (Immediate) assembly instruction.
-Imm_IR asmToImm(char *line) {
+Imm_IR handleImmediate(TokenisedLine line) {
     Imm_IR ir;
-    char *lineCopy = strcpy(malloc(strlen(line)), line);
     // Getting the mnemonic.
-    char *mnemonic = strtok(lineCopy, " ");
-    char *rd = strtok(NULL, " ");
+    int throwaway;
+    char *mnemonic = line.mnemonic;
+    char *rd = line.operands[0];
     sscanf(rd, "%*c%hhu", &ir.rd);
     // Set sf
 
@@ -38,13 +38,12 @@ Imm_IR asmToImm(char *line) {
 
         ir.opi = WIDE_MOVE;
         // Split remaining string into: imm and lsl value (if applicable)
-        char *imm = strtok(NULL, " ");
-        strtok(NULL, " "); char *shiftVal = strtok(NULL, " ");
-
+        char *imm = line.operands[1];
         sscanf(imm, "#%hu", &ir.operand.wideMove.imm16);
-        // Checking if shiftVal exists is the same as checking if there is a lsl
-        if (shiftVal != NULL) {
-            sscanf(shiftVal, "#%hhu", &ir.operand.wideMove.hw);
+        // Check if lsl is present, and if present - get shift value.
+        if (line.parameterCount > 2) {
+            char *shiftValue = split(line.operands[2], " ", &throwaway)[1];
+            sscanf(shiftValue, "#%hhu", &ir.operand.wideMove.hw);
             // Assuming hw is value 0-3.
             ir.operand.wideMove.hw /= 16;
         }
@@ -58,18 +57,19 @@ Imm_IR asmToImm(char *line) {
 
         ir.opi = ARITH;
         // Split remaining string into: Rn, imm and lsl value (if applicable)
-        char *rn = strtok(NULL, " ");
-        char *imm = strtok(NULL, " ");
-        strtok(NULL, " "); char *shiftval = strtok(NULL, " ");
+        char *rn = line.operands[1];
+        char *imm = line.operands[2];
         uint8_t sh = 0;
 
         sscanf(rn, "%*c%hhu", &ir.operand.arith.rn);
         sscanf(imm, "#%hu", &ir.operand.arith.imm12);
         // sh is 0 or 1 depending on whether lsl value is 0 or 12.
-        if (shiftval != NULL) sscanf(shiftval, "#%hhu", &sh);
-        ir.operand.arith.sh = (sh == 12);
+        if (line.parameterCount > 3) {
+            char *shiftValue = split(line.operands[3], " ", &throwaway)[1];
+            sscanf(shiftValue, "#%hhu", &sh);
+            ir.operand.arith.sh = (sh == 12);
+        }
     }
-    free(lineCopy);
     return ir;
 }
 

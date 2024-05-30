@@ -32,6 +32,4 @@ struct {
 
 IR handleBranch(TokenisedLine line, AssemblerState state);
 
-BitInst immToInst(Branch_IR ir);
-
 #endif //ASSEMBLER_BRANCH_HANDLER_H

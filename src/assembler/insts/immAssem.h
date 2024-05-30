@@ -12,10 +12,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "instructionHandler.h"
 #include "../../common/ir/imm.h"
 #include "../../common/const.h"
 
-Imm_IR asmToImm(char *line);
+Imm_IR handleImmediate(TokenisedLine line);
 
 BitInst immToInst(Imm_IR ir);
 
