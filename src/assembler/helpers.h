@@ -41,13 +41,6 @@ typedef struct {
 /// A function which processes a tokenised assembly instruction.
 typedef IR (*Handler)(TokenisedLine line, AssemblerState state);
 
-/// An intermediate representation of a <literal>, which is either a signed immediate
-/// or a label reference. This is needed since not all label references are backwards.
-typedef union {
-    char *label;
-    int32_t immediate;
-} Literal;
-
 char *trim(char *str, const char *except);
 
 char **split(char *str, const char *delim, int *count);
