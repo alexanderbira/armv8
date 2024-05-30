@@ -14,11 +14,6 @@
 #include "../../system/memory.h"
 #include "../../../common/ir/ir.h"
 
-/// hw mask
-#define IMM_HW_M  BitMask(22, 21)
-/// imm16 mask
-#define IMM_16_M  BitMask(20, 5)
-
 void wideMoveExecute(Imm_IR ir, Registers regs);
 
 #endif //WIDEMOVE_H

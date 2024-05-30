@@ -13,8 +13,6 @@
 #include "../../system/registers.h"
 #include "../../system/memory.h"
 #include "../../../common/ir/ir.h"
-#include "arithmeticImmExecute.h"
-#include "wideMoveExecute.h"
 
 /// sf (bit-width specifier) mask
 #define IMM_SF_M  BitMask(31, 31)
@@ -24,6 +22,23 @@
 #define IMM_OPI_M BitMask(25, 23)
 /// rd (destination register) mask
 #define IMM_RD_M  BitMask(4, 0)
+
+// Arithmetic
+/// sh mask
+#define IMM_SH_M BitMask(22,22)
+/// imm12 mask
+#define IMM_12_M BitMask(21, 10)
+/// rn mask
+#define IMM_RN_M BitMask(9, 5)
+
+// Wide move
+/// hw mask
+#define IMM_HW_M  BitMask(22, 21)
+/// imm16 mask
+#define IMM_16_M  BitMask(20, 5)
+
+
+
 
 IR decodeImmediate(Instruction word);
 
