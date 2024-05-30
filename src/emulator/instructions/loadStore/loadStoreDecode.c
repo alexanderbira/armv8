@@ -11,6 +11,7 @@
 
 /// Decode a load and store-group instruction to its IR
 /// @param word The instruction to decode
+/// @returns The IR of word
 IR decodeLoadStore(Instruction word) {
     // Initialise the IR
     IR ir;

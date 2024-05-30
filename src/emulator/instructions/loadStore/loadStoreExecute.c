@@ -7,6 +7,10 @@
 
 #include "loadStoreExecute.h"
 
+/// Execute a load and store instruction from its intermediate representation
+/// @param ir The IR of the instruction to execute
+/// @param regs A pointer to the registers
+/// @param mem A pointer to the memory
 void executeLoadStore(IR ir, Registers regs, Memory mem) {
     assert(ir.type == LS);
 
