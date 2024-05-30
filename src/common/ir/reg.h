@@ -20,26 +20,26 @@ typedef struct {
     /// [2b] The operation code, determining the operation to be performed. To access union, check [opi].
     union {
 
-        /// The opcode for arithmetic operations.
-        enum ArithType {
-
-            /// The operation code for add.
-            /// \code Rd := Rn + Op2 \endcode
-            ADD,
-
-            /// The operation code for add, setting flags.
-            /// \code Rd := Rn + Op2 \endcode
-            ADDS,
-
-            /// The operation code for subtract.
-            /// \code Rd := Rn - Op2 \endcode
-            SUB,
-
-            /// The operation code for subtract, setting flags.
-            /// \code Rd := Rn - Op2 \endcode
-            SUBS
-
-        } arith;
+//        /// The opcode for arithmetic operations.
+//        enum ArithType {
+//
+//            /// The operation code for add.
+//            /// \code Rd := Rn + Op2 \endcode
+//            ADD,
+//
+//            /// The operation code for add, setting flags.
+//            /// \code Rd := Rn + Op2 \endcode
+//            ADDS,
+//
+//            /// The operation code for subtract.
+//            /// \code Rd := Rn - Op2 \endcode
+//            SUB,
+//
+//            /// The operation code for subtract, setting flags.
+//            /// \code Rd := Rn - Op2 \endcode
+//            SUBS
+//
+//        } arith;
 
         /// Arithmetic and logical instructions, separated into standard and negated types.
         union {

@@ -18,32 +18,9 @@
 #include "branchHandler.h"
 
 typedef struct {
-    int parameterCount;
-    char *mnemonic;
-    char **operands;
-} TokenisedLine;
-
-typedef IR (*Handler)(TokenisedLine line, AssemblerState state);
-
-typedef struct {
     char *mnemonic;
     Handler handler;
 } HandlerEntry;
-
-typedef union {
-    char *label;
-    int32_t immediate;
-} Literal;
-
-HandlerEntry instructionHandlers[] = {
-        {"b", handleBranch}
-};
-
-TokenisedLine tokenise(const char *line);
-
-Literal parseLiteral(const char *literal);
-
-uint8_t parseRegister(const char *name);
 
 Handler getParseFunction(const char *mnemonic);
 

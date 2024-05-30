@@ -10,25 +10,11 @@
 
 #include <string.h>
 
-#include "instructionHandler.h"
 #include "../../common/const.h"
 #include "../../common/ir/ir.h"
 #include "../../common/ir/branch.h"
-
-/// Constant mapping from condition names to enums.
-struct {
-    char *name;
-    enum BranchCondition condition;
-} const conditionMappings[] = {
-        {"eq", EQ},
-        {"ne", NE},
-        {"ge", GE},
-        {"lt", LT},
-        {"gt", GT},
-        {"le", LE},
-        {"al", AL},
-        {NULL}, // NULL terminate as ending because I'm lazy!
-};
+#include "../../common/error.h"
+#include "../helpers.h"
 
 IR handleBranch(TokenisedLine line, AssemblerState state);
 

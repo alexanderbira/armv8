@@ -10,7 +10,7 @@
 
 #include <stdint.h>
 
-#include "../assembler/insts/instructionHandler.h"
+#include "../const.h"
 
 /// The intermediate representation of a branch instruction.
 typedef struct {

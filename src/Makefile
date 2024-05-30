@@ -13,7 +13,7 @@ COMMON_OBJS = helpers.o
 
 EMULATE_OBJS = emulate.o registers.o memory.o output.o
 
-ASSEMBLE_OBJS = classify.o proc.o immAssem.o regAssem.o sdtAssem.o
+ASSEMBLE_OBJS = helpers.o handler.o instructionHandler.o immediateHandler.o branchHandler.o
 
 all: assemble emulate
 

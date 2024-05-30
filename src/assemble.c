@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
 
         // Check if line is directive.
         if (line[0] == '.') {
-            currentIR = handleDirective(trimmedLine, state);
+            handleDirective(trimmedLine, state);
         }
 
         // Check if line is a label.

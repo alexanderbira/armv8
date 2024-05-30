@@ -12,6 +12,7 @@
 AssemblerState createState(void) {
     AssemblerState state;
     state.address = 0x0;
+    return state;
 }
 
 /// Destroys the given [AssemblerState]
@@ -58,9 +59,9 @@ void addMapping(AssemblerState *state, const char *label, BitData address) {
 /// Function to process a directive, i.e. a line that begins with '.'.
 /// @param line The line to "process".
 /// @return The resulting binary word.
-IR handleDirective(const char *line, AssemblerState state) {
+void handleDirective(const char *line, AssemblerState state) {
     // TODO: Implement
-    return 0;
+
 }
 
 /// Function to process a label, i.e. a line of alphabet characters ending in ':'.

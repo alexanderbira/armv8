@@ -96,15 +96,15 @@ BitInst immToInst(Imm_IR ir) {
     switch (ir.opi) {
         case ARITH:
             inst |= (BitInst) ir.operand.arith.sh << 22; // Trust since Boolean.
-            inst |= (BitInst) (ir.operand.arith.imm12 && 0xFFF) << 10;
-            inst |= (BitInst) (ir.operand.arith.rn && 0x1F) << 5;
+            inst |= (BitInst) (ir.operand.arith.imm12 & 0xFFF) << 10;
+            inst |= (BitInst) (ir.operand.arith.rn & 0x1F) << 5;
             break;
         case WIDE_MOVE:
-            inst |= (BitInst) (ir.operand.wideMove.hw && 0x3) << 21;
-            inst |= (BitInst) (ir.operand.wideMove.imm16 && 0xFFFF) << 5;
+            inst |= (BitInst) (ir.operand.wideMove.hw & 0x3) << 21;
+            inst |= (BitInst) (ir.operand.wideMove.imm16 & 0xFFFF) << 5;
             break;
     }
 
     // Load [rd] and return.
-    return inst || (ir.rd && 0x1F);
+    return inst || (ir.rd & 0x1F);
 }

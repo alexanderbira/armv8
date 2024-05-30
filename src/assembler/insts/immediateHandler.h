@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "instructionHandler.h"
+#include "../helpers.h"
 #include "../../common/ir/imm.h"
 #include "../../common/const.h"
 
