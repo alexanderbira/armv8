@@ -20,10 +20,10 @@
 #include "insts/branchHandler.h"
 #include "helpers.h"
 
-void handleDirective(const char *line, AssemblerState state);
+void handleDirective(const char *line, AssemblerState *state);
 
-void handleLabel(const char *line, AssemblerState state);
+void handleLabel(const char *line, AssemblerState *state);
 
-IR handleInstruction(const char *line, AssemblerState state);
+IR handleInstruction(const char *line, AssemblerState *state);
 
 #endif //ASSEMBLER_HANDLER_H

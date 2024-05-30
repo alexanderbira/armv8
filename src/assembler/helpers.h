@@ -41,7 +41,7 @@ typedef struct {
 } TokenisedLine;
 
 /// A function which processes a tokenised assembly instruction.
-typedef IR (*Handler)(TokenisedLine line, AssemblerState state);
+typedef IR (*Handler)(TokenisedLine line, AssemblerState *state);
 
 AssemblerState createState(void);
 

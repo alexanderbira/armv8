@@ -151,9 +151,9 @@ TokenisedLine tokenise(const char *line) {
     char *trimmedOperands = trim(operands, " ");
 
     // Separate operands by comma, then trim each.
-    result.operands = split(trimmedOperands, ",", &result.parameterCount);
+    result.operands = split(trimmedOperands, ",", &result.operandCount);
 
-    for (int i = 0; i < result.parameterCount; i++) {
+    for (int i = 0; i < result.operandCount; i++) {
         result.operands[i] = trim(result.operands[i], " ");
     }
 
@@ -170,7 +170,7 @@ Literal parseLiteral(const char *literal) {
         assertFatal(sscanf(literal, "#0x%" SCNx32, &result) != 1, "[parseLiteral] Unable to parse immediate!");
         return (Literal) {false, .data.immediate = result};
     } else {
-        return (Literal) {true, strdup(literal)};
+        return (Literal) {true, {strdup(literal)}};
     }
 }
 

@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
 
         // Check if line is directive.
         if (line[0] == '.') {
-            handleDirective(trimmedLine, state);
+            handleDirective(trimmedLine, &state);
         }
 
         // Check if line is a label.
@@ -39,15 +39,15 @@ int main(int argc, char **argv) {
             // Ensure all preceding chars are alphabet.
             for (char *p = line; p < colon; p++) {
                 if (!isalpha((unsigned char) *p)) {
-                    currentIR = handleInstruction(trimmedLine, state);
+                    currentIR = handleInstruction(trimmedLine, &state);
                 }
             }
 
-            handleLabel(trimmedLine, state);
+            handleLabel(trimmedLine, &state);
         }
 
         // By default, return instruction.
-        currentIR = handleInstruction(trimmedLine, state);
+        currentIR = handleInstruction(trimmedLine, &state);
 
         // TODO: Append current IR to some dynamic array of all IRs.
     }
