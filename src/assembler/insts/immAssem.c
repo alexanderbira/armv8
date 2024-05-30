@@ -21,8 +21,7 @@ Imm_IR asmToImm(char *line) {
     sscanf(rd, "%*c%hhu", &ir.rd);
     // Set sf
 
-    if (rd[0] == 'x') ir.sf = 1;
-    else ir.sf = 0;
+    ir.sf = (rd[0] == 'x');
 
     if (mnemonic[0] == 'm') {
         switch (mnemonic[3]) {
@@ -43,9 +42,12 @@ Imm_IR asmToImm(char *line) {
         strtok(NULL, " "); char *shiftVal = strtok(NULL, " ");
 
         sscanf(imm, "#%hu", &ir.operand.wideMove.imm16);
-        // TODO - Check later. Ask how hw works.
         // Checking if shiftVal exists is the same as checking if there is a lsl
-        if (shiftVal != NULL) sscanf(shiftVal, "#%hhu", &ir.operand.wideMove.hw);
+        if (shiftVal != NULL) {
+            sscanf(shiftVal, "#%hhu", &ir.operand.wideMove.hw);
+            // Assuming hw is value 0-3.
+            ir.operand.wideMove.hw /= 16;
+        }
         else ir.operand.wideMove.hw = 0;
     } else {
         if (mnemonic[0] == 'a') {
@@ -59,12 +61,13 @@ Imm_IR asmToImm(char *line) {
         char *rn = strtok(NULL, " ");
         char *imm = strtok(NULL, " ");
         strtok(NULL, " "); char *shiftval = strtok(NULL, " ");
+        uint8_t sh = 0;
 
         sscanf(rn, "%*c%hhu", &ir.operand.arith.rn);
         sscanf(imm, "#%hu", &ir.operand.arith.imm12);
-        // TODO - Check later.
-        if (shiftval != NULL) sscanf(shiftval, "#%hhu", &ir.operand.arith.sh); //alternatively set directly to 12;
-        else ir.operand.arith.sh = 0;
+        // sh is 0 or 1 depending on whether lsl value is 0 or 12.
+        if (shiftval != NULL) sscanf(shiftval, "#%hhu", &sh);
+        ir.operand.arith.sh = (sh == 12);
     }
     return ir;
 }
@@ -104,3 +107,4 @@ BitInst immToInst(Imm_IR ir) {
     // Load [rd] and return.
     return inst || (ir.rd && 0x1F);
 }
+
