@@ -22,7 +22,7 @@ IR decodeBranch(Instruction word) {
         // Unconditional branch
         branchIr.branchType = B;
 
-        // Get the 26-bit offset as a 16-bit unsigned integer
+        // Get the 26-bit offset as a 32-bit unsigned integer
         uint32_t simm26 = decompose(word, B_SIMM26_M);
         // Sign-extend the address offset (32 - 26 = 6)
         branchIr.branch.simm26 = (simm26 << 6) >> 6;
@@ -45,7 +45,7 @@ IR decodeBranch(Instruction word) {
 
         struct Conditional conditional;
 
-        // Get the 19-bit offset as a 16-bit unsigned integer
+        // Get the 19-bit offset as a 32-bit unsigned integer
         uint32_t simm19 = decompose(word, B_SIMM19_M);
         // Sign-extend the address offset (32 - 19 = 13)
         conditional.simm19 = (simm19 << 13) >> 13;

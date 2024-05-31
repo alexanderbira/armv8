@@ -81,7 +81,7 @@ void executeBranch(Branch_IR branchIr, Registers regs, Memory mem) {
 
                     case GT:
                         if (
-                            !getRegState(regs, N) &&
+                            !getRegState(regs, Z) &&
                             getRegState(regs, N) == getRegState(regs, V)
                         ) {
                             setRegPC(regs, pcVal + 4 * offset);
@@ -91,7 +91,7 @@ void executeBranch(Branch_IR branchIr, Registers regs, Memory mem) {
                     case LE:
                         if (
                             !(
-                                !getRegState(regs, N) &&
+                                !getRegState(regs, Z) &&
                                 getRegState(regs, N) == getRegState(regs, V)
                             )
                         ) {
