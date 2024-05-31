@@ -51,7 +51,9 @@ int main(int argc, char **argv) {
 
         // TODO: Append current IR to some dynamic array of all IRs.
     }
+
     fclose(fileIn);
+    destroyState(state);
 
     // TODO: Final process all IRs, and write to file.
     FILE *fileOut = fopen(argv[2], "wb");

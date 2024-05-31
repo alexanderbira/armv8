@@ -31,11 +31,11 @@ IR parseBranch(TokenisedLine line, AssemblerState *state) {
     Branch_IR branchIR;
     if (!strcmp(line.mnemonic, "b")) {
         const Literal simm26 = parseLiteral(line.operands[0]);
-        branchIR = (Branch_IR) {UNCONDITIONAL, .branch.simm26 = simm26};
+        branchIR = (Branch_IR) { BRANCH_UNCONDITIONAL, .branch.simm26 = simm26 };
     } else if (!strcmp(line.mnemonic, "br")) {
         bool throwaway;
         uint8_t xn = parseRegister(line.operands[0], &throwaway);
-        branchIR = (Branch_IR) {REGISTER, .branch.xn = xn};
+        branchIR = (Branch_IR) { BRANCH_REGISTER, .branch.xn = xn };
     } else {
         // Get just the condition string.
         char *name = line.mnemonic;
@@ -54,10 +54,10 @@ IR parseBranch(TokenisedLine line, AssemblerState *state) {
 
         assertFatal(found, "[parseBranch] Invalid condition code!");
         const Literal simm19 = parseLiteral(line.operands[0]);
-        branchIR = (Branch_IR) {CONDITIONAL, .branch.conditional = {simm19, condition}};
+        branchIR = (Branch_IR) { BRANCH_CONDITIONAL, .branch.conditional = { simm19, condition } };
     }
 
-    return (IR) {BRANCH, .repr.branch = branchIR};
+    return (IR) { BRANCH, .repr.branch = branchIR };
 }
 
 BitInst writeBranch(IR ir, AssemblerState *state) {
@@ -66,8 +66,8 @@ BitInst writeBranch(IR ir, AssemblerState *state) {
     BitInst result;
 
     switch (branch.branchType) {
-        case UNCONDITIONAL:
-            result = BRANCH_UNCONDITIONAL;
+        case BRANCH_UNCONDITIONAL:
+            result = BRANCH_UNCONDITIONAL_C;
             if (branch.branch.simm26.isLabel) {
                 BitData *address = NULL;
                 address = getMapping(state, branch.branch.simm26.data.label);
@@ -76,11 +76,11 @@ BitInst writeBranch(IR ir, AssemblerState *state) {
             }
 
             return result | truncate(branch.branch.simm26.data.immediate, BRANCH_UNCONDITIONAL_SIMM26_N);
-        case REGISTER:
-            result = BRANCH_REGISTER;
+        case BRANCH_REGISTER:
+            result = BRANCH_REGISTER_C;
             return result | (truncate(branch.branch.xn, BRANCH_REGISTER_XN_N) << BRANCH_REGISTER_XN_S);
-        case CONDITIONAL:
-            result = BRANCH_CONDITIONAL;
+        case BRANCH_CONDITIONAL:
+            result = BRANCH_CONDITIONAL_C;
             if (branch.branch.conditional.simm19.isLabel) {
                 BitData *address = NULL;
                 address = getMapping(state, branch.branch.conditional.simm19.data.label);
