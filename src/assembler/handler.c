@@ -12,7 +12,6 @@
 /// @return The resulting binary word.
 void handleDirective(const char *line, AssemblerState *state) {
     // TODO: Implement
-
 }
 
 /// Function to process a label, i.e. a line of alphabet characters ending in ':'.
@@ -32,8 +31,11 @@ void handleLabel(const char *line, AssemblerState *state) {
 /// @return The resulting binary word.
 IR handleInstruction(const char *line, AssemblerState *state) {
     TokenisedLine tokenisedLine = tokenise(line);
-    IR result = getParseFunction(tokenisedLine.mnemonic)(tokenisedLine, state);
+    IR result = getParseFunction(tokenisedLine.mnemonic)(&tokenisedLine, state);
     destroyTokenisedLine(tokenisedLine);
+
+    // Always increment address by 4 since at compile time,
+    // jumps are not possible.
     state->address += 0x4;
     return result;
 }

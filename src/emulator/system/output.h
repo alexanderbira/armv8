@@ -11,11 +11,11 @@
 #include <inttypes.h>
 #include <stdio.h>
 
-#include "../system/registers.h"
-#include "../system/memory.h"
+#include "registers.h"
+#include "memory.h"
 
 void dumpRegs(Registers regs, FILE *fileOut);
 
 void dumpMem(Memory mem, FILE *fileOut);
 
-#endif //EMULATOR_OUTPUT_H
+#endif // EMULATOR_OUTPUT_H

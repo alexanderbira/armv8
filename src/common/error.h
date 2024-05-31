@@ -16,4 +16,4 @@ void assertFatal(bool condition, char message[]);
 
 void throwFatal(char message[]);
 
-#endif //COMMON_ERROR_H
+#endif // COMMON_ERROR_H

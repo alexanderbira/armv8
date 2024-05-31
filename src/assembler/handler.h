@@ -15,10 +15,9 @@
 
 #include "../common/const.h"
 #include "../common/ir/ir.h"
-#include "insts/instructionHandler.h"
-#include "insts/immediateHandler.h"
-#include "insts/branchHandler.h"
 #include "helpers.h"
+#include "state.h"
+#include "handlers/instructionHandler.h"
 
 void handleDirective(const char *line, AssemblerState *state);
 

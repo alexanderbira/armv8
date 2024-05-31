@@ -26,19 +26,19 @@ struct {
 /// @param state The current state of the assembler.
 /// @return The IR form of the branch instruction.
 /// @pre [line]'s mnemonic is at least one of "b", "br", or "b.COND".
-IR parseBranch(TokenisedLine line, AssemblerState *state) {
-    assertFatal(line.operandCount == 1, "[parseBranch] Incorrect number of operands!");
+IR parseBranch(TokenisedLine *line, unused AssemblerState *state) {
+    assertFatal(line->operandCount == 1, "[parseBranch] Incorrect number of operands!");
 
     Branch_IR branchIR;
-    if (!strcmp(line.mnemonic, "b")) {
-        const Literal simm26 = parseLiteral(line.operands[0]);
-        branchIR = (Branch_IR) { BRANCH_UNCONDITIONAL, .data.simm26 = simm26 };
-    } else if (!strcmp(line.mnemonic, "br")) {
-        uint8_t xn = parseRegister(line.operands[0], NULL);
-        branchIR = (Branch_IR) { BRANCH_REGISTER, .data.xn = xn };
+    if (!strcmp(line->mnemonic, "b")) {
+        const Literal simm26 = parseLiteral(line->operands[0]);
+        branchIR = (Branch_IR) {.type = BRANCH_UNCONDITIONAL, .data.simm26 = simm26};
+    } else if (!strcmp(line->mnemonic, "br")) {
+        uint8_t xn = parseRegister(line->operands[0], NULL);
+        branchIR = (Branch_IR) {.type = BRANCH_REGISTER, .data.xn = xn};
     } else {
         // Get just the condition string.
-        char *name = line.mnemonic;
+        char *name = line->mnemonic;
         name += 2;
 
         // Try to find the corresponding condition, else throw error.
@@ -53,8 +53,8 @@ IR parseBranch(TokenisedLine line, AssemblerState *state) {
         }
 
         assertFatal(found, "[parseBranch] Invalid condition code!");
-        const Literal simm19 = parseLiteral(line.operands[0]);
-        branchIR = (Branch_IR) { BRANCH_CONDITIONAL, .data.conditional = { simm19, condition } };
+        const Literal simm19 = parseLiteral(line->operands[0]);
+        branchIR = (Branch_IR) {.type = BRANCH_CONDITIONAL, .data.conditional = {simm19, condition}};
     }
 
     return (IR) { BRANCH, .ir.branchIR = branchIR };
@@ -64,43 +64,42 @@ IR parseBranch(TokenisedLine line, AssemblerState *state) {
 /// @param irObject The [IR] struct representing the instruction.
 /// @param state The current state of the assembler.
 /// @return 32-bit binary word of the instruction.
-BitInst translateBranch(IR irObject, AssemblerState *state) {
-    assertFatal(irObject.type == BRANCH, "[writeBranch] Received non-branch IR!");
-    Branch_IR branch = irObject.ir.branchIR;
+BitInst translateBranch(IR *irObject, AssemblerState *state) {
+    assertFatal(irObject->type == BRANCH, "[writeBranch] Received non-branch IR!");
+    Branch_IR *branch = &irObject->ir.branchIR;
     BitInst result;
 
-    switch (branch.type) {
+    switch (branch->type) {
         case BRANCH_UNCONDITIONAL:
             result = BRANCH_UNCONDITIONAL_C;
 
-            Literal simm26 = branch.data.simm26;
-            if (simm26.isLabel) {
+            Literal *simm26 = &branch->data.simm26;
+            if (simm26->isLabel) {
                 BitData *address = NULL;
-                address = getMapping(state, simm26.data.label);
+                address = getMapping(state, simm26->data.label);
                 assertFatal(address != NULL, "[writeBranch] No mapping for label!");
-                return result | truncate(*address, BRANCH_UNCONDITIONAL_SIMM26_N);
+                return result | truncater(*address, BRANCH_UNCONDITIONAL_SIMM26_N);
             }
 
-            return result | truncate(simm26.data.immediate, BRANCH_UNCONDITIONAL_SIMM26_N);
+            return result | truncater(simm26->data.immediate, BRANCH_UNCONDITIONAL_SIMM26_N);
         case BRANCH_REGISTER:
             result = BRANCH_REGISTER_C;
-            return result | (truncate(branch.data.xn, BRANCH_REGISTER_XN_N) << BRANCH_REGISTER_XN_S);
+            return result | (truncater(branch->data.xn, BRANCH_REGISTER_XN_N) << BRANCH_REGISTER_XN_S);
         case BRANCH_CONDITIONAL:
             result = BRANCH_CONDITIONAL_C;
 
-            struct Conditional conditional = branch.data.conditional;
-            if (conditional.simm19.isLabel) {
+            struct Conditional *conditional = &branch->data.conditional;
+            if (conditional->simm19.isLabel) {
                 BitData *address = NULL;
-                address = getMapping(state, conditional.simm19.data.label);
+                address = getMapping(state, conditional->simm19.data.label);
                 assertFatal(address != NULL, "[writeBranch] No mapping for label!");
-                result |= truncate(*address, BRANCH_CONDITIONAL_SIMM19_N);
+                result |= truncater(*address, BRANCH_CONDITIONAL_SIMM19_N);
             } else {
-                result |= truncate(conditional.simm19.data.immediate, BRANCH_CONDITIONAL_SIMM19_N);
+                result |= truncater(conditional->simm19.data.immediate, BRANCH_CONDITIONAL_SIMM19_N);
             }
 
-            return result | truncate(conditional.condition, BRANCH_CONDITIONAL_COND_N);
+            return result | truncater(conditional->condition, BRANCH_CONDITIONAL_COND_N);
     }
 
     throwFatal("[writeBranch] Unknown type of branch instruction!");
-    return 0x0; // For the compiler.
 }

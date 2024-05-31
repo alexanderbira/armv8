@@ -5,6 +5,8 @@
 /// Created by Lancelot Liu on 30/05/2024.
 ///
 
+#include <stdnoreturn.h>
+
 #include "error.h"
 
 /// Assert a condition, pretty-printing and error and exiting if it is not met.
@@ -23,7 +25,7 @@ void assertFatal(bool condition, char message[]) {
 /// Pretty-prints the given error and exits the program.
 /// \param message The failure message.
 /// @throws -1 Exits the program.
-void throwFatal(char message[]) {
+noreturn void throwFatal(char message[]) {
     fprintf(stderr, "%s\n", message);
     fprintf(stderr, "   In file %s, line %d", __FILE__, __LINE__);
     perror("    Fatal Error");

@@ -13,12 +13,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "../../common/const.h"
 #include "../../common/error.h"
 #include "../../common/ir/ir.h"
 #include "../helpers.h"
+#include "../state.h"
 
-IR parseImmediate(TokenisedLine line, AssemblerState *state);
+IR parseImmediate(TokenisedLine *line, unused AssemblerState *state);
 
-BitInst translateImmediate(IR irObject, AssemblerState *state);
+BitInst translateImmediate(IR *irObject, unused AssemblerState *state);
 
 #endif // ASSEMBLER_IMMEDIATE_HANDLER_H

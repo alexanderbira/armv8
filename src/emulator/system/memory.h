@@ -33,4 +33,4 @@ BitData readMem(Memory mem, bool as64, size_t addr);
 
 void writeMem(Memory mem, bool as64, size_t addr, BitData value);
 
-#endif //EMULATOR_MEMORY_H
+#endif // EMULATOR_MEMORY_H

@@ -12,7 +12,7 @@
 
 #include "emulator/system/registers.h"
 #include "emulator/system/memory.h"
-#include "emulator/io/output.h"
+#include "emulator/system/output.h"
 // #include "instructions/decode.h"
 
 #define HALT_INSTR_C 0x8a000000
