@@ -15,4 +15,6 @@
 #include "bitLogicExecute.h"
 #include "multiplyExecute.h"
 
+void executeRegister(Reg_IR regIR, Registers regs);
+
 #endif //REGISTEREXECUTE_H

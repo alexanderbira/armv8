@@ -32,7 +32,7 @@ IR decode(Instruction word) {
         ir = decodeBranch(word);
     }
 
-    else printf("Unknown op0: %d", op0);
+    else printf("Unknown op0: %d", op0); // TODO exit program here
 
     return ir;
 }

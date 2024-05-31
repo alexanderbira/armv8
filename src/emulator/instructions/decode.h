@@ -34,6 +34,11 @@
 /// OP0 Branch Code
 #define OP0_BR_C  B(1010)
 
+#include "immediate/immediateDecode.h"
+#include "register/registerDecode.h"
+#include "loadStore/loadStoreDecode.h"
+#include "branch/branchDecode.h"
+
 IR decode(Instruction word);
 
 #endif //DECODE_H

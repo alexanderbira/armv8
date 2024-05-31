@@ -12,6 +12,11 @@
 #include "../system/registers.h"
 #include "../system/memory.h"
 
+#include "immediate/immediateExecute.h"
+#include "register/registerExecute.h"
+#include "loadStore/loadStoreExecute.h"
+#include "branch/branchExecute.h"
+
 void execute(IR ir, Registers regs, Memory mem);
 
 #endif //EXECUTE_H

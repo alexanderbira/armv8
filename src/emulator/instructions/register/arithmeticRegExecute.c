@@ -7,41 +7,10 @@
 
 #include "arithmeticRegExecute.h"
 
-/// Determines whether signed overflow has occurred when performing a 64-bit addition
-/// @param src The value of the source register
-/// @param op2 The value of the second operand
-/// @param res Result of the addition
-/// @return Whether signed overflow has occurred
-bool overflow64(int64_t src, int64_t op2, int64_t res) {
-    return (src > 0 && op2 > 0 && res < 0) || (src < 0 && op2 < 0 && res > 0);
-}
-
-/// Determines whether signed overflow has occurred when performing a 32-bit addition
-/// @param src The value of the source register
-/// @param op2 The value of the second operand
-/// @param res Result of the addition
-/// @return Whether signed overflow has occurred
-bool overflow32(int32_t src, int32_t op2, int32_t res) {
-    return (src > 0 && op2 > 0 && res < 0) || (src < 0 && op2 < 0 && res > 0);
-}
-
-/// Determines whether signed underflow has occurred when performing a 64-bit subtraction
-/// @param src The value of the source register
-/// @param op2 The value of the second operand
-/// @param res Result of the subtraction
-/// @return Whether signed underflow has occurred
-bool underflow64(int64_t src, int64_t op2, int64_t res) {
-    return (src > 0 && op2 < 0 && res < 0) || (src < 0 && op2 > 0 && res > 0);
-}
-
-/// Determines whether signed underflow has occurred when performing a 32-bit subtraction
-/// @param src The value of the source register
-/// @param op2 The value of the second operand
-/// @param res Result of the subtraction
-/// @return Whether signed underflow has occurred
-bool underflow32(int32_t src, int32_t op2, int32_t res) {
-    return (src > 0 && op2 < 0 && res < 0) || (src < 0 && op2 > 0 && res > 0);
-}
+static bool overflow64(int64_t src, int64_t op2, int64_t res);
+static bool overflow32(int32_t src, int32_t op2, int32_t res);
+static bool underflow64(int64_t src, int64_t op2, int64_t res);
+static bool underflow32(int32_t src, int32_t op2, int32_t res);
 
 /// Execute an arithmetic type instruction
 /// @param regIR IR for a register (arithmetic) instruction
@@ -107,4 +76,40 @@ void arithmeticRegExecute(Reg_IR regIR, Registers regs) {
     // Set destination register to the result value, accessed in either 64-bit or 32-bit mode determined by sf
     setReg(regs, regIR.rd, regIR.sf, res);
 
+}
+
+/// Determines whether signed overflow has occurred when performing a 64-bit addition
+/// @param src The value of the source register
+/// @param op2 The value of the second operand
+/// @param res Result of the addition
+/// @return Whether signed overflow has occurred
+static bool overflow64(int64_t src, int64_t op2, int64_t res) {
+    return (src > 0 && op2 > 0 && res < 0) || (src < 0 && op2 < 0 && res > 0);
+}
+
+/// Determines whether signed overflow has occurred when performing a 32-bit addition
+/// @param src The value of the source register
+/// @param op2 The value of the second operand
+/// @param res Result of the addition
+/// @return Whether signed overflow has occurred
+static bool overflow32(int32_t src, int32_t op2, int32_t res) {
+    return (src > 0 && op2 > 0 && res < 0) || (src < 0 && op2 < 0 && res > 0);
+}
+
+/// Determines whether signed underflow has occurred when performing a 64-bit subtraction
+/// @param src The value of the source register
+/// @param op2 The value of the second operand
+/// @param res Result of the subtraction
+/// @return Whether signed underflow has occurred
+static bool underflow64(int64_t src, int64_t op2, int64_t res) {
+    return (src > 0 && op2 < 0 && res < 0) || (src < 0 && op2 > 0 && res > 0);
+}
+
+/// Determines whether signed underflow has occurred when performing a 32-bit subtraction
+/// @param src The value of the source register
+/// @param op2 The value of the second operand
+/// @param res Result of the subtraction
+/// @return Whether signed underflow has occurred
+static bool underflow32(int32_t src, int32_t op2, int32_t res) {
+    return (src > 0 && op2 < 0 && res < 0) || (src < 0 && op2 > 0 && res > 0);
 }

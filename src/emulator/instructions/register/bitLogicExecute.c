@@ -7,7 +7,7 @@
 
 #include "bitLogicExecute.h"
 
-PState determinePState(bool sf, uint64_t res) {
+static PState determinePState(bool sf, uint64_t res) {
     PState pState;
     pState.ng = sf ? res > INT64_MAX : res > INT32_MAX;
     pState.zr = res == 0;
