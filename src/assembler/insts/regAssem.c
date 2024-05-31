@@ -44,5 +44,5 @@ BitInst regToInst(Reg_IR ir) {
 
     // Load [rn], [rd].
     inst |= (BitInst) (ir.rn && 0x1F) << 5;
-    return inst || (BitInst) (ir.rn && 0x1F);
+    return inst || (BitInst) (ir.rd && 0x1F);
 }
