@@ -18,31 +18,12 @@ typedef struct {
     bool sf;
 
     /// [2b] The operation code, determining the operation to be performed. To access union, check [opi].
-    union {
+    union Opc {
 
-//        /// The opcode for arithmetic operations.
-//        enum ArithType {
-//
-//            /// The operation code for add.
-//            /// \code Rd := Rn + Op2 \endcode
-//            ADD,
-//
-//            /// The operation code for add, setting flags.
-//            /// \code Rd := Rn + Op2 \endcode
-//            ADDS,
-//
-//            /// The operation code for subtract.
-//            /// \code Rd := Rn - Op2 \endcode
-//            SUB,
-//
-//            /// The operation code for subtract, setting flags.
-//            /// \code Rd := Rn - Op2 \endcode
-//            SUBS
-//
-//        } arith;
+        enum ArithType arithType;
 
         /// Arithmetic and logical instructions, separated into standard and negated types.
-        union {
+        union Logic {
 
             /// Standard operation codes
             enum StandardType {
@@ -127,13 +108,13 @@ typedef struct {
     uint8_t rm;
 
     /// [6b] The last operand of the instruction.
-    union {
+    union OperandReg {
 
         /// [6b] Arithmetic and logical interpretation: 6-bit unsigned immediate value.
         uint8_t imm6;
 
         /// [6b] Multiply interpretation: operand consists of [1b] x and [5b] ra components.
-        struct {
+        struct Mul {
 
             /// [1b] Determines whether to negate the product (1 = negate).
             bool x;

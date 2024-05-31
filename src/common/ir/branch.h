@@ -44,7 +44,7 @@
 typedef struct {
 
     /// The type of branch instruction.
-    enum {
+    enum BranchType {
 
         /// Unconditional : branch to the address encoded by literal.
         /// \code PC := PC + offset \endcode
@@ -61,7 +61,7 @@ typedef struct {
     } branchType;
 
     /// The constants for the branch instruction.
-    union {
+    union Branch {
 
         /// [26b] Used to encode the signed offset (simm26 * 4) to apply to the PC for the unconditional branch.
         Literal simm26;
@@ -70,7 +70,7 @@ typedef struct {
         uint8_t xn;
 
         /// [23b] The constants for the conditional branch instruction.
-        struct {
+        struct Conditional {
 
             /// [19b] Used to encode the signed offset (simm19 * 4) to apply to the PC for the conditional branch.
             Literal simm19;

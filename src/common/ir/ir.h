@@ -12,11 +12,13 @@
 #include "reg.h"
 #include "sdt.h"
 #include "branch.h"
+#include "ls.h"
+#include "branch.h"
 
 /// The type of instruction represented.
 typedef enum {
     IMMEDIATE,            ///< Data Processing (Immediate)
-    REGISTER,          ///< Data Processing (Register)
+    REGISTER,             ///< Data Processing (Register)
     SINGLE_DATA_TRANSFER, ///< Single Data Transfer
     LOAD_LITERAL,         ///< Load Literal
     BRANCH,               ///< Branch
@@ -24,13 +26,12 @@ typedef enum {
 
 /// The general IR wrapper for all types of assembly instructions.
 typedef struct {
-    enum IRType {
-
-    } type;
+    IRType type;
     union {
         Imm_IR imm;
         Reg_IR reg;
         SDT_IR sdt;
+        LS_IR ls;
         Branch_IR branch;
     } repr;
 } IR;
