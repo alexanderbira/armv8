@@ -1,11 +1,11 @@
 ///
-/// immediateExecute.c
+/// immediateExecuter.c
 /// Delegates execution of an immediate instruction to its specific type
 ///
 /// Created by Billy Highley on 27/05/2024.
 ///
 
-#include "immediateExecute.h"
+#include "immediateExecuter.h"
 
 /// Execute an immediate group instruction
 /// @param immIR IR for an immediate instruction
