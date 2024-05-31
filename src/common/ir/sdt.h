@@ -12,6 +12,7 @@
 #include <stdint.h>
 
 #include "../const.h"
+#include "types.h"
 
 /// Baseline mask for a Single Data Transfer (Load) instruction.
 #define SINGLE_DATA_TRANSFER_LOAD             b(1011_1000_0000_0000_0000_0000_0000_0000)
@@ -47,7 +48,7 @@
 #define SINGLE_DATA_TRANSFER_SF_S             30
 
 /// Number of bits in [rt] in a Single Data Transfer (Load) instruction.
-#define SINGLE_DATA_TRANSFER_RT_N        5
+#define SINGLE_DATA_TRANSFER_RT_N             5
 
 /// The intermediate representation of a single data transfer instruction.
 typedef struct {
@@ -61,7 +62,7 @@ typedef struct {
         SDT, ///< The single data transfer instruction type.
         LL   ///< The load literal instruction type.
 
-    } sdtType;
+    } type;
 
     /// [19b] The parameters for the single data transfer instruction group.
     union {
@@ -76,26 +77,35 @@ typedef struct {
             bool l;
 
             /// The addressing mode.
-            enum {
+            enum AddressingMode {
+                /// In the form of \code [xn] \endcode
+                /// Transfer address: \code Xn \endcode
+                ZERO_UNSIGNED_OFFSET,
 
-                /// Transfer address: \code Xn + uoffset \endcode
-                REGISTER_OFFSET,
+                /// In the form of \code [xn, #<imm>] \endcode
+                /// Transfer address: \code Xn + imm \endcode
+                UNSIGNED_OFFSET,
 
-                /// Transfer address: \code Xn + simm9 \endcode
-                /// Write-back: \code Xn + simm9 \endcode
+                /// In the form of \code [xn, #<simm>]! \endcode
+                /// Transfer address: \code Xn + simm \endcode
+                /// Write-back: \code Xn := Xn + simm \endcode
                 PRE_INDEXED,
 
+                /// In the form of \code [xn], #<simm> \encode
                 /// Transfer address: \code Xn \endcode
-                /// Write-back: \code Xn + simm9 \endcode
+                /// Write-back: \code Xn + simm \endcode
                 POST_INDEXED,
 
+                /// In the form of \code [xn, xm] \endcode
                 /// Transfer address: \code Xn + Xm \endcode
-                UNSIGNED_OFFSET
+                REGISTER_OFFSET,
 
+                /// In the form of \code <literal> \endcode
+                LITERAL,
             } addressingMode;
 
             /// [12b] Interpretation of offset (depending on addressing mode).
-            union {
+            union Offset {
 
                 /// [5b] The code for register Xm, used for the register offset addressing mode.
                 uint8_t xm;
@@ -119,10 +129,10 @@ typedef struct {
             /// [5b] The encoding of the base register.
             uint8_t xn;
 
-        } sdtType;
+        } address;
 
         /// [19b] Load literal interpretation: signed immediate value.
-        int32_t simm19;
+        Literal simm19;
 
     } sdtGroup;
 
