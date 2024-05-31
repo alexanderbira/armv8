@@ -34,13 +34,13 @@ typedef uint32_t BitInst;
 /// @example \code mask(uint8_t, 3) = 0x07 \endcode
 /// @author https://stackoverflow.com/a/28703383/
 #define mask(__TYPE__, __ONE_COUNT__) \
-    ((__TYPE__) (-((__ONE_COUNT__) != 0))) \
-    & (((__TYPE__) -1) >> ((sizeof(__TYPE__) * CHAR_BIT) - (__ONE_COUNT__)))
+    (((__TYPE__) (-((__ONE_COUNT__) != 0))) \
+    & (((__TYPE__) -1) >> ((sizeof(__TYPE__) * CHAR_BIT) - (__ONE_COUNT__))))
 
 static inline uint64_t toBinary(const char *str) {
     uint64_t result = 0;
     while (*str) {
-        if (*str == '-') {
+        if (*str == '_') {
             str++;
             continue;
         }
@@ -50,7 +50,11 @@ static inline uint64_t toBinary(const char *str) {
     return result;
 }
 
-static inline uint64_t truncate(uint64_t value, size_t numBits) {
+/// Truncates the least significant [numBits] bits of [value].
+/// @param value The value to truncate.
+/// @param numBits How many bits to preserve.
+/// @return The truncated value.
+inline uint64_t truncate(uint64_t value, size_t numBits) {
     return value & mask(uint64_t, numBits);
 }
 

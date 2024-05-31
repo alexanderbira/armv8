@@ -41,7 +41,7 @@ Imm_IR handleImmediate(TokenisedLine line) {
         char *imm = line.operands[1];
         sscanf(imm, "#%hu", &ir.operand.wideMove.imm16);
         // Check if lsl is present, and if present - get shift value.
-        if (line.parameterCount > 2) {
+        if (line.operandCount > 2) {
             char *shiftValue = split(line.operands[2], " ", &throwaway)[1];
             sscanf(shiftValue, "#%hhu", &ir.operand.wideMove.hw);
             // Assuming hw is value 0-3.
@@ -64,7 +64,7 @@ Imm_IR handleImmediate(TokenisedLine line) {
         sscanf(rn, "%*c%hhu", &ir.operand.arith.rn);
         sscanf(imm, "#%hu", &ir.operand.arith.imm12);
         // sh is 0 or 1 depending on whether lsl value is 0 or 12.
-        if (line.parameterCount > 3) {
+        if (line.operandCount > 3) {
             char *shiftValue = split(line.operands[3], " ", &throwaway)[1];
             sscanf(shiftValue, "#%hhu", &sh);
             ir.operand.arith.sh = (sh == 12);

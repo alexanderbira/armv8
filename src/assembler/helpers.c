@@ -9,6 +9,7 @@
 AssemblerState createState(void) {
     AssemblerState state;
     state.address = 0x0;
+    state.map = NULL;
     return state;
 }
 
@@ -57,19 +58,19 @@ void addMapping(AssemblerState *state, const char *label, BitData address) {
 /// Given a [label], searches for its address in the given [AssemblerState].
 /// @param state The [AssemblerState] to be modified.
 /// @param label The name of the label.
-/// @param address[out] Either a pointer to the address, or NULL if not found.
-void getMapping(AssemblerState *state, const char *label, BitData *address) {
+/// @returns Either a pointer to the address, or NULL if not found.
+BitData *getMapping(AssemblerState *state, const char *label) {
     struct LabelAddressPair *current = state->map;
 
     while (current != NULL) {
-        if (current->label == label) {
-            address = &current->address;
+        if (!strcmp(current->label, label)) {
+            return &current->address;
         }
 
         current = current->next;
     }
 
-    address = NULL;
+    return NULL;
 }
 
 /// Trims the specified ([except]) characters from the beginning and end of the given string ([str]).
@@ -137,9 +138,7 @@ TokenisedLine tokenise(const char *line) {
 
     // Find the first space in the line, separating the mnemonic from the operands.
     char *separator = strchr(lineCopy, ' ');
-    if (!separator) {
-        // TODO: Error since not valid instruction.
-    }
+    assertFatal(separator, "[tokenise] Invalid assembly instruction!");
 
     // Extract the mnemonic.
     size_t mnemonicLength = separator - trimmedLine;
@@ -165,6 +164,7 @@ TokenisedLine tokenise(const char *line) {
 /// @param literal <literal> to be parsed.
 /// @return A union representing the literal.
 Literal parseLiteral(const char *literal) {
+    // TODO: Supply range and fatal error if outside.
     if (strchr(literal, '#')) {
         uint32_t result;
         assertFatal(sscanf(literal, "#0x%" SCNx32, &result) != 1, "[parseLiteral] Unable to parse immediate!");

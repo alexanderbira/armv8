@@ -69,7 +69,7 @@ BitInst writeBranch(IR ir, AssemblerState *state) {
             result = BRANCH_UNCONDITIONAL;
             if (branch.branch.simm26.isLabel) {
                 BitData *address = NULL;
-                getMapping(state, branch.branch.simm26.data.label, address);
+                address = getMapping(state, branch.branch.simm26.data.label);
                 assertFatal(address != NULL, "[writeBranch] No mapping for label!");
                 return result | truncate(*address, BRANCH_UNCONDITIONAL_SIMM26_N);
             }
@@ -82,7 +82,7 @@ BitInst writeBranch(IR ir, AssemblerState *state) {
             result = BRANCH_CONDITIONAL;
             if (branch.branch.conditional.simm19.isLabel) {
                 BitData *address = NULL;
-                getMapping(state, branch.branch.conditional.simm19.data.label, address);
+                address = getMapping(state, branch.branch.conditional.simm19.data.label);
                 assertFatal(address != NULL, "[writeBranch] No mapping for label!");
                 result |= truncate(*address, BRANCH_CONDITIONAL_SIMM19_N);
             } else {

@@ -49,7 +49,7 @@ void destroyState(AssemblerState state);
 
 void addMapping(AssemblerState *state, const char *label, BitData address);
 
-void getMapping(AssemblerState *state, const char *label, BitData *address);
+BitData *getMapping(AssemblerState *state, const char *label);
 
 char *trim(char *str, const char *except);
 
