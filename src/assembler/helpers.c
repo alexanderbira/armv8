@@ -174,14 +174,23 @@ Literal parseLiteral(const char *literal) {
     }
 }
 
-uint8_t parseRegister(const char *name) {
+/// Parses a register and returns its binary representation and whether its 64-bit or not.
+/// @param name The register name to be parsed.
+/// @param[out] sf Whether the register is 64-bit or not.
+/// @return The binary representation of the register.
+uint8_t parseRegister(const char *name, bool *sf) {
     uint8_t result;
-    if (sscanf(name, "%*c%" SCNx8, &result) == 1) {
+    char prefix = 0;
+
+    int success = sscanf(name, "%c%" SCNx8, &prefix, &result);
+    if (success > 0) {
+        *sf = (prefix == 'x');
+    }
+
+    if (success > 1) {
         return result;
-    } else if (!strcmp(name + 1, "sp") || !strcmp(name + 1, "zr")) {
-        return 0x1F;
     } else {
-        // TODO: Throw error since invalid register name.
-        return 0;
+        assertFatal(!strcmp(name + 1, "sp") || !strcmp(name + 1, "zr"), "[parseRegister] Invalid register name!");
+        return 0x1F;
     }
 }

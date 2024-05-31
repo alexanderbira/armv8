@@ -33,7 +33,8 @@ IR parseBranch(TokenisedLine line, AssemblerState *state) {
         const Literal simm26 = parseLiteral(line.operands[0]);
         branchIR = (Branch_IR) {UNCONDITIONAL, .branch.simm26 = simm26};
     } else if (!strcmp(line.mnemonic, "br")) {
-        uint8_t xn = parseRegister(line.operands[0]);
+        bool throwaway;
+        uint8_t xn = parseRegister(line.operands[0], &throwaway);
         branchIR = (Branch_IR) {REGISTER, .branch.xn = xn};
     } else {
         // Get just the condition string.

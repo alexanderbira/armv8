@@ -59,6 +59,6 @@ TokenisedLine tokenise(const char *line);
 
 Literal parseLiteral(const char *literal);
 
-uint8_t parseRegister(const char *name);
+uint8_t parseRegister(const char *name, bool *sf);
 
 #endif //ASSEMBLER_HELPERS_H
