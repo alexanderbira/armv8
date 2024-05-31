@@ -30,7 +30,7 @@ typedef struct {
 } IREntry;
 
 /// A function which produces a binary word instruction given its intermediate representation.
-typedef BitInst (*InstructionGenerator)(IR *irObject, AssemblerState *state);
+typedef Instruction (*InstructionGenerator)(IR *irObject, AssemblerState *state);
 
 /// An entry in an [InstructionGenerator] table.
 typedef struct {

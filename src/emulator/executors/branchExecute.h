@@ -8,9 +8,9 @@
 #ifndef BRANCHEXECUTE_H
 #define BRANCHEXECUTE_H
 
-#include "../../../common/ir/ir.h"
-#include "../../system/registers.h"
-#include "../../system/memory.h"
+#include "../../common/ir/ir.h"
+#include "../system/registers.h"
+#include "../system/memory.h"
 
 void executeBranch(Branch_IR branchIr, Registers regs, Memory mem);
 

@@ -8,8 +8,8 @@
 #ifndef REGISTEREXECUTE_H
 #define REGISTEREXECUTE_H
 
-#include "../../../common/ir/ir.h"
-#include "../../system/registers.h"
+#include "../../common/ir/ir.h"
+#include "../system/registers.h"
 #include "../instructions.h"
 #include "arithmeticRegExecute.h"
 #include "bitLogicExecute.h"

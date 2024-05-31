@@ -10,9 +10,9 @@
 
 #include "../mask.h"
 #include "../instructions.h"
-#include "../../system/registers.h"
-#include "../../system/memory.h"
-#include "../../../common/ir/ir.h"
+#include "../system/registers.h"
+#include "../system/memory.h"
+#include "../../common/ir/ir.h"
 
 void arithmeticImmExecute(Imm_IR ir, Registers regs);
 

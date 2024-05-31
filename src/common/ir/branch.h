@@ -40,6 +40,27 @@
 /// Number of bits in [cond] in a Branch (Conditional) instruction.
 #define BRANCH_CONDITIONAL_COND_N     4
 
+/// Mask for a Branch (Unconditional) instruction.
+#define BRANCH_UNCONDITIONAL_M        maskl(6)
+
+/// Mask for a Branch (Register) instruction.
+#define BRANCH_REGISTER_M             maskl(22) & maskr(5)
+
+/// Mask for a Branch (Unconditional) instruction.
+#define BRANCH_CONDITIONAL_M          maskl(8) & mask(4, 4)
+
+/// Mask for [simm26] in a Branch (Unconditional) instruction.
+#define BRANCH_UNCONDITIONAL_SIMM26_M maskr(26)
+
+/// Mask for [xn] in a Branch (Register) instruction.
+#define BRANCH_REGISTER_XN_M          mask(9, 5)
+
+/// Mask for [simm26] in a Branch (Conditional) instruction.
+#define BRANCH_CONDITIONAL_SIMM19_M   mask(23, 5)
+
+/// Mask for [cond] in a Branch (Conditional) instruction.
+#define BRANCH_CONDITIONAL_COND_M     maskr(4)
+
 /// The intermediate representation of a branch instruction.
 typedef struct {
 

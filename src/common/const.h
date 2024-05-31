@@ -1,6 +1,6 @@
 ///
 /// const.h
-/// Constants for the rest of the program.
+/// Constants and helpers for the rest of the program.
 ///
 /// Created by Lancelot Liu on 26/05/2024.
 ///
@@ -21,7 +21,13 @@
 typedef uint64_t BitData;
 
 /// Alias for an instruction as a binary word.
-typedef uint32_t BitInst;
+typedef uint32_t Instruction;
+
+/// Alias for a bit-mask.
+typedef uint32_t Mask;
+
+/// Alias for a sub-component of an [Instruction].
+typedef uint32_t Component;
 
 /// Shorthand to mark an input parameter is unused. This is usually because a type signature
 /// has to be followed for a group of functions.
@@ -59,6 +65,11 @@ typedef uint32_t BitInst;
 /// @example \code truncatel(0xF, 3) = 0x7 \endcode
 #define truncater(__VALUE__, __BIT_COUNT__) __VALUE__ & maskr(__BIT_COUNT__)
 
+/// Shorthand for truncating a value according to [mask(__MSB__, __LSB__)].
+/// @example \code truncate(0xFF, 7, 4) = 0xF0 \endcode
+/// @pre 31 >= __MSB__, __LSB__ >= 0
+#define truncate(__VALUE__, __MSB__, __LSB__) __VALUE__ & mask(__MSB__, __LSB__)
+
 static inline uint64_t toBinary(const char *str) {
     uint64_t result = 0;
     while (*str) {
@@ -70,6 +81,19 @@ static inline uint64_t toBinary(const char *str) {
         result += *str++ - '0';
     }
     return result;
+}
+
+/// Applies the given mask to an instruction and returns the bits
+/// shifted so that the LSB is right-aligned to yield the component.
+/// @param word The instruction to mask.
+/// @param mask The mask to use on the instruction.
+/// @return The shifted bit pattern extracted by the mask.
+/// @example \code decompose(10111, 11100) == 00101 \endcode
+/// @authors Billy Highley and Alexander Biraben-Renard
+Component decompose(Instruction word, Mask mask) {
+    uint32_t bits = word & mask;
+    while (!(mask & 1) && (mask >>= 1)) bits >>= 1;
+    return bits;
 }
 
 #endif // COMMON_CONST_H

@@ -8,8 +8,8 @@
 #ifndef IMMEDIATEEXECUTE_H
 #define IMMEDIATEEXECUTE_H
 
-#include "../../../common/ir/ir.h"
-#include "../../system/registers.h"
+#include "../../common/ir/ir.h"
+#include "../system/registers.h"
 #include "../instructions.h"
 #include "arithmeticImmExecute.h"
 #include "wideMoveExecute.h"

@@ -95,42 +95,43 @@ IR parseImmediate(TokenisedLine *line, unused AssemblerState *state) {
 /// @param irObject The [IR] struct representing the instruction.
 /// @param state The current state of the assembler.
 /// @return 32-bit binary word of the instruction.
-BitInst translateImmediate(IR *irObject, unused AssemblerState *state) {
+Instruction translateImmediate(IR *irObject, unused AssemblerState *state) {
     assertFatal(irObject->type == IMMEDIATE, "[writeBranch] Received non-branch IR!");
     Immediate_IR *immediate = &irObject->ir.immediateIR;
-    BitInst result = IMMEDIATE_C;
+    Instruction result = IMMEDIATE_C;
 
     // Load [sf], trust since boolean.
-    result = (BitInst) immediate->sf << 31;
+    result = (Instruction) immediate->sf << 31;
 
     // Load [opc], trust value since defined in enum.
     union ImmediateOpCode *opc = &immediate->opc;
     switch (immediate->opi) {
         case IMMEDIATE_ARITHMETIC:
-            result |= (BitInst) opc->arithmeticType << IMMEDIATE_OPC_S;
+            result |= (Instruction) opc->arithmeticType << IMMEDIATE_OPC_S;
             break;
         case IMMEDIATE_WIDE_MOVE:
-            result |= (BitInst) opc->wideMoveType << IMMEDIATE_OPC_S;
+            result |= (Instruction) opc->wideMoveType << IMMEDIATE_OPC_S;
             break;
     }
 
     // Load [opi], trust value since defined in enum.
-    result |= (BitInst) immediate->opi << IMMEDIATE_OPC_S;
+    result |= (Instruction) immediate->opi << IMMEDIATE_OPC_S;
 
     // Load [operand].
     switch (immediate->opi) {
         case IMMEDIATE_ARITHMETIC : {
             struct Arithmetic *arithmetic = &immediate->operand.arithmetic;
-            result |= (BitInst) arithmetic->sh << IMMEDIATE_ARITHMETIC_SH_S; // Trust since Boolean.
-            result |= (BitInst) truncater(arithmetic->imm12, IMMEDIATE_ARITHMETIC_IMM12_N)
+            result |= (Instruction) arithmetic->sh << IMMEDIATE_ARITHMETIC_SH_S; // Trust since Boolean.
+            result |= (Instruction) truncater(arithmetic->imm12, IMMEDIATE_ARITHMETIC_IMM12_N)
                       << IMMEDIATE_ARITHMETIC_IMM12_S;
-            result |= (BitInst) truncater(arithmetic->rn, IMMEDIATE_ARITHMETIC_RN_N) << IMMEDIATE_ARITHMETIC_RN_S;
+            result |= (Instruction) truncater(arithmetic->rn, IMMEDIATE_ARITHMETIC_RN_N) << IMMEDIATE_ARITHMETIC_RN_S;
             break;
         }
         case IMMEDIATE_WIDE_MOVE : {
             struct WideMove *wideMove = &immediate->operand.wideMove;
-            result |= (BitInst) truncater(wideMove->hw, IMMEDIATE_WIDE_MOVE_HW_N) << IMMEDIATE_WIDE_MOVE_HW_S;
-            result |= (BitInst) truncater(wideMove->imm16, IMMEDIATE_WIDE_MOVE_IMM16_N) << IMMEDIATE_WIDE_MOVE_IMM16_S;
+            result |= (Instruction) truncater(wideMove->hw, IMMEDIATE_WIDE_MOVE_HW_N) << IMMEDIATE_WIDE_MOVE_HW_S;
+            result |= (Instruction) truncater(wideMove->imm16, IMMEDIATE_WIDE_MOVE_IMM16_N)
+                      << IMMEDIATE_WIDE_MOVE_IMM16_S;
             break;
         }
     }

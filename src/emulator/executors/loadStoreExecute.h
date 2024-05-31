@@ -8,9 +8,9 @@
 #ifndef LOADSTOREEXECUTE_H
 #define LOADSTOREEXECUTE_H
 
-#include "../../../common/ir/ir.h"
-#include "../../system/registers.h"
-#include "../../system/memory.h"
+#include "../../common/ir/ir.h"
+#include "../system/registers.h"
+#include "../system/memory.h"
 
 void executeLoadStore(LS_IR lsIr, Registers regs, Memory mem);
 

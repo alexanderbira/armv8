@@ -11,6 +11,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "../const.h"
 #include "types.h"
 
 /// Baseline mask for a Immediate instruction.
@@ -60,6 +61,33 @@
 
 /// Number of bits in [rd] in an Immediate instruction.
 #define IMMEDIATE_RD_N               5
+
+/// Mask for [sf] (the bit-width specifier) in an Immediate instruction.
+#define IMMEDIATE_SF_M               maskl(1)
+
+/// Mask for [opc] (operation code) in an Immediate instruction.
+#define IMMEDIATE_OPC_M              mask(30, 29)
+
+/// Mask for [opi] (data process type) in an Immediate instruction.
+#define IMMEDIATE_OPI_M              mask(25, 23)
+
+/// Mask for [rd] (destination register) in an Immediate instruction.
+#define IMMEDIATE_RD_M               mask(4, 0)
+
+/// Mask for [sh] in an Immediate (Arithmetic) instruction.
+#define IMMEDIATE_ARITHMETIC_SH_M    mask(22,22)
+
+/// Mask for [imm12] in an Immediate (Arithmetic) instruction.
+#define IMMEDIATE_ARITHMETIC_IMM12_M mask(21, 10)
+
+/// Mask for [rn] in an Immediate (Arithmetic) instruction.
+#define IMMEDIATE_ARITHMETIC_RN_M    mask(9, 5)
+
+/// Mask for [hw] in an Immediate (Wide Move) instruction.
+#define IMMEDIATE_WIDE_MOVE_HW_M     mask(22, 21)
+
+/// Mask for [imm16] in an Immediate (Wide Move) instruction.
+#define IMMEDIATE_WIDE_MOVE_IMM16_M  mask(20, 5)
 
 /// The intermediate representation of a data processing (immediate) instruction.
 typedef struct {

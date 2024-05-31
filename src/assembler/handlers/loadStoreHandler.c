@@ -53,29 +53,28 @@ IR parseLoadStore(TokenisedLine *line, unused AssemblerState *state) {
 /// @param irObject The [IR] struct representing the instruction.
 /// @param state The current state of the assembler.
 /// @return 32-bit binary word of the instruction.
-BitInst translateLoadStore(IR *irObject, AssemblerState *state) {
+Instruction translateLoadStore(IR *irObject, AssemblerState *state) {
     assertFatal(irObject->type == SINGLE_DATA_TRANSFER,
                 "[writeSingleDataTransfer] Received non-single data transfer IR!");
     LoadStore_IR *loadStore = &irObject->ir.loadStoreIR;
-    BitInst result;
+    Instruction result;
 
     switch (loadStore->type) {
         case SINGLE_DATA_TRANSFER:
             // TODO: Implement
         case LOAD_LITERAL:
-            result = SINGLE_DATA_TRANSFER_LITERAL;
-            result |= loadStore->sf << SINGLE_DATA_TRANSFER_SF_S; // Trust since boolean.
+            result = LOAD_STORE_LITERAL;
+            result |= loadStore->sf << LOAD_STORE_SF_S; // Trust since boolean.
 
             Literal *simm19 = &loadStore->data.simm19;
             if (simm19->isLabel) {
                 BitData *address = NULL;
                 address = getMapping(state, simm19->data.label);
                 assertFatal(address != NULL, "[writeBranch] No mapping for label!");
-                result |= truncater(*address, SINGLE_DATA_TRANSFER_LITERAL_SIMM19_N)
-                          << SINGLE_DATA_TRANSFER_LITERAL_SIMM19_S;
+                result |= truncater(*address, LOAD_STORE_LITERAL_SIMM19_N)
+                          << LOAD_STORE_LITERAL_SIMM19_S;
             }
-            result |= truncater(simm19->data.immediate, SINGLE_DATA_TRANSFER_LITERAL_SIMM19_N)
-                      << SINGLE_DATA_TRANSFER_LITERAL_SIMM19_S;
-            return result | truncater(loadStore->rt, SINGLE_DATA_TRANSFER_RT_N);
+            result |= truncater(simm19->data.immediate, LOAD_STORE_LITERAL_SIMM19_N) << LOAD_STORE_LITERAL_SIMM19_S;
+            return result | truncater(loadStore->rt, LOAD_STORE_RT_N);
     }
 }

@@ -8,7 +8,7 @@
 #ifndef BITWISESHIFTS_H
 #define BITWISESHIFTS_H
 
-#include "../../../common/ir/register.h"
+#include "../../common/ir/register.h"
 
 uint64_t bitShift(enum ShiftType shiftType, uint8_t operand, uint64_t rm, bool sf);
 
