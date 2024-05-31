@@ -24,4 +24,4 @@ typedef struct {
 
 Handler getParseFunction(const char *mnemonic);
 
-#endif //ASSEMBLER_INSTRUCTION_HANDLER_H
+#endif // ASSEMBLER_INSTRUCTION_HANDLER_H

@@ -178,7 +178,7 @@ Literal parseLiteral(const char *literal) {
     // TODO: Supply range and fatal error if outside.
     if (strchr(literal, '#')) {
         uint32_t result;
-        assertFatal(sscanf(literal, "#0x%" SCNx32, &result) != 1, "[parseLiteral] Unable to parse immediate!");
+        assertFatal(sscanf(literal, "#0x%" SCNx32, &result) == 1, "[parseLiteral] Unable to parse immediate!");
         return (Literal) {false, .data.immediate = result};
     } else {
         return (Literal) {true, .data.label = strdup(literal) };
@@ -194,7 +194,7 @@ uint8_t parseRegister(const char *name, bool *sf) {
     char prefix = 0;
 
     int success = sscanf(name, "%c%" SCNx8, &prefix, &result);
-    if (success > 0) {
+    if (success > 0 && sf != NULL) {
         *sf = (prefix == 'x');
     }
 

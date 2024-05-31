@@ -1,18 +1,15 @@
 ///
-/// sdt.h
-/// The intermediate representation of a Single Data Transfer instruction.
+/// loadStore.h
+/// The intermediate representation of a Load and Store instruction.
 ///
 /// Created by Alexander Biraben-Renard on 29/05/2024.
 ///
 
-#ifndef COMMON_SDT_H
-#define COMMON_SDT_H
+#ifndef IR_LOAD_STORE_H
+#define IR_LOAD_STORE_H
 
 #include <stdbool.h>
 #include <stdint.h>
-
-#include "../const.h"
-#include "types.h"
 
 /// Baseline mask for a Single Data Transfer (Load) instruction.
 #define SINGLE_DATA_TRANSFER_LOAD             b(1011_1000_0000_0000_0000_0000_0000_0000)
@@ -50,25 +47,23 @@
 /// Number of bits in [rt] in a Single Data Transfer (Load) instruction.
 #define SINGLE_DATA_TRANSFER_RT_N             5
 
-/// The intermediate representation of a single data transfer instruction.
+/// The intermediate representation of a load and store instruction.
 typedef struct {
 
     /// [1b] The bit-width of all the registers in the instruction: 0 for 32-bit, 1 for 64-bit.
     bool sf;
 
-    /// The type of the single data transfer instruction group instruction.
-    enum {
-
-        SDT, ///< The single data transfer instruction type.
-        LL   ///< The load literal instruction type.
-
+    /// The type of the load and store instruction.
+    enum LoadStoreType {
+        SINGLE_DATA_TRANSFER, ///< The single data transfer instruction type.
+        LOAD_LITERAL,         ///< The load literal instruction type.
     } type;
 
-    /// [19b] The parameters for the single data transfer instruction group.
-    union {
+    /// [19b] The constants for the load and store instruction group.
+    union LoadStoreConstants {
 
         /// [19b] Single data transfer interpretation: constants struct.
-        struct {
+        struct SingleDataTransfer {
 
             /// [1b] Determines whether addressing mode is unsigned offset (1 = unsigned offset).
             bool u;
@@ -111,7 +106,7 @@ typedef struct {
                 uint8_t xm;
 
                 /// [10b] The parameters for the pre/post indexed addressing mode.
-                struct {
+                struct PrePostIndex {
 
                     /// [9b] The signed value used for the pre/post-indexed addressing mode.
                     int16_t simm9;
@@ -129,16 +124,16 @@ typedef struct {
             /// [5b] The encoding of the base register.
             uint8_t xn;
 
-        } address;
+        } sdt;
 
         /// [19b] Load literal interpretation: signed immediate value.
         Literal simm19;
 
-    } sdtGroup;
+    } data;
 
     /// [5b] The encoding of the target register.
     uint8_t rt;
 
-} SDT_IR;
+} LoadStore_IR;
 
-#endif //COMMON_SDT_H
+#endif // IR_LOAD_STORE_H

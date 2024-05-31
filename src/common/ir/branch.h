@@ -5,8 +5,8 @@
 /// Created by Alexander Biraben-Renard on 29/05/2024.
 ///
 
-#ifndef BRANCH_H
-#define BRANCH_H
+#ifndef IR_BRANCH_H
+#define IR_BRANCH_H
 
 #include <stdint.h>
 
@@ -58,7 +58,7 @@ typedef struct {
         /// \code if cond, PC := PC + offset \endcode
         BRANCH_CONDITIONAL,
 
-    } branchType;
+    } type;
 
     /// The constants for the branch instruction.
     union Branch {
@@ -106,12 +106,12 @@ typedef struct {
                 /// Any PSTATE flags.
                 AL = 0xE
 
-            } cond;
+            } condition;
 
         } conditional;
 
-    } branch;
+    } data;
 
 } Branch_IR;
 
-#endif //BRANCH_H
+#endif // IR_BRANCH_H

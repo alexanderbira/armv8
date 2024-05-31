@@ -16,6 +16,6 @@
 
 IR parseBranch(TokenisedLine line, AssemblerState *state);
 
-BitInst writeBranch(IR ir, AssemblerState *state);
+BitInst translateBranch(IR irObject, AssemblerState *state);
 
-#endif //ASSEMBLER_BRANCH_HANDLER_H
+#endif // ASSEMBLER_BRANCH_HANDLER_H

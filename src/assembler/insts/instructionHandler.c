@@ -8,7 +8,9 @@
 #include "instructionHandler.h"
 
 static const HandlerEntry instructionHandlers[] = {
-        {"b", parseBranch}
+        { "b", parseBranch },
+        { "br", parseBranch },
+        // TODO: Enumerate possible handlers.
 };
 
 Handler getParseFunction(const char *mnemonic) {

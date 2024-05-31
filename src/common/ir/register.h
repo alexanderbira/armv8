@@ -1,15 +1,17 @@
 ///
-/// reg.h
+/// register.h
 /// The intermediate representation and functions to process a Data Processing (Register) instruction.
 ///
 /// Created by Billy Highley on 29/05/2024.
 ///
 
-#ifndef COMMON_REG_H
-#define COMMON_REG_H
+#ifndef IR_REGISTER_H
+#define IR_REGISTER_H
 
 #include <stdbool.h>
 #include <stdint.h>
+
+#include "types.h"
 
 /// The intermediate representation of a data processing (register) instruction.
 typedef struct {
@@ -18,9 +20,9 @@ typedef struct {
     bool sf;
 
     /// [2b] The operation code, determining the operation to be performed. To access union, check [opi].
-    union Opc {
+    union RegisterOpCode {
 
-        enum ArithType arithType;
+        enum ArithmeticType type;
 
         /// Arithmetic and logical instructions, separated into standard and negated types.
         union Logic {
@@ -91,7 +93,7 @@ typedef struct {
     uint8_t opr;
 
     /// Type of data processing operation. (Derived from [opr] and [M].)
-    enum RegType { ARITHMETIC, BIT_LOGIC, MULTIPLY } group;
+    enum RegisterType { ARITHMETIC, BIT_LOGIC, MULTIPLY } group;
 
     /// The type of shift to perform on Rm. (Derived from [opr].)
     enum ShiftType {
@@ -108,13 +110,13 @@ typedef struct {
     uint8_t rm;
 
     /// [6b] The last operand of the instruction.
-    union OperandReg {
+    union RegisterOperand {
 
         /// [6b] Arithmetic and logical interpretation: 6-bit unsigned immediate value.
         uint8_t imm6;
 
         /// [6b] Multiply interpretation: operand consists of [1b] x and [5b] ra components.
-        struct Mul {
+        struct Multiply {
 
             /// [1b] Determines whether to negate the product (1 = negate).
             bool x;
@@ -122,7 +124,7 @@ typedef struct {
             /// [5b] The encoding of the second operand register.
             uint8_t ra;
 
-        } mul;
+        } multiply;
 
     } operand;
 
@@ -132,6 +134,6 @@ typedef struct {
     /// [5b] The encoding of the destination register.
     uint8_t rd;
 
-} Reg_IR;
+} Register_IR;
 
-#endif //COMMON_REG_H
+#endif // IR_REGISTER_H

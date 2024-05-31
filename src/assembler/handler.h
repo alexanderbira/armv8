@@ -26,4 +26,4 @@ void handleLabel(const char *line, AssemblerState *state);
 
 IR handleInstruction(const char *line, AssemblerState *state);
 
-#endif //ASSEMBLER_HANDLER_H
+#endif // ASSEMBLER_HANDLER_H
