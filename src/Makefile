@@ -3,19 +3,23 @@ CC       ?= gcc
 CFLAGS   ?= -std=c17 -g\
 	-D_DEFAULT_SOURCE\
 	-Wall -Werror -pedantic
-CXXFLAGS ?= -Idefs/ -Iemulator/instructions/ -Iemulator/io/ -Iemulator/system
-VPATH    ?= defs/:emulator/instructions/:emulator/io/:emulator/system
+CXXFLAGS ?= -Icommon/ -Icommon/ir/ -Iemulator/instructions/ -Iemulator/io/ -Iemulator/system -Iassembler/insts -Iassembler/
+VPATH    ?= common/:common/ir/:emulator/instructions/:emulator/io/:emulator/system:assembler/insts/:assembler/
 
 .SUFFIXES: .c .o
 .PHONY: all clean
 
+COMMON_OBJS = helpers.o
+
 EMULATE_OBJS = emulate.o registers.o memory.o output.o
+
+ASSEMBLE_OBJS = classify.o proc.o immAssem.o regAssem.o sdtAssem.o
 
 all: assemble emulate
 
-assemble: assemble.o
+assemble: $(COMMON_OBJS) $(ASSEMBLE_OBJS)
 
-emulate: $(EMULATE_OBJS)
+emulate: $(COMMON_OBJS) $(EMULATE_OBJS)
 	$(CC) $(CFLAGS) -o $@ $(EMULATE_OBJS)
 
 %.o: %.c
