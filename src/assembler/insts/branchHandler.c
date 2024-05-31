@@ -1,5 +1,5 @@
 ///
-/// branchAssem.h
+/// branchHandler.h
 /// Functions to parse from assembly and write as binary a Branch instruction.
 ///
 /// Created by Lancelot Liu on 29/05/2024.
@@ -26,7 +26,7 @@ struct {
 /// @return The IR form of the branch instruction.
 /// @pre [line]'s mnemonic is at least one of "b", "br", or "b.COND".
 IR parseBranch(TokenisedLine line, AssemblerState *state) {
-    assertFatal(line.operandCount == 1, "[handleBranch] Incorrect number of operands!");
+    assertFatal(line.operandCount == 1, "[parseBranch] Incorrect number of operands!");
 
     Branch_IR branchIR;
     if (!strcmp(line.mnemonic, "b")) {
@@ -51,7 +51,7 @@ IR parseBranch(TokenisedLine line, AssemblerState *state) {
             }
         }
 
-        assertFatal(found, "[branchHandler] Invalid condition code!");
+        assertFatal(found, "[parseBranch] Invalid condition code!");
         const Literal simm19 = parseLiteral(line.operands[0]);
         branchIR = (Branch_IR) {CONDITIONAL, .branch.conditional = {simm19, condition}};
     }
