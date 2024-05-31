@@ -16,20 +16,20 @@ int main(int argc, char **argv) {
     Registers regs = &regs_s;
     Memory mem = allocMemFromFile(argv[1]);
 
-    // TODO: Execution cycle, with halt
     while (true) {
+        // Fetch the instruction pointed to by the PC
         BitData pcVal = getRegPC(regs);
-        BitData instruction = readMem(mem, 1, pcVal);
+        BitData instruction = readMem(mem, true, pcVal);
 
-        if (instruction == HALT_INSTR_C) {
-            // Halt the program
-            break;
-        }
+        // Halt the execution if the instruction is a halt
+        if (instruction == HALT_INSTR_C) break;
 
-        // decode(instruction, regs, mem);
+        // Decode and execute the instruction
+        IR ir = decode(instruction);
+        execute(ir, regs, mem);
 
-        //Increment PC as normal when no branch or jump instructions applied.
-        if (pcVal == getRegPC(regs)) incRegPC(regs);
+        //Increment PC only when no branch or jump instructions applied.
+        if (ir.type != B) incRegPC(regs);
     }
 
     // Dump contents of register and memory, then free memory.
