@@ -41,36 +41,25 @@ IR parseSingleDataTransfer(TokenisedLine line, AssemblerState *state) {
     return (IR) {SINGLE_DATA_TRANSFER, .repr.sdt = sdt};
 }
 
-BitInst writeBranch(IR ir, AssemblerState *state) {
-    assertFatal(ir.type == BRANCH, "[writeBranch] Received non-branch IR!");
-    Branch_IR branch = ir.repr.branch;
+BitInst writeSingleDataTransfer(IR ir, AssemblerState *state) {
+    assertFatal(ir.type == SINGLE_DATA_TRANSFER, "[writeSingleDataTransfer] Received non-single data transfer IR!");
+    SDT_IR sdt = ir.repr.sdt;
     BitInst result;
 
-    switch (branch.branchType) {
-        case UNCONDITIONAL:
-            result = BRANCH_UNCONDITIONAL;
-            if (branch.branch.simm26.isLabel) {
+    switch (sdt.type) {
+        case SDT:
+        case LL:
+            result = SINGLE_DATA_TRANSFER_LITERAL;
+            result |= sdt.sf << SINGLE_DATA_TRANSFER_SF_S; // Trust since boolean.
+            if (sdt.sdtGroup.simm19.isLabel) {
                 BitData *address = NULL;
-                address = getMapping(state, branch.branch.simm26.data.label);
+                address = getMapping(state, sdt.sdtGroup.simm19.data.label);
                 assertFatal(address != NULL, "[writeBranch] No mapping for label!");
-                return result | truncate(*address, BRANCH_UNCONDITIONAL_SIMM26_N);
+                result |= truncate(*address, SINGLE_DATA_TRANSFER_LITERAL_SIMM19_N)
+                        << SINGLE_DATA_TRANSFER_LITERAL_SIMM19_S;
             }
-
-            return result | truncate(branch.branch.simm26.data.immediate, BRANCH_UNCONDITIONAL_SIMM26_N);
-        case REGISTER:
-            result = BRANCH_REGISTER;
-            return result | (truncate(branch.branch.xn, BRANCH_REGISTER_XN_N) << BRANCH_REGISTER_XN_S);
-        case CONDITIONAL:
-            result = BRANCH_CONDITIONAL;
-            if (branch.branch.conditional.simm19.isLabel) {
-                BitData *address = NULL;
-                address = getMapping(state, branch.branch.conditional.simm19.data.label);
-                assertFatal(address != NULL, "[writeBranch] No mapping for label!");
-                result |= truncate(*address, BRANCH_CONDITIONAL_SIMM19_N);
-            } else {
-                result |= truncate(branch.branch.conditional.simm19.data.immediate, BRANCH_CONDITIONAL_SIMM19_N);
-            }
-
-            return result | truncate(branch.branch.conditional.cond, BRANCH_CONDITIONAL_COND_N);
+            result |= truncate(sdt.sdtGroup.simm19.data.immediate, SINGLE_DATA_TRANSFER_LITERAL_SIMM19_N)
+                    << SINGLE_DATA_TRANSFER_LITERAL_SIMM19_S;
+            return result | truncate(sdt.rt, SINGLE_DATA_TRANSFER_RT_N);
     }
 }
