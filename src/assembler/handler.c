@@ -33,6 +33,7 @@ void handleLabel(const char *line, AssemblerState *state) {
 IR handleInstruction(const char *line, AssemblerState *state) {
     TokenisedLine tokenisedLine = tokenise(line);
     IR result = getParseFunction(tokenisedLine.mnemonic)(tokenisedLine, state);
+    destroyTokenisedLine(tokenisedLine);
     state->address += 0x4;
     return result;
 }

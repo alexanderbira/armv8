@@ -142,8 +142,9 @@ TokenisedLine tokenise(const char *line) {
 
     // Extract the mnemonic.
     size_t mnemonicLength = separator - trimmedLine;
-    result.mnemonic = (char *) malloc(separator - trimmedLine + 1);
+    result.mnemonic = (char *) malloc(mnemonicLength + 1);
     strncpy(result.mnemonic, trimmedLine, mnemonicLength);
+    // *(result.mnemonic + mnemonicLength) = '\0';
 
     // Extract all the operands together.
     char *operands = separator + 1; // New variable for clarity.
@@ -162,12 +163,12 @@ TokenisedLine tokenise(const char *line) {
 
 /// Frees all memory associated with a [TokenisedLine].
 /// @param line [TokenisedLine] to be freed.
-void destroyTokenisedLine(TokenisedLine *line) {
-    free(line->mnemonic);
-    for (int i = 0; i < line->operandCount; i++) {
-        free(line->operands[i]);
+void destroyTokenisedLine(TokenisedLine line) {
+    free(line.mnemonic);
+    for (int i = 0; i < line.operandCount; i++) {
+        free(line.operands[i]);
     }
-    free(line->operands);
+    free(line.operands);
 }
 
 /// Parses a literal as either a signed immediate constant or a label.

@@ -92,4 +92,7 @@ BitInst writeBranch(IR ir, AssemblerState *state) {
 
             return result | truncate(branch.branch.conditional.cond, BRANCH_CONDITIONAL_COND_N);
     }
+
+    throwFatal("[writeBranch] Unknown type of branch instruction!");
+    return 0x0; // For the compiler.
 }
