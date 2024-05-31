@@ -10,13 +10,15 @@
 void assertFatal(bool condition, char message[]) {
     if (!condition) {
         fprintf(stderr, "%s\n", message);
-        perror("Fatal Error");
+        fprintf(stderr, "   In file %s, line %d", __FILE__, __LINE__);
+        perror("    Fatal Error");
         exit(-1);
     }
 }
 
 void throwFatal(char message[]) {
     fprintf(stderr, "%s\n", message);
-    perror("Fatal Error");
+    fprintf(stderr, "   In file %s, line %d", __FILE__, __LINE__);
+    perror("    Fatal Error");
     exit(-1);
 }

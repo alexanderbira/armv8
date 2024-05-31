@@ -34,7 +34,7 @@ void destroyState(AssemblerState state) {
 void addMapping(AssemblerState *state, const char *label, BitData address) {
     // Magic Number: 16 == sizeof(BitData) + sizeof(LabelAddressPair *)
     // I.e., the two fixed sized components of a [LabelAddressPair].
-    struct LabelAddressPair *mapping = (struct LabelAddressPair *) malloc(16 + strlen(label));
+    struct LabelAddressPair *mapping = (struct LabelAddressPair *) malloc(16 + strlen(label) + 1);
     char *copiedLabel = strdup(label);
     mapping->address = address;
     mapping->next = NULL;
@@ -93,8 +93,8 @@ char *trim(char *str, const char *except) {
 
 /// Splits the given string ([str]) into parts by the given delimiters ([delim]).
 /// @param[in, out] str Pointer to the string to be split.
-/// @param delim[in] List of delimiter(s).
-/// @param count[out] Number of pieces the incoming string was split into.
+/// @param[in] delim List of delimiter(s).
+/// @param[out] count Number of pieces the incoming string was split into.
 /// @return Pointer to the array of split strings.
 /// @attention Mutates input pointer [str].
 char **split(char *str, const char *delim, int *count) {
@@ -160,6 +160,16 @@ TokenisedLine tokenise(const char *line) {
     return result;
 }
 
+/// Frees all memory associated with a [TokenisedLine].
+/// @param line [TokenisedLine] to be freed.
+void destroyTokenisedLine(TokenisedLine *line) {
+    free(line->mnemonic);
+    for (int i = 0; i < line->operandCount; i++) {
+        free(line->operands[i]);
+    }
+    free(line->operands);
+}
+
 /// Parses a literal as either a signed immediate constant or a label.
 /// @param literal <literal> to be parsed.
 /// @return A union representing the literal.
@@ -170,7 +180,7 @@ Literal parseLiteral(const char *literal) {
         assertFatal(sscanf(literal, "#0x%" SCNx32, &result) != 1, "[parseLiteral] Unable to parse immediate!");
         return (Literal) {false, .data.immediate = result};
     } else {
-        return (Literal) {true, {strdup(literal)}};
+        return (Literal) {true, .data.label = strdup(literal) };
     }
 }
 

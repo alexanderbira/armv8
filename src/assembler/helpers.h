@@ -57,6 +57,8 @@ char **split(char *str, const char *delim, int *count);
 
 TokenisedLine tokenise(const char *line);
 
+void destroyTokenisedLine(TokenisedLine *line);
+
 Literal parseLiteral(const char *literal);
 
 uint8_t parseRegister(const char *name, bool *sf);
