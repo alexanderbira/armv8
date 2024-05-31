@@ -11,6 +11,44 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "../const.h"
+
+/// Baseline mask for a Single Data Transfer (Load) instruction.
+#define SINGLE_DATA_TRANSFER_LOAD             b(1011_1000_0000_0000_0000_0000_0000_0000)
+
+/// Number of bits to shift for [U] in a Single Data Transfer (Load) instruction.
+#define SINGLE_DATA_TRANSFER_LOAD_U_S         24
+
+/// Number of bits to shift for [L] in a Single Data Transfer (Load) instruction.
+#define SINGLE_DATA_TRANSFER_LOAD_L_S         22
+
+/// Number of bits to shift for [offset] in a Single Data Transfer (Load) instruction.
+#define SINGLE_DATA_TRANSFER_LOAD_OFFSET_S    10
+
+/// Number of bits in [offset] in a Single Data Transfer (Load) instruction.
+#define SINGLE_DATA_TRANSFER_LOAD_OFFSET_N    12
+
+/// Number of bits to shift for [xn] in a Single Data Transfer (Load) instruction.
+#define SINGLE_DATA_TRANSFER_LOAD_XN_S        5
+
+/// Number of bits in [xn] in a Single Data Transfer (Load) instruction.
+#define SINGLE_DATA_TRANSFER_LOAD_XN_N        5
+
+/// Baseline mask for a Single Data Transfer (Literal) instruction.
+#define SINGLE_DATA_TRANSFER_LITERAL          b(1101_0110_0001_1111_0000_0000_0000_0000)
+
+/// Number of bits to shift for [simm19] in a Single Data Transfer (Literal) instruction.
+#define SINGLE_DATA_TRANSFER_LITERAL_SIMM19_S 5
+
+/// Number of bits in [simm19] in a Single Data Transfer (Literal) instruction.
+#define SINGLE_DATA_TRANSFER_LITERAL_SIMM19_N 19
+
+/// Number of bits to shift for [sf] in a Single Data Transfer (Load / Literal) instruction.
+#define SINGLE_DATA_TRANSFER_SF_S             30
+
+/// Number of bits in [rt] in a Single Data Transfer (Load) instruction.
+#define SINGLE_DATA_TRANSFER_RT_N        5
+
 /// The intermediate representation of a single data transfer instruction.
 typedef struct {
 
