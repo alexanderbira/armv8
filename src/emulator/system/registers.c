@@ -35,6 +35,7 @@ Regs_s createRegs(void) {
 /// @param id The ID of the register to access.
 /// @return The value of the register, or 0 if [id] is out of range.
 BitData getReg(Registers regs, size_t id) {
+    if (id == 31) return 0; // Zero Register
     assert(id < NUM_GPRS);
     return regs->gprs[id];
 }
@@ -74,6 +75,7 @@ bool getRegState(Registers regs, PStateField field) {
 /// @param as64 Whether or not to write to the 64-bit register, i.e., X[id].
 /// @param value The value to write.
 void setReg(Registers regs, size_t id, bool as64, BitData value) {
+    if (id == 31) return; // Zero Register
     assert(id < NUM_GPRS);
     regs->gprs[id] = as64 ? value : (uint32_t) value;
 }

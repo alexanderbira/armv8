@@ -61,12 +61,12 @@ typedef struct {
 
     /// Program state register. Contains boolean flags.
     PState pstate;
-} Regs_s;
+} Registers_s;
 
 /// Type definition representing a pointer to the registers struct.
-typedef Regs_s* Registers;
+typedef Registers_s *Registers;
 
-Regs_s createRegs(void);
+Registers_s createRegs(void);
 
 BitData getReg(Registers regs, size_t id);
 

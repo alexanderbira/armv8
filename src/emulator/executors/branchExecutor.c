@@ -1,18 +1,18 @@
 ///
-/// branchExecuter.c
+/// branchExecutor.c
 /// Execute a branch instruction from its intermediate representation (IR)
 ///
 /// Created by Alexander Biraben-Renard on 31/05/2024.
 ///
 
-#include "branchExecuter.h"
+#include "branchExecutor.h"
 
 /// Execute a branch instruction from its intermediate representation
 /// @param ir The IR of the instruction to execute
 /// @param regs A pointer to the registers
 /// @param mem A pointer to the memory
 void executeBranch(IR *irObject, Registers regs, Memory mem) {
-    assertFatal(irObject->type == IMMEDIATE,
+    assertFatal(irObject->type == BRANCH,
                 "[executeImmediate] Received non-immediate instruction!");
     Branch_IR *branchIR = &irObject->ir.branchIR;
 
@@ -20,7 +20,7 @@ void executeBranch(IR *irObject, Registers regs, Memory mem) {
         case BRANCH_UNCONDITIONAL:
             {
                 // Get the address offset
-                uint64_t simm26 = branchIR->data.simm26.data.immediate;
+                int64_t simm26 = branchIR->data.simm26.data.immediate;
                 int64_t offset = (simm26 << 32) >> 32; // Sign-extend the address offset (64 - 32 = 32)
 
                 int64_t pcVal = getRegPC(regs);
@@ -39,7 +39,7 @@ void executeBranch(IR *irObject, Registers regs, Memory mem) {
         case BRANCH_CONDITIONAL:
             {
                 // Get the address offset
-                uint64_t simm19 = branchIR->data.conditional.simm19.data.immediate;
+                int64_t simm19 = branchIR->data.conditional.simm19.data.immediate;
                 int64_t offset = (simm19 << 32) >> 32; // Sign-extend the address offset (64 - 32 = 32)
 
                 int64_t pcVal = getRegPC(regs);

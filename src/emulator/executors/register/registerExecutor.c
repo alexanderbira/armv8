@@ -11,8 +11,8 @@
 /// @param regIR IR for a register instruction
 /// @param regs Pointer to registers
 void executeRegister(IR *irObject, Registers regs, unused Memory mem) {
-    assertFatal(irObject->type == IMMEDIATE,
-                "[executeImmediate] Received non-immediate instruction!");
+    assertFatal(irObject->type == REGISTER,
+                "[executeImmediate] Received non-register instruction!");
     Register_IR *registerIR = &irObject->ir.registerIR;
 
     switch (registerIR->group) {

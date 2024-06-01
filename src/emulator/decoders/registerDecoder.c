@@ -6,8 +6,6 @@
 ///
 
 #include "registerDecoder.h"
-#include <stdio.h>
-#include <stdlib.h>
 
 /// Decode a register group instruction to its IR
 /// @param word The instruction to decode
@@ -58,7 +56,7 @@ IR decodeRegister(Instruction word) {
 
     // Set operand constituents depending on whether the instruction is multiply type (M = 1) or not (M = 0).
     (registerIR.M) ?
-    (registerIR.operand.multiply.x = op >> 5, registerIR.operand.multiply.ra = op & ((1 << 6) - 1)) :
+    (registerIR.operand.multiply.x = op >> 5, registerIR.operand.multiply.ra = op & ((1 << 5) - 1)) :
     (registerIR.operand.imm6 = op);
 
     return (IR) {.type = REGISTER, .ir.registerIR = registerIR};

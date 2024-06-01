@@ -32,7 +32,9 @@ void arithmeticRegisterExecute(Register_IR *registerIR, Registers regs) {
                    (uint32_t) getReg(regs, registerIR->rn);
 
     // Op2 is rm shifted by operand many bits by the encoded shift
-    uint64_t op2 = bitShift(registerIR->shift, operand, rm, registerIR->sf);
+    uint64_t op2 = registerIR->sf ?
+                   bitShift(registerIR->shift, operand, rm, registerIR->sf) :
+                   (uint32_t) bitShift(registerIR->shift, operand, rm, registerIR->sf);
 
     // Initialise result value
     uint64_t res;
@@ -45,7 +47,7 @@ void arithmeticRegisterExecute(Register_IR *registerIR, Registers regs) {
         case ADDS:
             // Add (and set flags)
             res = src + op2;
-            pState.ng = registerIR->sf ? res > INT64_MAX : res > INT32_MAX;
+            pState.ng = registerIR->sf ? res > INT64_MAX : (uint32_t) res > INT32_MAX;
             pState.zr = res == 0;
             pState.cr = registerIR->sf ? op2 > UINT64_MAX - src : op2 > UINT32_MAX - src;
             pState.ov = registerIR->sf ? overflow64(src, op2, res) : overflow32(src, op2, res);
@@ -57,9 +59,9 @@ void arithmeticRegisterExecute(Register_IR *registerIR, Registers regs) {
         case SUBS:
             // Subtract (and set flags)
             res = src - op2;
-            pState.ng = registerIR->sf ? res > INT64_MAX : res > INT32_MAX;
+            pState.ng = registerIR->sf ? res > INT64_MAX : (uint32_t) res > INT32_MAX;
             pState.zr = res == 0;
-            pState.cr = op2 > src;
+            pState.cr = op2 <= src;
             pState.ov = registerIR->sf ? underflow64(src, op2, res) : underflow32(src, op2, res);
             setRegStates(regs, pState);
             break;

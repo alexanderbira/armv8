@@ -1,5 +1,5 @@
 ///
-/// branchExecuter.h
+/// branchExecutor.h
 /// Execute a branch instruction from its intermediate representation (IR)
 ///
 /// Created by Alexander Biraben-Renard on 31/05/2024.

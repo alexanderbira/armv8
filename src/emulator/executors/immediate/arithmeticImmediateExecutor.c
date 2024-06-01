@@ -41,7 +41,7 @@ void arithmeticExecute(Immediate_IR *immediateIR, Registers regs) {
         case ADDS: {
             res = src + op2;
             PState pState;
-            pState.ng = immediateIR->sf ? res > INT64_MAX : res > INT32_MAX;
+            pState.ng = immediateIR->sf ? res > INT64_MAX : (uint32_t) res > INT32_MAX;
             pState.zr = res == 0;
             pState.cr = immediateIR->sf ? op2 > UINT64_MAX - src : op2 > UINT32_MAX - src;
             pState.ov = immediateIR->sf ? overflow64(src, op2, res) : overflow32(src, op2, res);
@@ -59,9 +59,9 @@ void arithmeticExecute(Immediate_IR *immediateIR, Registers regs) {
         case SUBS: {
             res = src - op2;
             PState pState;
-            pState.ng = immediateIR->sf ? res > INT64_MAX : res > INT32_MAX;
+            pState.ng = immediateIR->sf ? res > INT64_MAX : (uint32_t) res > INT32_MAX;
             pState.zr = res == 0;
-            pState.cr = op2 > src;
+            pState.cr = op2 <= src;
             pState.ov = immediateIR->sf ? underflow64(src, op2, res) : underflow32(src, op2, res);
             setRegStates(regs, pState);
             break;

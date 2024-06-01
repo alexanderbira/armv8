@@ -18,7 +18,7 @@
 #include "executors/immediate/immediateExecutor.h"
 #include "executors/register/registerExecutor.h"
 #include "executors/loadStoreExecutor.h"
-#include "executors/branchExecuter.h"
+#include "executors/branchExecutor.h"
 #include "system/memory.h"
 #include "system/registers.h"
 

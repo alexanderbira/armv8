@@ -12,12 +12,12 @@
 /// @param regs A pointer to the registers
 /// @param mem A pointer to the memory
 void executeLoadStore(IR *irObject, Registers regs, Memory mem) {
-    assertFatal(irObject->type == IMMEDIATE,
+    assertFatal(irObject->type == LOAD_STORE,
                 "[executeImmediate] Received non-immediate instruction!");
     LoadStore_IR *loadStoreIR = &irObject->ir.loadStoreIR;
 
     // Initialise the transfer address
-    int64_t transferAddress;
+    int64_t transferAddress = getReg(regs, loadStoreIR->data.sdt.xn);
 
     // Initialise write-back information
     bool writeBack = false;
@@ -42,8 +42,7 @@ void executeLoadStore(IR *irObject, Registers regs, Memory mem) {
                     break;
                 case PRE_INDEXED:
                     writeBack = true;
-
-                    uint64_t simm9Pre = loadStoreIR->data.sdt.offset.prePostIndex.simm9;
+                    int64_t simm9Pre = loadStoreIR->data.sdt.offset.prePostIndex.simm9;
                     // Sign-extend simm9 from 16 to 64 bits (48 = 64-16)
                     transferAddress += (simm9Pre << 48) >> 48;
 
@@ -52,7 +51,7 @@ void executeLoadStore(IR *irObject, Registers regs, Memory mem) {
                 case POST_INDEXED:
                     writeBack = true;
 
-                    uint64_t simm9Post = loadStoreIR->data.sdt.offset.prePostIndex.simm9;
+                    int64_t simm9Post = loadStoreIR->data.sdt.offset.prePostIndex.simm9;
                     // Sign-extend simm9 from 16 to 64 bits (48 = 64-16)
                     writeBackValue = transferAddress + ((simm9Post << 48) >> 48);
                     break;
@@ -62,7 +61,6 @@ void executeLoadStore(IR *irObject, Registers regs, Memory mem) {
                                        loadStoreIR->data.sdt.offset.uoffset * 4;
                     break;
                     // TODO: Do these... exist?
-                case ZERO_UNSIGNED_OFFSET:
                 case LITERAL:
                     throwFatal("[executeLoadStore] Not implemented!");
             }
@@ -71,7 +69,7 @@ void executeLoadStore(IR *irObject, Registers regs, Memory mem) {
         case LOAD_LITERAL:
             transferAddress = getRegPC(regs);
 
-            uint64_t simm19 = loadStoreIR->data.simm19.data.immediate;
+            int64_t simm19 = loadStoreIR->data.simm19.data.immediate;
             // Sign-extend simm19 from 32 to 64 bits (32 = 64-32)
             int64_t simm19Extended = (simm19 << 32) >> 32;
 
@@ -80,11 +78,11 @@ void executeLoadStore(IR *irObject, Registers regs, Memory mem) {
     }
 
     if (isLoad) {
-        BitData bitsToLoad = getReg(regs, loadStoreIR->rt);
-        writeMem(mem, loadStoreIR->sf, transferAddress, bitsToLoad);
-    } else {
         BitData bitsToStore = readMem(mem, loadStoreIR->sf, transferAddress);
         setReg(regs, loadStoreIR->rt, loadStoreIR->sf, bitsToStore);
+    } else {
+        BitData bitsToLoad = getReg(regs, loadStoreIR->rt);
+        writeMem(mem, loadStoreIR->sf, transferAddress, bitsToLoad);
     }
 
     if (writeBack) {
