@@ -38,7 +38,7 @@ void executeLoadStore(IR *irObject, Registers regs, Memory mem) {
             // Switch over the addressing modes
             switch (loadStoreIR->data.sdt.addressingMode) {
                 case REGISTER_OFFSET:
-                    transferAddress += getReg(regs, loadStoreIR->lsConsts.sdt.offset.xm);
+                    transferAddress += getReg(regs, loadStoreIR->data.sdt.offset.xm);
                     break;
                 case PRE_INDEXED:
                     writeBack = true;
@@ -61,9 +61,10 @@ void executeLoadStore(IR *irObject, Registers regs, Memory mem) {
                                        loadStoreIR->data.sdt.offset.uoffset * 8 :
                                        loadStoreIR->data.sdt.offset.uoffset * 4;
                     break;
+                    // TODO: Do these... exist?
                 case ZERO_UNSIGNED_OFFSET:
                 case LITERAL:
-                    // TODO: Do these... exist?
+                    throwFatal("[executeLoadStore] Not implemented!");
             }
 
             break;

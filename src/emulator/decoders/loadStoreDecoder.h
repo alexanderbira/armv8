@@ -8,6 +8,9 @@
 #ifndef EMULATOR_LOAD_STORE_DECODER_H
 #define EMULATOR_LOAD_STORE_DECODER_H
 
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "../../common/const.h"
 #include "../../common/error.h"
 #include "../../common/ir/ir.h"

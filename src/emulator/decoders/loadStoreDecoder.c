@@ -6,8 +6,6 @@
 ///
 
 #include "loadStoreDecoder.h"
-#include <stdio.h>
-#include <stdlib.h>
 
 /// Decode a load and store-group instruction to its IR
 /// @param word The instruction to decode

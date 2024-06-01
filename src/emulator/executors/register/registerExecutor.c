@@ -17,10 +17,13 @@ void executeRegister(IR *irObject, Registers regs, unused Memory mem) {
 
     switch (registerIR->group) {
         case ARITHMETIC:
-            return arithmeticRegExecute(registerIR, regs);
+            arithmeticRegisterExecute(registerIR, regs);
+            break;
         case BIT_LOGIC:
-            return bitLogicExecute(registerIR, regs);
+            bitLogicExecute(registerIR, regs);
+            break;
         case MULTIPLY:
-            return multiplyExecute(registerIR, regs);
+            multiplyExecute(registerIR, regs);
+            break;
     }
 }

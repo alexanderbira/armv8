@@ -13,7 +13,7 @@
 /// @param rm The register value encoded by rm
 /// @param sf Whether to consider rm as a 64-bit or 32-bit value
 /// @return The op2 value
-static uint64_t bitShift(enum ShiftType shiftType, uint8_t operand, uint64_t rm, bool sf) {
+uint64_t bitShift(enum ShiftType shiftType, uint8_t operand, uint64_t rm, bool sf) {
     switch (shiftType) {
         case LSL:
             return (sf ? rm : (uint32_t) rm) << operand;

@@ -5,8 +5,6 @@
 /// Created by Lancelot Liu on 30/05/2024.
 ///
 
-#include <stdnoreturn.h>
-
 #include "error.h"
 
 /// Assert a condition, pretty-printing and error and exiting if it is not met.

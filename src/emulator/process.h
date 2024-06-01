@@ -15,6 +15,10 @@
 #include "decoders/registerDecoder.h"
 #include "decoders/loadStoreDecoder.h"
 #include "decoders/branchDecoder.h"
+#include "executors/immediate/immediateExecutor.h"
+#include "executors/register/registerExecutor.h"
+#include "executors/loadStoreExecutor.h"
+#include "executors/branchExecuter.h"
 #include "system/memory.h"
 #include "system/registers.h"
 
@@ -45,7 +49,7 @@
 /// The code for op0 of a Branch binary instruction.
 #define OP0_BRANCH_C     b(1010)
 
-typedef Instruction (*IRExecutor)(IR *irObject, Registers regs, Memory mem);
+typedef void (*IRExecutor)(IR *irObject, Registers regs, Memory mem);
 
 typedef IR (*BinaryParser)(Instruction instruction);
 

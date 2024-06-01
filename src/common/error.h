@@ -11,9 +11,10 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdnoreturn.h>
 
 void assertFatal(bool condition, char message[]);
 
-void throwFatal(char message[]);
+noreturn void throwFatal(char message[]);
 
 #endif // COMMON_ERROR_H

@@ -8,6 +8,7 @@
 #ifndef EMULATOR_IMMEDIATE_EXECUTOR_H
 #define EMULATOR_IMMEDIATE_EXECUTOR_H
 
+#include "../../../common/const.h"
 #include "../../../common/error.h"
 #include "../../../common/ir/ir.h"
 #include "../../system/memory.h"
@@ -15,6 +16,6 @@
 #include "arithmeticImmediateExecutor.h"
 #include "wideMoveExecutor.h"
 
-void executeImmediate(IR *irObject, Registers regs);
+void executeImmediate(IR *irObject, Registers regs, unused Memory mem);
 
 #endif // EMULATOR_IMMEDIATE_EXECUTOR_H

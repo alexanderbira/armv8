@@ -3,28 +3,55 @@ CC       ?= gcc
 CFLAGS   ?= -std=c17 -g\
 	-D_DEFAULT_SOURCE\
 	-Wall -Werror -pedantic
-CXXFLAGS ?= -Icommon/ -Icommon/ir/ -Iemulator/instructions/ -Iemulator/io/ -Iemulator/system -Iassembler/insts -Iassembler/
-VPATH    ?= common/:common/ir/:emulator/instructions/:emulator/io/:emulator/system:assembler/insts/:assembler/
+CXXFLAGS ?= -Icommon/ -Icommon/ir\
+ 	-Iemulator/decoders/ -Iemulator/executors/ -Iemulator/executors/immediate -Iemulator/executors/register\
+ 	-Iemulator/system -Iemulator\
+ 	-Iassembler/ -Iassembler/handlers/
+
+SRC_DIR = .
+OBJ_DIR = obj
+BIN_DIR = bin
 
 .SUFFIXES: .c .o
 .PHONY: all clean
 
-COMMON_OBJS = helpers.o error.o
+# Find all source files
+EMULATOR_SRC_FILES = $(wildcard $(SRC_DIR)/emulator/*.c) \
+	$(wildcard $(SRC_DIR)/emulator/decoders/*.c) \
+	$(wildcard $(SRC_DIR)/emulator/executors/*.c) \
+	$(wildcard $(SRC_DIR)/emulator/executors/immediate/*.c) \
+	$(wildcard $(SRC_DIR)/emulator/executors/register/*.c) \
+	$(wildcard $(SRC_DIR)/emulator/system/*.c) \
+	$(wildcard $(SRC_DIR)/common/*.c)\
+	$(wildcard $(SRC_DIR)/emulate.c)
 
-EMULATE_OBJS = emulate.o registers.o memory.o output.o
+ASSEMBLER_SRC_FILES = $(wildcard $(SRC_DIR)/assembler/**/*.c) \
+	$(wildcard $(SRC_DIR)/common/*.c)
 
-ASSEMBLE_OBJS = helpers.o handler.o instructionHandler.o immediateHandler.o branchHandler.o
+# Object files list
+EMULATOR_OBJ_FILES = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(EMULATOR_SRC_FILES))
+ASSEMBLER_OBJ_FILES = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(ASSEMBLER_SRC_FILES))
 
-all: assemble emulate
+# Targets
+EMULATOR_TARGET = $(BIN_DIR)/emulate
+ASSEMBLER_TARGET = $(BIN_DIR)/assemble
 
-assemble: $(COMMON_OBJS) $(ASSEMBLE_OBJS)
+all: $(EMULATOR_TARGET) $(ASSEMBLER_TARGET)
 
-emulate: $(COMMON_OBJS) $(EMULATE_OBJS)
-	$(CC) $(CFLAGS) -o $@ $(EMULATE_OBJS)
+# Link emulator target
+$(EMULATOR_TARGET): $(EMULATOR_OBJ_FILES)
+	@mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS) -o $@ $^
 
-%.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+# Link assembler target
+$(ASSEMBLER_TARGET): $(ASSEMBLER_OBJ_FILES)
+	@mkdir -p $(BIN_DIR)
+	$(CC) $(CFLAGS) -o $@ $^
+
+# Compile rules for all .c files
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	$(RM) *.o assemble emulate
-	
+	$(RM) -r $(OBJ_DIR) $(BIN_DIR)

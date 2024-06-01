@@ -61,15 +61,6 @@ typedef uint32_t Component;
 /// @pre 31 >= __MSB__, __LSB__ >= 0
 #define mask(__MSB__, __LSB__) maskl(8 * sizeof(uint32_t) - __LSB__) & maskr(__MSB__ + 1)
 
-/// Shorthand for truncating a value to just [__BIT_COUNT__] of its least significant bits.
-/// @example \code truncatel(0xF, 3) = 0x7 \endcode
-#define truncater(__VALUE__, __BIT_COUNT__) __VALUE__ & maskr(__BIT_COUNT__)
-
-/// Shorthand for truncating a value according to [mask(__MSB__, __LSB__)].
-/// @example \code truncate(0xFF, 7, 4) = 0xF0 \endcode
-/// @pre 31 >= __MSB__, __LSB__ >= 0
-#define truncate(__VALUE__, __MSB__, __LSB__) __VALUE__ & mask(__MSB__, __LSB__)
-
 static inline uint64_t toBinary(const char *str) {
     uint64_t result = 0;
     while (*str) {
@@ -90,7 +81,9 @@ static inline uint64_t toBinary(const char *str) {
 /// @return The shifted bit pattern extracted by the mask.
 /// @example \code decompose(10111, 11100) == 00101 \endcode
 /// @authors Billy Highley and Alexander Biraben-Renard
-Component decompose(Instruction word, Mask mask) {
+#define decompose(__WORD__, __MASK__) decompose(__WORD__, __MASK__)
+
+static inline Component decompose(Instruction word, Mask mask) {
     uint32_t bits = word & mask;
     while (!(mask & 1) && (mask >>= 1)) bits >>= 1;
     return bits;
