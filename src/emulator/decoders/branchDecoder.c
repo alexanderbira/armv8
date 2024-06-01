@@ -11,11 +11,12 @@
 /// @param word The instruction to decode
 /// @return The IR of word
 IR decodeBranch(Instruction word) {
+
     Branch_IR branchIR;
 
     if ((word & BRANCH_UNCONDITIONAL_M) == BRANCH_UNCONDITIONAL_C) {
         // Get the 26-bit offset as a 32-bit unsigned integer
-        uint32_t simm26 = decompose(word, BRANCH_UNCONDITIONAL_SIMM26_M);
+        int32_t simm26 = decompose(word, BRANCH_UNCONDITIONAL_SIMM26_M);
         simm26 = (simm26 << 6) >> 6; // Sign-extend the address offset (32 - 26 = 6)
 
         branchIR = (Branch_IR) {.type = BRANCH_UNCONDITIONAL, .data.simm26.data.immediate = simm26};
@@ -25,8 +26,8 @@ IR decodeBranch(Instruction word) {
         struct Conditional conditional;
 
         // Get the 19-bit offset as a 32-bit unsigned integer
-        uint32_t simm19 = decompose(word, BRANCH_CONDITIONAL_SIMM19_M);
-        simm19 = (simm19 << 13) >> 13; // Sign-extend the address offset (32 - 19 = 13)
+        int32_t simm19 = decompose(word, BRANCH_CONDITIONAL_SIMM19_M);
+        conditional.simm19.data.immediate = (simm19 << 13) >> 13; // Sign-extend the address offset (32 - 19 = 13)
 
         // Get the condition code from the instruction and check if it's valid
         uint8_t condition = decompose(word, BRANCH_CONDITIONAL_COND_M);
@@ -46,7 +47,7 @@ IR decodeBranch(Instruction word) {
 
         branchIR = (Branch_IR) {
                 .type = BRANCH_CONDITIONAL,
-                .data.conditional = (struct Conditional) {.simm19.data.immediate = simm19, .condition = condition}
+                .data.conditional = conditional
         };
     } else {
         throwFatal("[decodeBranch] Invalid instruction format!");
