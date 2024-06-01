@@ -35,6 +35,7 @@ Regs_s createRegs(void) {
 /// @param id The ID of the register to access.
 /// @return The value of the register, or 0 if [id] is out of range.
 BitData getReg(Registers regs, size_t id) {
+    if (id == 31) return 0; // Zero Register
     assert(id < NUM_GPRS);
     return regs->gprs[id];
 }
