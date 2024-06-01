@@ -2,7 +2,7 @@ CC       ?= gcc
 # No -D_POSIX_SOURCE as that interferes with MAP_ANONYMOUS in <sys/mman.h>!
 CFLAGS   ?= -std=c17 -g\
 	-D_DEFAULT_SOURCE\
-	-Wall -Werror -pedantic
+	-Wall -Werror -Wextra -Wpedantic
 CXXFLAGS ?= -Icommon/ -Icommon/ir\
  	-Iemulator/decoders/ -Iemulator/executors/ -Iemulator/executors/immediate -Iemulator/executors/register\
  	-Iemulator/system -Iemulator\
@@ -21,11 +21,14 @@ EMULATOR_SRC_FILES = $(wildcard $(SRC_DIR)/emulator/*.c) \
 	$(wildcard $(SRC_DIR)/emulator/executors/immediate/*.c) \
 	$(wildcard $(SRC_DIR)/emulator/executors/register/*.c) \
 	$(wildcard $(SRC_DIR)/emulator/system/*.c) \
-	$(wildcard $(SRC_DIR)/common/*.c)\
+	$(wildcard $(SRC_DIR)/common/*.c) \
 	$(wildcard $(SRC_DIR)/emulate.c)
 
-ASSEMBLER_SRC_FILES = $(wildcard $(SRC_DIR)/assembler/**/*.c) \
-	$(wildcard $(SRC_DIR)/common/*.c)
+ASSEMBLER_SRC_FILES = $(wildcard $(SRC_DIR)/assembler/*.c) \
+	$(wildcard $(SRC_DIR)/assembler/*.c) \
+	$(wildcard $(SRC_DIR)/assembler/handlers/*.c) \
+	$(wildcard $(SRC_DIR)/common/*.c) \
+    $(wildcard $(SRC_DIR)/assemble.c)
 
 # Object files list
 EMULATOR_OBJ_FILES = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(EMULATOR_SRC_FILES))

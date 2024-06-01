@@ -18,6 +18,6 @@
 
 IR parseBranch(TokenisedLine *line, unused AssemblerState *state);
 
-BitInst translateBranch(IR *irObject, AssemblerState *state);
+Instruction translateBranch(IR *irObject, AssemblerState *state);
 
 #endif // ASSEMBLER_BRANCH_HANDLER_H

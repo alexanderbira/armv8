@@ -31,6 +31,11 @@ IR parseLoadStore(TokenisedLine *line, unused AssemblerState *state) {
         uint8_t destination;
 
         // TODO: Finish parsing the offset.
+        // Dummy initialisations to proceed with debug of warnings.
+        u = false;
+        mode = ZERO_UNSIGNED_OFFSET;
+        offset.xm = 0;
+        destination = 0;
 
         loadStoreIR = (LoadStore_IR) {
                 .sf = sf,

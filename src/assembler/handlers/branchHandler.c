@@ -18,7 +18,7 @@ struct {
         { "gt", GT },
         { "le", LE },
         { "al", AL },
-        { NULL },
+        {NULL, AL},
 };
 
 /// Translates an assembly branch instruction into its IR form.

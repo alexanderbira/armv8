@@ -59,7 +59,11 @@ typedef uint32_t Component;
 /// @example \code mask(3, 1) = 0xE \endcode \code mask(31, 29) = 0xe0000000 \endcode
 /// @warning Produces [uint32_t]!
 /// @pre 31 >= __MSB__, __LSB__ >= 0
-#define mask(__MSB__, __LSB__) maskl(8 * sizeof(uint32_t) - __LSB__) & maskr(__MSB__ + 1)
+#define mask(__MSB__, __LSB__) (maskl(8 * sizeof(uint32_t) - __LSB__) & maskr(__MSB__ + 1))
+
+/// Shorthand for truncating a value to just [__BIT_COUNT__] of its least significant bits.
+/// @example \code truncatel(0xF, 3) = 0x7 \endcode
+#define truncater(__VALUE__, __BIT_COUNT__) (__VALUE__ & maskr(__BIT_COUNT__))
 
 static inline uint64_t toBinary(const char *str) {
     uint64_t result = 0;

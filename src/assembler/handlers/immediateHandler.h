@@ -21,6 +21,6 @@
 
 IR parseImmediate(TokenisedLine *line, unused AssemblerState *state);
 
-BitInst translateImmediate(IR *irObject, unused AssemblerState *state);
+Instruction translateImmediate(IR *irObject, unused AssemblerState *state);
 
 #endif // ASSEMBLER_IMMEDIATE_HANDLER_H

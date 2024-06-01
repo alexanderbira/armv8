@@ -24,7 +24,7 @@ static const InstructionEntry translationHandlers[] = {
 /// @param mnemonic The mnemonic to search for.
 /// @return Either the corresponding [IRGenerator], or NULL if none was found.
 IRGenerator getParseFunction(const char *mnemonic) {
-    for (int i = 0; i < sizeof(instructionHandlers) / sizeof(IREntry); i++) {
+    for (int i = 0; i < (int) (sizeof(instructionHandlers) / sizeof(IREntry)); i++) {
         if (!strcmp(instructionHandlers[i].mnemonic, mnemonic)) {
             return instructionHandlers[i].handler;
         }
@@ -37,7 +37,7 @@ IRGenerator getParseFunction(const char *mnemonic) {
 /// @param type The type to search for.
 /// @return Either the corresponding [InstructionGenerator], or NULL if none was found.
 InstructionGenerator getTranslateFunction(IRType type) {
-    for (int i = 0; i < sizeof(translationHandlers) / sizeof(InstructionEntry); i++) {
+    for (int i = 0; i < (int) (sizeof(translationHandlers) / sizeof(InstructionEntry)); i++) {
         if (translationHandlers[i].type == type) {
             return translationHandlers[i].handler;
         }

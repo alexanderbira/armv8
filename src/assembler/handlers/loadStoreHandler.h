@@ -18,6 +18,6 @@
 
 IR parseLoadStore(TokenisedLine *line, unused AssemblerState *state);
 
-BitInst translateLoadStore(IR *irObject, AssemblerState *state);
+Instruction translateLoadStore(IR *irObject, AssemblerState *state);
 
 #endif // ASSEMBLER_LOAD_STORE_H
