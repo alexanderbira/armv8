@@ -24,35 +24,38 @@ IR decodeLoadStore(Instruction word) {
                 .xn = decompose(word, LOAD_STORE_DATA_XN_M),
         };
 
+        Component offsetComponent = decompose(word, LOAD_STORE_DATA_OFFSET_M);
+
         union Offset offset;
         if (data.u == 1) {
             // Unsigned offset addressing mode
             data.addressingMode = UNSIGNED_OFFSET;
-            offset.uoffset = decompose(word, LOAD_STORE_DATA_OFFSET_M);
-        } else if ((word & LOAD_STORE_DATA_OFFSET_REGISTER_M) == LOAD_STORE_DATA_OFFSET_REGISTER_C) {
+            offset.uoffset = offsetComponent;
+        } else if ((offsetComponent & LOAD_STORE_DATA_OFFSET_REGISTER_M) == LOAD_STORE_DATA_OFFSET_REGISTER_C) {
             // Register offset addressing mode
             data.addressingMode = REGISTER_OFFSET;
             offset.xm = decompose(word, LOAD_STORE_DATA_XM_REGISTER_M);
-        } else if ((word & LOAD_STORE_DATA_OFFSET_INDEXED_M) == LOAD_STORE_DATA_OFFSET_INDEXED_C) {
+        } else if ((offsetComponent & LOAD_STORE_DATA_OFFSET_INDEXED_M) == LOAD_STORE_DATA_OFFSET_INDEXED_C) {
             // Pre/post-index addressing mode
             struct PrePostIndex prePostIndex;
 
             // Get the 9-bit address offset as a 16-bit unsigned integer
-            uint16_t simm9 = decompose(word, LOAD_STORE_DATA_SIMM9_INDEXED_M);
-            prePostIndex.simm9 = (simm9 << 7) >> 7; // Sign-extend the address offset (16 - 9 = 7)
+            int16_t simm9 = decompose(word, LOAD_STORE_DATA_SIMM9_INDEXED_M);
+            prePostIndex.simm9 = (int16_t) (simm9 << 7) >> 7; // Sign-extend the address offset (16 - 9 = 7)
             prePostIndex.i = decompose(word, LOAD_STORE_DATA_I_INDEXED_M);
+            offset.prePostIndex = prePostIndex;
             data.addressingMode = (prePostIndex.i == 1) ? PRE_INDEXED : POST_INDEXED;
         } else {
             // Invalid addressing mode
-            fprintf(stderr, "Invalid addressing mode");
-            exit(-1);
+            throwFatal("[decodeLoadStore] Invalid addressing mode!");
         }
 
+        data.offset = offset;
         // Save the SDT to the IR
         loadStoreIR.data.sdt = data;
     } else if ((word & LOAD_STORE_LITERAL_M) == LOAD_STORE_LITERAL) {
         // Get the 19-bit offset as a 32-bit unsigned integer
-        uint32_t offset = decompose(word, LOAD_STORE_LITERAL_SIMM19_M);
+        int32_t offset = decompose(word, LOAD_STORE_LITERAL_SIMM19_M);
         offset = (offset << 13) >> 13; // Sign-extend the offset (32 - 19 = 13)
 
         loadStoreIR.type = LOAD_LITERAL;
