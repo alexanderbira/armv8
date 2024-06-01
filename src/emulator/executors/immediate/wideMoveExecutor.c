@@ -40,7 +40,7 @@ void wideMoveExecute(Immediate_IR *immediateIR, Registers regs) {
 
         // Move wide with keep
         case MOVK: {
-            res = op + dest & ~(UINT16_MAX << (operand->hw * 16));
+            res = op + (dest & ~(UINT16_MAX << (operand->hw * 16)));
             break;
         }
 
