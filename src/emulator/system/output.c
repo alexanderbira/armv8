@@ -24,9 +24,9 @@ void dumpRegs(Registers regs, FILE *fileOut) {
 
 
 void dumpMem(Memory mem, FILE *fileOut) {
-    fprintf(fileOut, "Non-zero memory:\n");
+    fprintf(fileOut, "Non-Zero memory:\n");
     for (int addr = 0; addr < MEMORY_SIZE; addr += 0x4) {
         uint32_t curr = readMem(mem, false, addr);
-        if (curr) fprintf(fileOut, "0x%08x: 0x%08x\n", addr, curr);
+        if (curr) fprintf(fileOut, "0x%08x : %08x\n", addr, curr);
     }
 }
