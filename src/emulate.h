@@ -10,11 +10,11 @@
 
 #include <stdlib.h>
 
-#include "emulator/system/registers.h"
+#include "common/ir/ir.h"
+#include "emulator/process.h"
 #include "emulator/system/memory.h"
-#include "emulator/io/output.h"
-#include "emulator/instructions/decode.h"
-#include "emulator/instructions/execute.h"
+#include "emulator/system/output.h"
+#include "emulator/system/registers.h"
 
 #define HALT_INSTR_C 0x8a000000
 

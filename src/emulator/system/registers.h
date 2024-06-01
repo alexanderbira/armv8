@@ -88,4 +88,4 @@ void setRegState(Registers regs, PStateField field, bool state);
 
 void setRegStates(Registers regs, PState state);
 
-#endif //EMULATOR_REGISTER_H
+#endif // EMULATOR_REGISTER_H

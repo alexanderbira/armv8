@@ -13,32 +13,31 @@ int main(int argc, char **argv) {
 
     // Initialise registers and memory.
     Regs_s regs_s = createRegs();
-    Registers regs = &regs_s;
-    Memory mem = allocMemFromFile(argv[1]);
+    Registers registers = &regs_s;
+    Memory memory = allocMemFromFile(argv[1]);
 
     while (true) {
-        // Fetch the instruction pointed to by the PC
-        BitData pcVal = getRegPC(regs);
-        BitData instruction = readMem(mem, true, pcVal);
+        BitData pcVal = getRegPC(registers);
+        BitData instruction = readMem(memory, false, pcVal);
 
-        // Halt the execution if the instruction is a halt
+        // Catch halt instruction.
         if (instruction == HALT_INSTR_C) break;
 
-        // Decode and execute the instruction
-        IR ir = decode(instruction);
-        execute(ir, regs, mem);
+        // Decode and execute.
+        IR ir = getDecodeFunction(instruction)(instruction);
+        getExecuteFunction(&ir)(&ir, registers, memory);
 
         //Increment PC only when no branch or jump instructions applied.
-        if (ir.type != B) incRegPC(regs);
+        if (ir.type != BRANCH) incRegPC(registers);
     }
 
     // Dump contents of register and memory, then free memory.
     FILE *fileOut = stdout;
     if (argc == 3) fileOut = fopen(argv[2], "w");
 
-    dumpRegs(regs, fileOut);
-    dumpMem(mem, fileOut);
-    freeMem(mem);
+    dumpRegs(registers, fileOut);
+    dumpMem(memory, fileOut);
+    freeMem(memory);
 
     fclose(fileOut);
 

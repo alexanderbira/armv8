@@ -5,10 +5,61 @@
 /// Created by Alexander Biraben-Renard on 29/05/2024.
 ///
 
-#ifndef BRANCH_H
-#define BRANCH_H
+#ifndef IR_BRANCH_H
+#define IR_BRANCH_H
 
 #include <stdint.h>
+
+#include "../const.h"
+#include "types.h"
+
+/// Baseline mask for a Branch (Unconditional) instruction.
+#define BRANCH_UNCONDITIONAL_C        b(0001_0100_0000_0000_0000_0000_0000_0000)
+
+/// Number of bits in [simm26] in a Branch (Unconditional) instruction.
+#define BRANCH_UNCONDITIONAL_SIMM26_N 26
+
+/// Baseline mask for a Branch (Register) instruction.
+#define BRANCH_REGISTER_C             b(1101_0110_0001_1111_0000_0000_0000_0000)
+
+/// Number of bits to shift for [xn] in a Branch (Register) instruction.
+#define BRANCH_REGISTER_XN_S          5
+
+/// Number of bits in [xn] in a Branch (Register) instruction.
+#define BRANCH_REGISTER_XN_N          5
+
+/// Baseline mask for a Branch (Conditional) instruction.
+#define BRANCH_CONDITIONAL_C          b(0101_0100_0000_0000_0000_0000_0000_0000)
+
+/// Number of bits to shift for [simm19] in a Branch (Conditional) instruction.
+#define BRANCH_CONDITIONAL_SIMM19_S   5
+
+/// Number of bits in [simm19] in a Branch (Conditional) instruction.
+#define BRANCH_CONDITIONAL_SIMM19_N   19
+
+/// Number of bits in [cond] in a Branch (Conditional) instruction.
+#define BRANCH_CONDITIONAL_COND_N     4
+
+/// Mask for a Branch (Unconditional) instruction.
+#define BRANCH_UNCONDITIONAL_M        maskl(6)
+
+/// Mask for a Branch (Register) instruction.
+#define BRANCH_REGISTER_M             maskl(22) & maskr(5)
+
+/// Mask for a Branch (Unconditional) instruction.
+#define BRANCH_CONDITIONAL_M          maskl(8) & mask(4, 4)
+
+/// Mask for [simm26] in a Branch (Unconditional) instruction.
+#define BRANCH_UNCONDITIONAL_SIMM26_M maskr(26)
+
+/// Mask for [xn] in a Branch (Register) instruction.
+#define BRANCH_REGISTER_XN_M          mask(9, 5)
+
+/// Mask for [simm26] in a Branch (Conditional) instruction.
+#define BRANCH_CONDITIONAL_SIMM19_M   mask(23, 5)
+
+/// Mask for [cond] in a Branch (Conditional) instruction.
+#define BRANCH_CONDITIONAL_COND_M     maskr(4)
 
 /// The intermediate representation of a branch instruction.
 typedef struct {
@@ -18,23 +69,23 @@ typedef struct {
 
         /// Unconditional : branch to the address encoded by literal.
         /// \code PC := PC + offset \endcode
-        B,
+        BRANCH_UNCONDITIONAL,
 
         /// Register: branch to the address in Xn.
         /// \code PC := Xn \endcode
-        BR,
+        BRANCH_REGISTER,
 
         /// Conditional: branch to literal when PSTATE satisfies cond.
         /// \code if cond, PC := PC + offset \endcode
-        BCOND
+        BRANCH_CONDITIONAL,
 
-    } branchType;
+    } type;
 
     /// The constants for the branch instruction.
     union Branch {
 
         /// [26b] Used to encode the signed offset (simm26 * 4) to apply to the PC for the unconditional branch.
-        int32_t simm26;
+        Literal simm26;
 
         /// [5b] The encoding of Xn, the register containing the address to jump to for the register branch.
         uint8_t xn;
@@ -43,10 +94,10 @@ typedef struct {
         struct Conditional {
 
             /// [19b] Used to encode the signed offset (simm19 * 4) to apply to the PC for the conditional branch.
-            int32_t simm19;
+            Literal simm19;
 
             /// [4b] The condition for the conditional branch instruction.
-            enum Cond {
+            enum BranchCondition {
 
                 /// Equal.
                 /// \code Z == 1 \endcode
@@ -76,12 +127,12 @@ typedef struct {
                 /// Any PSTATE flags.
                 AL = 0xE
 
-            } cond;
+            } condition;
 
         } conditional;
 
-    } branch;
+    } data;
 
 } Branch_IR;
 
-#endif //BRANCH_H
+#endif // IR_BRANCH_H

@@ -8,15 +8,15 @@
 #ifndef EMULATOR_MEMORY_H
 #define EMULATOR_MEMORY_H
 
+#include <assert.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
 #include <sys/fcntl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
-#include <string.h>
 #include <unistd.h>
-#include <assert.h>
 
 #include "../../common/const.h"
 
@@ -33,4 +33,4 @@ BitData readMem(Memory mem, bool as64, size_t addr);
 
 void writeMem(Memory mem, bool as64, size_t addr, BitData value);
 
-#endif //EMULATOR_MEMORY_H
+#endif // EMULATOR_MEMORY_H

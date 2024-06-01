@@ -8,21 +8,14 @@
 #ifndef ASSEMBLER_ASSEMBLE_H
 #define ASSEMBLER_ASSEMBLE_H
 
+#include <ctype.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "assembler/classify.h"
-#include "assembler/proc.h"
+#include "assembler/handler.h"
+#include "assembler/helpers.h"
 
 int main(int argc, char **argv);
-
-/// Functions corresponding to each [AsmType].
-const LineProcessor procTable[4] = {
-        procEmpty,
-        procDirective,
-        procLabel,
-        procInst,
-};
 
 #endif //ASSEMBLER_ASSEMBLE_H
