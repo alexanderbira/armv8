@@ -26,7 +26,7 @@ IRExecutor getExecuteFunction(IR *irObject) {
 /// Get the corresponding [BinaryParser] for this [instruction].
 /// @param ir The intermediate representation of the instruction
 /// @returns The corresponding [BinaryParser].
-BinaryParser getDecodeFunction(Instruction instruction) {
+BinaryParser getDecodeFunction(const Instruction instruction) {
     Component op0 = decompose(instruction, OP0_M);
     if ((op0 & OP0_IMMEDIATE_M) == OP0_IMMEDIATE_C) {
         return decodeImmediate;

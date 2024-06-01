@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
 
     while (true) {
         BitData pcVal = getRegPC(registers);
-        BitData instruction = readMem(memory, true, pcVal);
+        BitData instruction = readMem(memory, false, pcVal);
 
         // Catch halt instruction.
         if (instruction == HALT_INSTR_C) break;

@@ -14,7 +14,7 @@
 void assertFatal(bool condition, char message[]) {
     if (!condition) {
         fprintf(stderr, "%s\n", message);
-        fprintf(stderr, "   In file %s, line %d", __FILE__, __LINE__);
+        fprintf(stderr, "   In file %s, line %d \n\n", __FILE__, __LINE__);
         perror("    Fatal Error");
         exit(-1);
     }

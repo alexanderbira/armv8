@@ -10,7 +10,6 @@ CXXFLAGS ?= -Icommon/ -Icommon/ir\
 
 SRC_DIR = .
 OBJ_DIR = obj
-BIN_DIR = bin
 
 .SUFFIXES: .c .o
 .PHONY: all clean
@@ -33,19 +32,17 @@ EMULATOR_OBJ_FILES = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(EMULATOR_SRC_F
 ASSEMBLER_OBJ_FILES = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(ASSEMBLER_SRC_FILES))
 
 # Targets
-EMULATOR_TARGET = $(BIN_DIR)/emulate
-ASSEMBLER_TARGET = $(BIN_DIR)/assemble
+EMULATOR_TARGET = emulate
+ASSEMBLER_TARGET = assemble
 
-all: $(EMULATOR_TARGET) $(ASSEMBLER_TARGET)
+all: assemble emulate
 
 # Link emulator target
-$(EMULATOR_TARGET): $(EMULATOR_OBJ_FILES)
-	@mkdir -p $(BIN_DIR)
+emulate: $(EMULATOR_OBJ_FILES)
 	$(CC) $(CFLAGS) -o $@ $^
 
 # Link assembler target
-$(ASSEMBLER_TARGET): $(ASSEMBLER_OBJ_FILES)
-	@mkdir -p $(BIN_DIR)
+assemble: $(ASSEMBLER_OBJ_FILES)
 	$(CC) $(CFLAGS) -o $@ $^
 
 # Compile rules for all .c files
