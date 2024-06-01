@@ -6,6 +6,7 @@
 ///
 
 #include "wideMoveExecutor.h"
+#include <stdio.h>
 
 /// Execute a wide move type instruction
 /// @param immIR IR for an immediate (wide move) instruction
@@ -18,7 +19,7 @@ void wideMoveExecute(Immediate_IR *immediateIR, Registers regs) {
     uint64_t dest = immediateIR->sf ? getReg(regs, immediateIR->rd) : (uint32_t) getReg(regs, immediateIR->rd);
 
     // Op is imm16 shifted left by either 0, 16, 32 or 48 bits, determined by hw
-    uint64_t op = operand->imm16 << (operand->hw * 16);
+    uint64_t op = (uint64_t) operand->imm16 << (operand->hw * 16);
 
     // Initialise result value
     uint64_t res;
@@ -40,7 +41,7 @@ void wideMoveExecute(Immediate_IR *immediateIR, Registers regs) {
 
         // Move wide with keep
         case MOVK: {
-            res = op + (dest & ~(UINT16_MAX << (operand->hw * 16)));
+            res = op | (dest & ~((uint64_t) UINT16_MAX << (operand->hw * 16)));
             break;
         }
 
