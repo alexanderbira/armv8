@@ -30,7 +30,7 @@ void multiplyExecute(Register_IR *registerIR, Registers regs) {
     uint64_t res;
 
     // Perform multiply-add or multiply-sub depending on the value of x
-    registerIR->operand.multiply.x ? (res = ra + rn * rm) : (res = ra - rn * rm);
+    registerIR->operand.multiply.x ? (res = ra - rn * rm) : (res = ra + rn * rm);
 
     // Set destination register to the result value, accessed in either 64-bit or 32-bit mode determined by sf
     setReg(regs, registerIR->rd, registerIR->sf, res);
