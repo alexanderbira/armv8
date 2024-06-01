@@ -15,7 +15,7 @@
 #define LOAD_STORE_DATA                   b(1011_1000_0000_0000_0000_0000_0000_0000)
 
 /// Mask for a Load Store (Literal) instruction.
-#define LOAD_STORE_DATA_M                 maskl(1) & mask(29, 24)
+#define LOAD_STORE_DATA_M                 ((maskl(1)) | (mask(29, 25)) | (mask(23, 23)))
 
 /// Number of bits to shift for [U] in a Single Data Transfer (Load) instruction.
 #define LOAD_STORE_DATA_U_S               24
@@ -48,7 +48,7 @@
 #define LOAD_STORE_DATA_XM_REGISTER_M     mask(20, 16)
 
 /// Mask for [simm9] in a Pre/Post-Index-ed Load Store (Single Data Transfer) instruction.
-#define LOAD_STORE_DATA_SIMM9_INDEXED_M   mask(20, 16)
+#define LOAD_STORE_DATA_SIMM9_INDEXED_M   mask(20, 12)
 
 /// Mask for [I] in a Pre/Post-Index-ed Load Store (Single Data Transfer) instruction.
 #define LOAD_STORE_DATA_I_INDEXED_M       mask(11, 11)
@@ -69,10 +69,10 @@
 #define LOAD_STORE_DATA_XN_M              mask(9, 5)
 
 /// Baseline mask for a Single Data Transfer (Literal) instruction.
-#define LOAD_STORE_LITERAL                b(1101_0110_0001_1111_0000_0000_0000_0000)
+#define LOAD_STORE_LITERAL                b(0001_1000_0000_0000_0000_0000_0000_0000)
 
 /// Mask for a Single Data Transfer (Literal) instruction
-#define LOAD_STORE_LITERAL_M              maskl(1) & mask(29, 24)
+#define LOAD_STORE_LITERAL_M              ((maskl(1)) | (mask(29, 24)))
 
 /// Number of bits to shift for [simm19] in a Single Data Transfer (Literal) instruction.
 #define LOAD_STORE_LITERAL_SIMM19_S       5
@@ -121,9 +121,6 @@ typedef struct {
 
             /// The addressing mode.
             enum AddressingMode {
-                /// In the form of \code [xn] \endcode
-                /// Transfer address: \code Xn \endcode
-                ZERO_UNSIGNED_OFFSET,
 
                 /// In the form of \code [xn, #<imm>] \endcode
                 /// Transfer address: \code Xn + imm \endcode
