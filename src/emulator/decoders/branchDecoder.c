@@ -18,7 +18,7 @@ IR decodeBranch(Instruction word) {
         uint32_t simm26 = decompose(word, BRANCH_UNCONDITIONAL_SIMM26_M);
         simm26 = (simm26 << 6) >> 6; // Sign-extend the address offset (32 - 26 = 6)
 
-        branchIR = (Branch_IR) {.type = BRANCH_UNCONDITIONAL, .data.simm26 = simm26};
+        branchIR = (Branch_IR) {.type = BRANCH_UNCONDITIONAL, .data.simm26.data.immediate = simm26};
     } else if ((word & BRANCH_REGISTER_M) == BRANCH_REGISTER_C) {
         branchIR = (Branch_IR) {.type = BRANCH_REGISTER, .data.xn = decompose(word, BRANCH_REGISTER_XN_M)};
     } else if ((word & BRANCH_CONDITIONAL_M) == BRANCH_CONDITIONAL_C) {
@@ -46,7 +46,7 @@ IR decodeBranch(Instruction word) {
 
         branchIR = (Branch_IR) {
                 .type = BRANCH_CONDITIONAL,
-                .data.conditional = (struct Conditional) {.simm19 = simm19, .condition = condition}
+                .data.conditional = (struct Conditional) {.simm19.data.immediate = simm19, .condition = condition}
         };
     } else {
         throwFatal("[decodeBranch] Invalid instruction format!");

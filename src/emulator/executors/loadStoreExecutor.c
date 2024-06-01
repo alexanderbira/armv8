@@ -1,17 +1,20 @@
 ///
-/// loadStoreExecute.c
+/// loadStoreExecutor.c
 /// Execute a load and store instruction from its intermediate representation (IR)
 ///
 /// Created by Alexander Biraben-Renard on 29/05/2024.
 ///
 
-#include "loadStoreExecute.h"
+#include "loadStoreExecutor.h"
 
 /// Execute a load and store instruction from its intermediate representation
 /// @param ir The IR of the instruction to execute
 /// @param regs A pointer to the registers
 /// @param mem A pointer to the memory
-void executeLoadStore(LS_IR lsIr, Registers regs, Memory mem) {
+void executeLoadStore(IR *irObject, Registers regs, Memory mem) {
+    assertFatal(irObject->type == IMMEDIATE,
+                "[executeImmediate] Received non-immediate instruction!");
+    LoadStore_IR *loadStoreIR = &irObject->ir.loadStoreIR;
 
     // Initialise the transfer address
     int64_t transferAddress;
@@ -24,55 +27,50 @@ void executeLoadStore(LS_IR lsIr, Registers regs, Memory mem) {
     bool isLoad = true;
 
     // Switch over the instruction type (SDT or LL)
-    switch (lsIr.ls) {
-
-        case SDT:
+    switch (loadStoreIR->type) {
+        case SINGLE_DATA_TRANSFER:
             // Use Xn as the base register for the transfer address
-            transferAddress = getReg(regs, lsIr.lsConsts.sdt.xn);
+            transferAddress = getReg(regs, loadStoreIR->data.sdt.xn);
 
             // Determine if the instruction is a load or a store
-            isLoad = lsIr.lsConsts.sdt.l;
+            isLoad = loadStoreIR->data.sdt.l;
 
             // Switch over the addressing modes
-            switch (lsIr.lsConsts.sdt.addressingMode) {
-
+            switch (loadStoreIR->data.sdt.addressingMode) {
                 case REGISTER_OFFSET:
-                    transferAddress += getReg(regs, lsIr.lsConsts.sdt.offset.xm);
+                    transferAddress += getReg(regs, loadStoreIR->lsConsts.sdt.offset.xm);
                     break;
-
                 case PRE_INDEXED:
                     writeBack = true;
 
-                    uint64_t simm9Pre = lsIr.lsConsts.sdt.offset.prePostIndex.simm9;
+                    uint64_t simm9Pre = loadStoreIR->data.sdt.offset.prePostIndex.simm9;
                     // Sign-extend simm9 from 16 to 64 bits (48 = 64-16)
                     transferAddress += (simm9Pre << 48) >> 48;
 
                     writeBackValue = transferAddress;
                     break;
-
                 case POST_INDEXED:
                     writeBack = true;
 
-                    uint64_t simm9Post = lsIr.lsConsts.sdt.offset.prePostIndex.simm9;
+                    uint64_t simm9Post = loadStoreIR->data.sdt.offset.prePostIndex.simm9;
                     // Sign-extend simm9 from 16 to 64 bits (48 = 64-16)
                     writeBackValue = transferAddress + ((simm9Post << 48) >> 48);
-
                     break;
-
                 case UNSIGNED_OFFSET:
-                    transferAddress += lsIr.sf ?
-                            lsIr.lsConsts.sdt.offset.uoffset * 8 :
-                            lsIr.lsConsts.sdt.offset.uoffset * 4;
+                    transferAddress += loadStoreIR->sf ?
+                                       loadStoreIR->data.sdt.offset.uoffset * 8 :
+                                       loadStoreIR->data.sdt.offset.uoffset * 4;
                     break;
-
+                case ZERO_UNSIGNED_OFFSET:
+                case LITERAL:
+                    // TODO: Do these... exist?
             }
 
             break;
-
-        case LL:
+        case LOAD_LITERAL:
             transferAddress = getRegPC(regs);
 
-            uint64_t simm19 = lsIr.lsConsts.simm19;
+            uint64_t simm19 = loadStoreIR->data.simm19.data.immediate;
             // Sign-extend simm19 from 32 to 64 bits (32 = 64-32)
             int64_t simm19Extended = (simm19 << 32) >> 32;
 
@@ -81,15 +79,15 @@ void executeLoadStore(LS_IR lsIr, Registers regs, Memory mem) {
     }
 
     if (isLoad) {
-        BitData bitsToLoad = getReg(regs, lsIr.rt);
-        writeMem(mem, lsIr.sf, transferAddress, bitsToLoad);
+        BitData bitsToLoad = getReg(regs, loadStoreIR->rt);
+        writeMem(mem, loadStoreIR->sf, transferAddress, bitsToLoad);
     } else {
-        BitData bitsToStore = readMem(mem, lsIr.sf, transferAddress);
-        setReg(regs, lsIr.rt, lsIr.sf, bitsToStore);
+        BitData bitsToStore = readMem(mem, loadStoreIR->sf, transferAddress);
+        setReg(regs, loadStoreIR->rt, loadStoreIR->sf, bitsToStore);
     }
 
     if (writeBack) {
         // Must be a SDT
-        setReg(regs, lsIr.lsConsts.sdt.xn, true, writeBackValue);
+        setReg(regs, loadStoreIR->data.sdt.xn, true, writeBackValue);
     }
 }

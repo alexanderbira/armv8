@@ -45,4 +45,3 @@ IR decodeImmediate(Instruction word) {
 
     return (IR) {.type = IMMEDIATE, .ir.immediateIR = immediateIR};
 }
-

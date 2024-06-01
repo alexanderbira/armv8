@@ -8,13 +8,10 @@
 #ifndef ARITHMETICREGEXECUTE_H
 #define ARITHMETICREGEXECUTE_H
 
-#include "../mask.h"
-#include "../instructions.h"
-#include "../system/registers.h"
-#include "../system/memory.h"
-#include "../../common/ir/ir.h"
+#include "../../../common/ir/register.h"
+#include "../../system/registers.h"
 #include "bitwiseShifts.h"
 
-void arithmeticRegExecute(Reg_IR regIR, Registers regs);
+void arithmeticRegisterExecute(Register_IR *registerIR, Registers regs);
 
 #endif //ARITHMETICREGEXECUTE_H

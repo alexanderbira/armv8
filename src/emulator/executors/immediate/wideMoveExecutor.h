@@ -1,5 +1,5 @@
 ///
-/// wideMoveExecuter.h
+/// wideMoveExecutor.h
 /// Executes a wide move instruction
 ///
 /// Created by Billy Highley on 27/05/2024.

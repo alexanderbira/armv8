@@ -1,11 +1,11 @@
 ///
-/// wideMoveExecuter.c
+/// wideMoveExecutor.c
 /// Executes a wide move instruction
 ///
 /// Created by Billy Highley on 27/05/2024.
 ///
 
-#include "wideMoveExecuter.h"
+#include "wideMoveExecutor.h"
 
 /// Execute a wide move type instruction
 /// @param immIR IR for an immediate (wide move) instruction
