@@ -44,10 +44,10 @@
 #define BRANCH_UNCONDITIONAL_M        maskl(6)
 
 /// Mask for a Branch (Register) instruction.
-#define BRANCH_REGISTER_M             maskl(22) & maskr(5)
+#define BRANCH_REGISTER_M             ((maskl(22)) | (maskr(5)))
 
 /// Mask for a Branch (Unconditional) instruction.
-#define BRANCH_CONDITIONAL_M          maskl(8) & mask(4, 4)
+#define BRANCH_CONDITIONAL_M          ((maskl(8)) | (mask(4, 4)))
 
 /// Mask for [simm26] in a Branch (Unconditional) instruction.
 #define BRANCH_UNCONDITIONAL_SIMM26_M maskr(26)
