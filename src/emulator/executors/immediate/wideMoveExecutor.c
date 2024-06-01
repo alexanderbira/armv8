@@ -6,7 +6,6 @@
 ///
 
 #include "wideMoveExecutor.h"
-#include <stdio.h>
 
 /// Execute a wide move type instruction
 /// @param immIR IR for an immediate (wide move) instruction

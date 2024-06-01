@@ -32,7 +32,8 @@ void arithmeticRegisterExecute(Register_IR *registerIR, Registers regs) {
                    (uint32_t) getReg(regs, registerIR->rn);
 
     // Op2 is rm shifted by operand many bits by the encoded shift
-    uint64_t op2 = registerIR->sf ? bitShift(registerIR->shift, operand, rm, registerIR->sf) :
+    uint64_t op2 = registerIR->sf ?
+                   bitShift(registerIR->shift, operand, rm, registerIR->sf) :
                    (uint32_t) bitShift(registerIR->shift, operand, rm, registerIR->sf);
 
     // Initialise result value

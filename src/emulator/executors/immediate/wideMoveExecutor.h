@@ -8,6 +8,8 @@
 #ifndef EMULATOR_WIDE_MOVE_EXECUTOR_H
 #define EMULATOR_WIDE_MOVE_EXECUTOR_H
 
+#include <stdio.h>
+
 #include "../../../common/ir/ir.h"
 #include "../../system/memory.h"
 #include "../../system/registers.h"
