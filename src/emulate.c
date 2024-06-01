@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
         getExecuteFunction(&ir)(&ir, registers, memory);
 
         //Increment PC only when no branch or jump instructions applied.
-        if (ir.type != BRANCH) incRegPC(registers);
+        if (pcVal == getRegPC(registers)) incRegPC(registers);
     }
 
     // Dump contents of register and memory, then free memory.
