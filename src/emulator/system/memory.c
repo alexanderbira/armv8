@@ -67,7 +67,7 @@ BitData readMem(Memory mem, bool as64, size_t addr) {
     // Read virtual memory as little-endian.
     uint8_t *ptr = (uint8_t *) mem + addr;
     uint64_t res = ptr[0];
-    for (int i = 1; i < readSize; i++) {
+    for (size_t i = 1; i < readSize; i++) {
         res |= ((uint64_t) ptr[i] << i * 8);
     }
     return res;
@@ -83,7 +83,7 @@ void writeMem(Memory mem, bool as64, size_t addr, BitData value) {
     assert(addr + writeSize <= MEMORY_SIZE);
 
     uint8_t *ptr = (uint8_t *) mem + addr;
-    for (int i = 0; i < writeSize; i++) {
+    for (size_t i = 0; i < writeSize; i++) {
         ptr[i] = (uint8_t)(value >> 8 * i);
     }
 }

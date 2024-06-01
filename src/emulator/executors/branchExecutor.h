@@ -13,6 +13,6 @@
 #include "../system/registers.h"
 #include "../system/memory.h"
 
-void executeBranch(IR *irObject, Registers regs, Memory mem);
+void executeBranch(IR *irObject, Registers regs, unused Memory mem);
 
 #endif // EMULATOR_BRANCH_EXECUTOR_H

@@ -24,8 +24,8 @@ static void initRegs(Registers regs) {
 
 /// Creates fresh registers, properly initialised at startup.
 /// @return Fresh registers.
-Regs_s createRegs(void) {
-    Regs_s regs;
+Registers_s createRegs(void) {
+    Registers_s regs;
     initRegs(&regs);
     return regs;
 }

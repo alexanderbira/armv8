@@ -11,7 +11,7 @@
 /// @param ir The IR of the instruction to execute
 /// @param regs A pointer to the registers
 /// @param mem A pointer to the memory
-void executeBranch(IR *irObject, Registers regs, Memory mem) {
+void executeBranch(IR *irObject, Registers regs, unused Memory mem) {
     assertFatal(irObject->type == BRANCH,
                 "[executeImmediate] Received non-immediate instruction!");
     Branch_IR *branchIR = &irObject->ir.branchIR;
