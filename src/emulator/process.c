@@ -20,6 +20,8 @@ IRExecutor getExecuteFunction(IR *irObject) {
             return executeLoadStore;
         case BRANCH:
             return executeBranch;
+        default:
+            throwFatal("[getExecuteFunction] Invalid IR!");
     }
 }
 
