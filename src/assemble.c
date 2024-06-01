@@ -24,6 +24,8 @@ int main(int argc, char **argv) {
     while (fgets(line, sizeof(line), fileIn)) {
         char *trimmedLine = trim(line, " ");
         IR currentIR;
+        // TODO: Remove this which silences warnings during debug of other files.
+        printf("%d", currentIR.type);
 
         // Check if line is blank.
         if (strlen(line) == 0) continue;

@@ -10,8 +10,8 @@
 /// Function to process a directive, i.e. a line that begins with '.'.
 /// @param line The line to "process".
 /// @return The resulting binary word.
-void handleDirective(const char *line, AssemblerState *state) {
-    // TODO: Implement
+void handleDirective(unused const char *line, unused AssemblerState *state) {
+    // TODO: Implement, remove [unused]
 }
 
 /// Function to process a label, i.e. a line of alphabet characters ending in ':'.
