@@ -74,6 +74,7 @@ bool getRegState(Registers regs, PStateField field) {
 /// @param as64 Whether or not to write to the 64-bit register, i.e., X[id].
 /// @param value The value to write.
 void setReg(Registers regs, size_t id, bool as64, BitData value) {
+    if (id == 31) return; // Zero Register
     assert(id < NUM_GPRS);
     regs->gprs[id] = as64 ? value : (uint32_t) value;
 }
