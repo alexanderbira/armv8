@@ -124,11 +124,12 @@ Literal parseLiteral(const char *literal) {
 /// @param name The register name to be parsed.
 /// @param[out] sf Whether the register is 64-bit or not.
 /// @return The binary representation of the register.
-uint8_t parseRegister(const char *name, bool *sf) {
+/// @attention Set [bool *sf] to NULL if information is not desired.
+uint8_t parseRegisterStr(const char *name, bool *sf) {
     uint8_t result;
     char prefix = 0;
 
-    int success = sscanf(name, "%c%" SCNx8, &prefix, &result);
+    int success = sscanf(name, "%c%" SCNu8, &prefix, &result);
     if (success > 0 && sf != NULL) {
         *sf = (prefix == 'x');
     }
