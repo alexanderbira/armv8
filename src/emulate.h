@@ -16,6 +16,6 @@
 #include "emulator/system/output.h"
 #include "emulator/system/registers.h"
 
-#define HALT_INSTR_C 0x8a000000
+#define HALT 0x8a000000
 
 #endif //EMULATE_H
