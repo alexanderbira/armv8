@@ -18,7 +18,7 @@ IR decodeBranch(Instruction word) {
 
         // Get the 26-bit offset as a 32-bit unsigned integer
         int32_t simm26 = decompose(word, BRANCH_UNCONDITIONAL_SIMM26_M);
-        simm26 = (simm26 << 6) >> 6; // Sign-extend the address offset (32 - 26 = 6)
+        simm26 = signExtend(simm26, BRANCH_UNCONDITIONAL_SIMM26_N);
 
         branchIR = (Branch_IR) {.type = BRANCH_UNCONDITIONAL, .data.simm26.data.immediate = simm26};
 
@@ -32,7 +32,7 @@ IR decodeBranch(Instruction word) {
 
         // Get the 19-bit offset as a 32-bit unsigned integer
         int32_t simm19 = decompose(word, BRANCH_CONDITIONAL_SIMM19_M);
-        conditional.simm19.data.immediate = (simm19 << 13) >> 13; // Sign-extend the address offset (32 - 19 = 13)
+        conditional.simm19.data.immediate = signExtend(simm19, BRANCH_CONDITIONAL_SIMM19_N);
 
         // Get the condition code from the instruction and check if it's valid
         uint8_t condition = decompose(word, BRANCH_CONDITIONAL_COND_M);

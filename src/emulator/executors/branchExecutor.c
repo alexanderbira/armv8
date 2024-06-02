@@ -24,7 +24,7 @@ void executeBranch(IR *irObject, Registers regs, unused Memory mem) {
 
             // Get the address offset
             int64_t simm26 = branchIR->data.simm26.data.immediate;
-            int64_t offset = (simm26 << 32) >> 32; // Sign-extend the address offset (64 - 32 = 32)
+            int64_t offset = signExtend(simm26, 8 * sizeof(uint32_t));
 
             int64_t pcVal = getRegPC(regs);
 
@@ -47,7 +47,7 @@ void executeBranch(IR *irObject, Registers regs, unused Memory mem) {
 
             // Get the address offset
             int64_t simm19 = branchIR->data.conditional.simm19.data.immediate;
-            int64_t offset = (simm19 << 32) >> 32; // Sign-extend the address offset (64 - 32 = 32)
+            int64_t offset = signExtend(simm19, 8 * sizeof(uint32_t));
 
             int64_t pcVal = getRegPC(regs);
 
