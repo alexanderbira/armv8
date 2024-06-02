@@ -12,6 +12,9 @@
 #include <string.h>
 
 #include "../common/const.h"
+#include "../common/ir/ir.h"
+
+#define INITIAL_LIST_SIZE 64
 
 /// Struct representing the current state of the assembler.
 typedef struct {
@@ -28,7 +31,16 @@ typedef struct {
 
         /// The string title of the label.
         char *label;
-    } *map;
+    } *symbolTable;
+
+    /// The list of all parsed intermediate representations.
+    IR *irList;
+
+    /// The number of [IR]s in [irList].
+    size_t irCount;
+
+    /// The maximum number of [IR]s that [irList] is currently allocated for.
+    size_t irMaxCount;
 } AssemblerState;
 
 AssemblerState createState(void);
@@ -38,5 +50,7 @@ void destroyState(AssemblerState state);
 void addMapping(AssemblerState *state, const char *label, BitData address);
 
 BitData *getMapping(AssemblerState *state, const char *label);
+
+void addIR(AssemblerState *state, IR ir);
 
 #endif // ASSEMBLER_STATE_H

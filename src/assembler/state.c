@@ -12,22 +12,28 @@
 AssemblerState createState(void) {
     AssemblerState state;
     state.address = 0x0;
-    state.map = NULL;
+    state.symbolTable = NULL;
+
+    state.irList = calloc(INITIAL_LIST_SIZE, sizeof(IR));
+    state.irCount = 0;
+    state.irMaxCount = INITIAL_LIST_SIZE;
     return state;
 }
 
 /// Destroys the given [AssemblerState]
 /// @param state The [AssemblerState] to be destroyed.
 void destroyState(AssemblerState state) {
-    struct LabelAddressPair *current = state.map;
-    struct LabelAddressPair *next;
+    struct LabelAddressPair *currentSymbol = state.symbolTable;
+    struct LabelAddressPair *nextSymbol;
 
-    while (current != NULL) {
-        next = current->next;
-        free(current->label);
-        free(current);
-        current = next;
+    while (currentSymbol != NULL) {
+        nextSymbol = currentSymbol->next;
+        free(currentSymbol->label);
+        free(currentSymbol);
+        currentSymbol = nextSymbol;
     }
+
+    free(state.irList);
 }
 
 /// Given an [AssemblerState], add another [LabelAddressPair] mapping to it.
@@ -43,11 +49,11 @@ void addMapping(AssemblerState *state, const char *label, BitData address) {
     mapping->next = NULL;
     mapping->label = copiedLabel;
 
-    if (state->map == NULL) {
-        state->map = mapping;
+    if (state->symbolTable == NULL) {
+        state->symbolTable = mapping;
     }
 
-    struct LabelAddressPair *current = state->map;
+    struct LabelAddressPair *current = state->symbolTable;
     struct LabelAddressPair *previous;
 
     while (current != NULL) {
@@ -63,7 +69,7 @@ void addMapping(AssemblerState *state, const char *label, BitData address) {
 /// @param label The name of the label.
 /// @returns Either a pointer to the address, or NULL if not found.
 BitData *getMapping(AssemblerState *state, const char *label) {
-    struct LabelAddressPair *current = state->map;
+    struct LabelAddressPair *current = state->symbolTable;
 
     while (current != NULL) {
         if (!strcmp(current->label, label)) {
@@ -74,4 +80,13 @@ BitData *getMapping(AssemblerState *state, const char *label) {
     }
 
     return NULL;
+}
+
+void addIR(AssemblerState *state, IR ir) {
+    if (state->irCount >= state->irMaxCount) {
+        // Exponential (doubling) scaling policy.
+        state->irList = realloc(state->irList, state->irMaxCount * 2);
+    }
+
+    state->irList[state->irCount++] = ir;
 }

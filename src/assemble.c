@@ -17,20 +17,20 @@ int main(int argc, char **argv) {
     if (argc != 3) return EXIT_FAILURE;
 
     FILE *fileIn = fopen(argv[1], "r");
-    char line[256];
     AssemblerState state = createState();
+    char line[256];
 
     // TODO: Handle line too long... is it possible?
     while (fgets(line, sizeof(line), fileIn)) {
         char *trimmedLine = trim(line, " ");
-        IR currentIR;
 
         // Check if line is blank.
         if (strlen(line) == 0) continue;
 
         // Check if line is directive.
         if (line[0] == '.') {
-            handleDirective(trimmedLine, &state);
+            IR ir = handleDirective(trimmedLine, &state);
+            addIR(&state, ir);
         }
 
         // Check if line is a label.
@@ -39,7 +39,8 @@ int main(int argc, char **argv) {
             // Ensure all preceding chars are alphabet.
             for (char *p = line; p < colon; p++) {
                 if (!isalpha((unsigned char) *p)) {
-                    currentIR = handleInstruction(trimmedLine, &state);
+                    IR ir = handleInstruction(trimmedLine, &state);
+                    addIR(&state, ir);
                 }
             }
 
@@ -47,19 +48,20 @@ int main(int argc, char **argv) {
         }
 
         // By default, return instruction.
-        currentIR = handleInstruction(trimmedLine, &state);
-
-        // TODO: Append current IR to some dynamic array of all IRs.
+        IR ir = handleInstruction(trimmedLine, &state);
+        addIR(&state, ir);
     }
 
     fclose(fileIn);
-    destroyState(state);
-
-    // TODO: Final process all IRs, and write to file.
     FILE *fileOut = fopen(argv[2], "wb");
-    // Write resulting instruction (if any) to file.
-    //    if (!inst) continue;
-    //    fwrite(&inst, sizeof(BitInst), 1, fileOut);
+
+    for (size_t i = 0; i < state.irCount; i++) {
+        IR ir = state.irList[i];
+        Instruction instruction = getTranslateFunction(ir.type)(&ir, &state);
+        fwrite(&instruction, sizeof(Instruction), 1, fileOut);
+    }
+
+    destroyState(state);
     fclose(fileOut);
 
     return EXIT_SUCCESS;
