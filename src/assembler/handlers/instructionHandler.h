@@ -42,4 +42,6 @@ IRGenerator getParseFunction(const char *mnemonic);
 
 InstructionGenerator getTranslateFunction(IRType type);
 
+Instruction translateConstant(IR *irObject, unused AssemblerState *state);
+
 #endif // ASSEMBLER_INSTRUCTION_HANDLER_H

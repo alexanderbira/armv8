@@ -65,7 +65,7 @@ IR parseBranch(TokenisedLine *line, unused AssemblerState *state) {
 /// @param state The current state of the assembler.
 /// @return 32-bit binary word of the instruction.
 Instruction translateBranch(IR *irObject, AssemblerState *state) {
-    assertFatal(irObject->type == BRANCH, "[writeBranch] Received non-branch IR!");
+    assertFatal(irObject->type == BRANCH, "[translateBranch] Received non-branch IR!");
     Branch_IR *branch = &irObject->ir.branchIR;
     Instruction result;
 
@@ -77,7 +77,7 @@ Instruction translateBranch(IR *irObject, AssemblerState *state) {
             if (simm26->isLabel) {
                 BitData *address = NULL;
                 address = getMapping(state, simm26->data.label);
-                assertFatal(address != NULL, "[writeBranch] No mapping for label!");
+                assertFatal(address != NULL, "[translateBranch] No mapping for label!");
                 return result | truncater(*address, BRANCH_UNCONDITIONAL_SIMM26_N);
             }
 
@@ -92,7 +92,7 @@ Instruction translateBranch(IR *irObject, AssemblerState *state) {
             if (conditional->simm19.isLabel) {
                 BitData *address = NULL;
                 address = getMapping(state, conditional->simm19.data.label);
-                assertFatal(address != NULL, "[writeBranch] No mapping for label!");
+                assertFatal(address != NULL, "[translateBranch] No mapping for label!");
                 result |= truncater(*address, BRANCH_CONDITIONAL_SIMM19_N);
             } else {
                 result |= truncater(conditional->simm19.data.immediate, BRANCH_CONDITIONAL_SIMM19_N);
@@ -101,5 +101,5 @@ Instruction translateBranch(IR *irObject, AssemblerState *state) {
             return result | truncater(conditional->condition, BRANCH_CONDITIONAL_COND_N);
     }
 
-    throwFatal("[writeBranch] Unknown type of branch instruction!");
+    throwFatal("[translateBranch] Unknown type of branch instruction!");
 }
