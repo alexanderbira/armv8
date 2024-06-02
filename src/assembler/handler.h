@@ -8,6 +8,7 @@
 #ifndef ASSEMBLER_HANDLER_H
 #define ASSEMBLER_HANDLER_H
 
+#include <inttypes.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -19,7 +20,7 @@
 #include "state.h"
 #include "handlers/instructionHandler.h"
 
-void handleDirective(const char *line, AssemblerState *state);
+IR handleDirective(const char *line, AssemblerState *state);
 
 void handleLabel(const char *line, AssemblerState *state);
 
