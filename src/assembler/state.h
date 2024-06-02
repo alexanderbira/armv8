@@ -21,17 +21,20 @@ typedef struct {
     /// The address of the current instruction being handled.
     BitData address;
 
-    /// The mapping of string labels to addresses as a linked list.
-    struct LabelAddressPair {
+    /// The symbol table (label to address pairings).
+    struct SymbolPair {
         /// The address the label points to.
         BitData address;
-
-        /// Pointer to the next mapping in the linked list.
-        struct LabelAddressPair *next;
 
         /// The string title of the label.
         char *label;
     } *symbolTable;
+
+    /// The number of [SymbolPair]s in [symbolTable].
+    size_t symbolCount;
+
+    /// The maximum number of [SymbolPair]s that [symbolTable] is currently allocated for.
+    size_t symbolMaxCount;
 
     /// The list of all parsed intermediate representations.
     IR *irList;
