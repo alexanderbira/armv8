@@ -27,15 +27,20 @@ struct {
 /// @return The IR form of the branch instruction.
 /// @pre [line]'s mnemonic is at least one of "b", "br", or "b.COND".
 IR parseBranch(TokenisedLine *line, unused AssemblerState *state) {
+
     assertFatal(line->operandCount == 1, "[parseBranch] Incorrect number of operands!");
 
     Branch_IR branchIR;
+
     if (!strcmp(line->mnemonic, "b")) {
+
         const Literal simm26 = parseLiteral(line->operands[0]);
         branchIR = (Branch_IR) {.type = BRANCH_UNCONDITIONAL, .data.simm26 = simm26};
+
     } else if (!strcmp(line->mnemonic, "br")) {
         uint8_t xn = parseRegisterStr(line->operands[0], NULL);
         branchIR = (Branch_IR) {.type = BRANCH_REGISTER, .data.xn = xn};
+
     } else {
         // Get just the condition string.
         char *name = line->mnemonic;
@@ -70,9 +75,9 @@ Instruction translateBranch(IR *irObject, AssemblerState *state) {
     Instruction result;
 
     switch (branch->type) {
+
         case BRANCH_UNCONDITIONAL:
             result = BRANCH_UNCONDITIONAL_C;
-
             Literal *simm26 = &branch->data.simm26;
             if (simm26->isLabel) {
                 BitData *address = NULL;
@@ -82,12 +87,13 @@ Instruction translateBranch(IR *irObject, AssemblerState *state) {
             }
 
             return result | truncater(simm26->data.immediate, BRANCH_UNCONDITIONAL_SIMM26_N);
+
         case BRANCH_REGISTER:
             result = BRANCH_REGISTER_C;
             return result | (truncater(branch->data.xn, BRANCH_REGISTER_XN_N) << BRANCH_REGISTER_XN_S);
+
         case BRANCH_CONDITIONAL:
             result = BRANCH_CONDITIONAL_C;
-
             struct Conditional *conditional = &branch->data.conditional;
             if (conditional->simm19.isLabel) {
                 BitData *address = NULL;
@@ -97,8 +103,8 @@ Instruction translateBranch(IR *irObject, AssemblerState *state) {
             } else {
                 result |= truncater(conditional->simm19.data.immediate, BRANCH_CONDITIONAL_SIMM19_N);
             }
-
             return result | truncater(conditional->condition, BRANCH_CONDITIONAL_COND_N);
+
     }
 
     throwFatal("[translateBranch] Unknown type of branch instruction!");
