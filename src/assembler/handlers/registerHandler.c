@@ -105,10 +105,20 @@ IR handleRegister(TokenisedLine line) {
     // Set sf based on first letter (x or w) of rd
     sf = (line.operands[0][0] == 'x');
 
-    // set x depending on MADD or MSUB
-    registerIR.operand.multiply.x = (registerIR.opc.multiply == MSUB);
     // handle operand 4 (either Ra (multiply) or shift + immediate)
-    if (group == MULTIPLY) sscanf(line.operands[3], "%*c%hhu", &registerIR.operand.multiply.ra);
+    union RegisterOperand operand;
+    if (group == MULTIPLY) {
+        struct Multiply multiply;
+        uint8_t ra;
+        // set x depending on MADD or MSUB
+        bool x = (registerIR.opc.multiply == MSUB);
+        sscanf(line.operands[3], "%*c%hhu", &ra);
 
-    return (IR) { REGISTER, .ir.registerIR = registerIR };;
+        multiply = (struct Multiply) {x, ra};
+        operand = (union RegisterOperand) {.multiply = multiply};
+    } else {
+        uint8_t imm6;
+    }
+
+    return (IR) { REGISTER, .ir.registerIR = registerIR };
 }
