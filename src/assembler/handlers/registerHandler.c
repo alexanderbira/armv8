@@ -178,7 +178,7 @@ Instruction translateRegister(IR *irObject, unused AssemblerState *state) {
     }
 
     // Load [M], trust since Boolean.
-    instruction = (Instruction) registerIR->M << REGISTER_M_S;
+    instruction |= (Instruction) registerIR->M << REGISTER_M_S;
 
     // Load [opr], [rm].
     instruction |= (Instruction) truncater(registerIR->opr, REGISTER_OPR_N) << REGISTER_OPR_S;
