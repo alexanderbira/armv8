@@ -2,8 +2,8 @@
 // Created by Jack on 6/1/2024.
 //
 
-#ifndef REGISTERHANDLER_H
-#define REGISTERHANDLER_H
+#ifndef ASSEMBLER_REGISTER_H
+#define ASSEMBLER_REGISTER_H
 
 #include <inttypes.h>
 #include <stdio.h>
@@ -13,8 +13,11 @@
 #include "../../common/const.h"
 #include "../../common/error.h"
 #include "../../common/ir/ir.h"
-#include "../../common/ir/register.h"
 #include "../helpers.h"
 #include "../state.h"
 
-#endif //REGISTERHANDLER_H
+IR parseRegister(TokenisedLine *line, AssemblerState *state);
+
+Instruction translateRegister(IR *irObject, unused AssemblerState *state);
+
+#endif // ASSEMBLER_REGISTER_H
