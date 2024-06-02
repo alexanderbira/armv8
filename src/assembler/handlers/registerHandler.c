@@ -9,10 +9,11 @@
 /// @return The [Reg_IR] struct representing the instruction.
 /// @pre The incoming [line] is a Data Processing (Register) assembly instruction.
 IR handleRegister(TokenisedLine line) {
-//    Imm_IR ir;
     Register_IR registerIR;
     // Getting the mnemonic.
     char *mnemonic = line.mnemonic;
+    bool sf;
+    union RegisterOpCode opc;
     // Assume the instruction is Arithmetic or Bit-Logic, will change M if its Multiply.
     bool M = 0;
     // Assume instruction is Bit-Logic, change if not
@@ -23,7 +24,6 @@ IR handleRegister(TokenisedLine line) {
     uint8_t rd;
     uint8_t rn;
     uint8_t rm;
-    bool sf;
     // decides opc, group, M and negated based on first letter of mnemonic
     switch (mnemonic[0]) {
         case 'a':
@@ -31,12 +31,12 @@ IR handleRegister(TokenisedLine line) {
             // differentiate between ADD and AND type instructions by the second letter (either d or n)
             // differentiate by string length
             if (mnemonic[1] == 'd') {
-                registerIR.opc.arithmetic = (strlen(mnemonic) == 3) ? ADD : ADDS;
+                opc.arithmetic = (strlen(mnemonic) == 3) ? ADD : ADDS;
                 group = ARITHMETIC;
             }
             // differentiate by string length
             else {
-                registerIR.opc.logic.standard = (strlen(mnemonic) == 3) ? AND : ANDS;
+                opc.logic.standard = (strlen(mnemonic) == 3) ? AND : ANDS;
                 // both are not negated
                 negated = false;
                 opr = 0;
@@ -46,7 +46,7 @@ IR handleRegister(TokenisedLine line) {
         case 'b':
         {
             // differentiate between bic, bics by string length
-            registerIR.opc.logic.negated = (strlen(mnemonic) == 3) ? BIC : BICS;
+            opc.logic.negated = (strlen(mnemonic) == 3) ? BIC : BICS;
             // both are negated
             negated = true;
             opr = 0;
@@ -56,11 +56,11 @@ IR handleRegister(TokenisedLine line) {
         {
             // differentiate between eor, eon by 3rd letter.
             if (mnemonic[2] == 'r') {
-                registerIR.opc.logic.standard = EOR;
+                opc.logic.standard = EOR;
                 negated = false;
             }
             else {
-                registerIR.opc.logic.negated = EON;
+                opc.logic.negated = EON;
                 negated = true;
             }
             opr = 0;
@@ -69,7 +69,7 @@ IR handleRegister(TokenisedLine line) {
         case 'm':
         {
             // differentiate by the 2nd letter
-            registerIR.opc.multiply = (mnemonic[1] == 'a') ? MADD : MSUB;
+            opc.multiply = (mnemonic[1] == 'a') ? MADD : MSUB;
             M = 1;
             group = MULTIPLY;
             break;
@@ -78,11 +78,11 @@ IR handleRegister(TokenisedLine line) {
         {
             // differentiate between orr, orn by 3rd letter.
             if (mnemonic[2] == 'r') {
-                registerIR.opc.logic.standard = ORR;
+                opc.logic.standard = ORR;
                 negated = false;
             }
             else {
-                registerIR.opc.logic.negated = ORN;
+                opc.logic.negated = ORN;
                 negated = false;
             }
             opr = 0;
@@ -91,7 +91,7 @@ IR handleRegister(TokenisedLine line) {
         case 's':
         {
             // differentiate by string length
-            registerIR.opc.arithmetic = (strlen(mnemonic) == 3) ? SUB : SUBS;
+            opc.arithmetic = (strlen(mnemonic) == 3) ? SUB : SUBS;
             group = ARITHMETIC;
             break;
         }
@@ -107,6 +107,7 @@ IR handleRegister(TokenisedLine line) {
 
     // handle operand 4 (either Ra (multiply) or shift + immediate)
     union RegisterOperand operand;
+    enum ShiftType shift;
     if (group == MULTIPLY) {
         struct Multiply multiply;
         uint8_t ra;
@@ -114,11 +115,42 @@ IR handleRegister(TokenisedLine line) {
         bool x = (registerIR.opc.multiply == MSUB);
         sscanf(line.operands[3], "%*c%hhu", &ra);
 
+        // shift is set as LSL since LSL = 0
+        shift = LSL;
         multiply = (struct Multiply) {x, ra};
         operand = (union RegisterOperand) {.multiply = multiply};
     } else {
         uint8_t imm6;
+        int matched;
+        char **shiftAndValue = split(line.operands[3], " ", &matched);
+
+        // fill imm6
+        sscanf(shiftAndValue[2], "%*c%hhu", &imm6);
+
+        // switch based on first letter of shift name
+        switch (shiftAndValue[0][0]) {
+            case 'l':
+            {
+                // differentiate based on third letter of shift name
+                shift = (shiftAndValue[0][2] == 'l') ? LSL : LSR;
+                break;
+            }
+            case 'a':
+            {
+                shift = ASR;
+                break;
+            }
+            case 'r':
+            {
+                shift = ROR;
+                break;
+            }
+            default: throwFatal("Shift supplied was not a shift.");
+        }
+
+        operand = (union RegisterOperand) {.imm6 = imm6};
     }
 
+    registerIR = (Register_IR) {sf, opc, M, opr, group, shift, negated, rm, operand, rn ,rd};
     return (IR) { REGISTER, .ir.registerIR = registerIR };
 }
