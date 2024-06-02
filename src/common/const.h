@@ -110,6 +110,7 @@ static inline Component decompose(Instruction word, Mask mask) {
 /// @param __ACTUAL_WIDTH__ The number of bits that need to be preserved.
 /// @returns The sign extended value.
 #define signExtend(__VALUE__, __ACTUAL_WIDTH__) \
-    ((__VALUE__ << (8 * sizeof(__VALUE__) - __ACTUAL_WIDTH__)) >> (8 * sizeof(__VALUE__) - __ACTUAL_WIDTH__))
+    ((__typeof__(__VALUE__))(__VALUE__ << (8 * sizeof(__VALUE__) - __ACTUAL_WIDTH__)) >> \
+    (8 * sizeof(__VALUE__) - __ACTUAL_WIDTH__))
 
 #endif // COMMON_CONST_H
