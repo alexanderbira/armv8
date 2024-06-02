@@ -14,41 +14,56 @@ Register_IR handleReg(TokenisedLine line) {
     // Getting the mnemonic.
 //    int throwaway;
     char *mnemonic = line.mnemonic;
+    // Assume the instruction is Arithmetic or Bit-Logic, will change M if its Multiply.
+    ir.M = 0;
     switch (mnemonic[0]) {
         case 'a':
         {
-            // differentiate between and, ands by string length
-            ir.opc.logic.standard = (strlen(mnemonic) == 3) ? AND : ANDS;
+            // differentiate between ADD and AND type instructions by the second letter (either d or n)
+            // differentiate by string length
+            if (mnemonic[1] == 'd') ir.opc.arithmetic = (strlen(mnemonic) == 3) ? ADD : ADDS;
+            // differentiate by string length
+            else ir.opc.logic.standard = (strlen(mnemonic) == 3) ? AND : ANDS;
+            break;
         }
         case 'b':
         {
             // differentiate between bic, bics by string length
             ir.opc.logic.negated = (strlen(mnemonic) == 3) ? BIC : BICS;
+            break;
         }
         case 'e':
         {
             // differentiate between eor, eon by 3rd letter.
             if (mnemonic[2] == 'r') ir.opc.logic.standard = EOR;
             else ir.opc.logic.negated = EON;
+            break;
+        }
+        case 'm':
+        {
+            ir.opc.multiply = (mnemonic[1] == 'a') ? MADD : MSUB;
+            ir.M = 1;
+            break;
         }
         case 'o':
         {
             // differentiate between orr, orn by 3rd letter.
             if (mnemonic[2] == 'r') ir.opc.logic.standard = ORR;
             else ir.opc.logic.negated = ORN;
+            break;
         }
-        case 'm':
+        case 's':
         {
-            ir.opc.multiply = (mnemonic[1] == 'a') ? MADD : MSUB;
+            // differentiate by string length
+            ir.opc.arithmetic = (strlen(mnemonic) == 3) ? SUB : SUBS;
+            break;
         }
-
     }
     char *rd = line.operands[0];
-    ir.rn
-//    sscanf(rd, "%*c%hhu", &ir.rd);
-//    // Set sf
-//
-//    ir.sf = (rd[0] == 'x');
+    sscanf(rd, "%*c%hhu", &ir.rd);
+    // Set sf
+
+    ir.sf = (rd[0] == 'x');
 //
 //    if (mnemonic[0] == 'm') {
 //        switch (mnemonic[3]) {
