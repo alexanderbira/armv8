@@ -34,13 +34,16 @@ typedef uint32_t Component;
 #define unused __attribute__((unused))
 
 /// Shorthand for binary literals. Ignores '_'s.
+/// @param __LITERAL__ The literal to interpret as binary.
+/// @returns The value of the literal, implicitly casted.
 /// @example \code b(1010_0101) = 0xA5 \endcode
-/// @param x The binary as a string.
 /// @warning May not be optimised at compile - do not abuse!
-#define b(x) toBinary(#x)
+#define b(__LITERAL__) toBinary(#__LITERAL__)
 
 // Shorthand for simple bitmasks on the "right hand" / least significant side. One-indexed.
 /// Significant inspiration taken from @see https://stackoverflow.com/a/28703383/
+/// @param __ONE_COUNT__ The number of bits to set.
+/// @returns The mask.
 /// @example \code maskr(uint8_t, 3) = 0x07 \endcode
 /// @warning Produces [uint32_t]!
 /// @pre 0 <= __ONE_COUNT__ <= 32
@@ -48,6 +51,8 @@ typedef uint32_t Component;
     ((__ONE_COUNT__) == 0 ? 0 : (((uint32_t)-1) >> (sizeof(uint32_t) * CHAR_BIT - (__ONE_COUNT__))))
 
 /// Shorthand for simple bitmasks on the "left hand" / most significant side. One-indexed.
+/// @param __ONE_COUNT__ The number of bits to set.
+/// @returns The mask.
 /// @example \code maskl(4) = 0xF0000000 \endcode
 /// @warning Produces [uint32_t]!
 /// @pre 0 <= __ONE_COUNT__ <= 32
@@ -56,12 +61,18 @@ typedef uint32_t Component;
 
 /// Shorthand for simple bitmasks in the "center" / delimited by MSB and LSB, inclusive. 0-indexed.
 /// Based on original by Billy Highley, \code ((1 << (msb - lsb + 1)) - 1) << lsb; \endcode
+/// @param __MSB__ The most significant bit to start the mask from.
+/// @param __LSB__ The least significant bit to end the mask on.
+/// @returns The mask.
 /// @example \code mask(3, 1) = 0xE \endcode \code mask(31, 29) = 0xe0000000 \endcode
 /// @warning Produces [uint32_t]!
 /// @pre 31 >= __MSB__, __LSB__ >= 0
 #define mask(__MSB__, __LSB__) (maskl(8 * sizeof(uint32_t) - __LSB__) & maskr(__MSB__ + 1))
 
 /// Shorthand for truncating a value to just [__BIT_COUNT__] of its least significant bits.
+/// @param __VALUE__ The value to truncate.
+/// @param __BIT_COUNT__ The number of bits to preserve.
+/// @returns The truncated value.
 /// @example \code truncatel(0xF, 3) = 0x7 \endcode
 #define truncater(__VALUE__, __BIT_COUNT__) (__VALUE__ & maskr(__BIT_COUNT__))
 
@@ -80,9 +91,9 @@ static inline uint64_t toBinary(const char *str) {
 
 /// Applies the given mask to an instruction and returns the bits
 /// shifted so that the LSB is right-aligned to yield the component.
-/// @param word The instruction to mask.
-/// @param mask The mask to use on the instruction.
-/// @return The shifted bit pattern extracted by the mask.
+/// @param __WORD__ The instruction to mask.
+/// @param __MASK__ The mask to use on the instruction.
+/// @returns The shifted bit pattern extracted by the mask.
 /// @example \code decompose(10111, 11100) == 00101 \endcode
 /// @authors Billy Highley and Alexander Biraben-Renard
 #define decompose(__WORD__, __MASK__) decompose(__WORD__, __MASK__)
