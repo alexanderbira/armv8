@@ -18,7 +18,7 @@ IR parseLoadStore(TokenisedLine *line, unused AssemblerState *state) {
     LoadStore_IR loadStoreIR;
 
     bool sf;
-    const uint8_t reg = parseRegister(line->operands[0], &sf);
+    const uint8_t reg = parseRegisterStr(line->operands[0], &sf);
 
     if (line->operandCount == 2) {
         // Only a <literal> is possible.

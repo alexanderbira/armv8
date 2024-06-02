@@ -19,7 +19,7 @@ IR parseImmediate(TokenisedLine *line, unused AssemblerState *state) {
     Immediate_IR immediateIR;
 
     bool sf;
-    const uint8_t reg = parseRegister(line->operands[0], &sf);
+    const uint8_t reg = parseRegisterStr(line->operands[0], &sf);
 
     if (*(line->mnemonic) == 'm') {
         enum WideMoveType type;

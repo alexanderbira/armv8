@@ -16,7 +16,7 @@
 #include "../../common/ir/ir.h"
 #include "../state.h"
 #include "branchHandler.h"
-// #include "registerHandler.h"
+#include "registerHandler.h"
 #include "immediateHandler.h"
 #include "loadStoreHandler.h"
 

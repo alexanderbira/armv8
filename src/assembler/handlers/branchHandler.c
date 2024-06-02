@@ -34,7 +34,7 @@ IR parseBranch(TokenisedLine *line, unused AssemblerState *state) {
         const Literal simm26 = parseLiteral(line->operands[0]);
         branchIR = (Branch_IR) {.type = BRANCH_UNCONDITIONAL, .data.simm26 = simm26};
     } else if (!strcmp(line->mnemonic, "br")) {
-        uint8_t xn = parseRegister(line->operands[0], NULL);
+        uint8_t xn = parseRegisterStr(line->operands[0], NULL);
         branchIR = (Branch_IR) {.type = BRANCH_REGISTER, .data.xn = xn};
     } else {
         // Get just the condition string.
