@@ -12,22 +12,27 @@
 AssemblerState createState(void) {
     AssemblerState state;
     state.address = 0x0;
-    state.map = NULL;
+    state.symbolTable = NULL;
+
+    state.irList = calloc(INITIAL_LIST_SIZE, sizeof(IR));
+    state.irCount = 0;
+    state.irMaxCount = INITIAL_LIST_SIZE;
+
+    state.symbolTable = calloc(INITIAL_LIST_SIZE, sizeof(struct SymbolPair));
+    state.symbolCount = 0;
+    state.symbolMaxCount = INITIAL_LIST_SIZE;
     return state;
 }
 
 /// Destroys the given [AssemblerState]
 /// @param state The [AssemblerState] to be destroyed.
 void destroyState(AssemblerState state) {
-    struct LabelAddressPair *current = state.map;
-    struct LabelAddressPair *next;
-
-    while (current != NULL) {
-        next = current->next;
-        free(current->label);
-        free(current);
-        current = next;
+    for (size_t i = 0; i < state.symbolCount; i++) {
+        free(state.symbolTable[i].label);
     }
+
+    free(state.symbolTable);
+    free(state.irList);
 }
 
 /// Given an [AssemblerState], add another [LabelAddressPair] mapping to it.
@@ -37,25 +42,17 @@ void destroyState(AssemblerState state) {
 void addMapping(AssemblerState *state, const char *label, BitData address) {
     // Magic Number: 16 == sizeof(BitData) + sizeof(LabelAddressPair *)
     // I.e., the two fixed sized components of a [LabelAddressPair].
-    struct LabelAddressPair *mapping = (struct LabelAddressPair *) malloc(16 + strlen(label) + 1);
+    struct SymbolPair symbolPair;
     char *copiedLabel = strdup(label);
-    mapping->address = address;
-    mapping->next = NULL;
-    mapping->label = copiedLabel;
+    symbolPair.address = address;
+    symbolPair.label = copiedLabel;
 
-    if (state->map == NULL) {
-        state->map = mapping;
+    if (state->symbolCount >= state->symbolMaxCount) {
+        // Exponential (doubling) scaling policy.
+        state->symbolTable = realloc(state->symbolTable, state->symbolMaxCount * 2);
     }
 
-    struct LabelAddressPair *current = state->map;
-    struct LabelAddressPair *previous;
-
-    while (current != NULL) {
-        previous = current;
-        current = current->next;
-    }
-
-    previous->next = mapping;
+    state->symbolTable[state->symbolCount++] = symbolPair;
 }
 
 /// Given a [label], searches for its address in the given [AssemblerState].
@@ -63,15 +60,22 @@ void addMapping(AssemblerState *state, const char *label, BitData address) {
 /// @param label The name of the label.
 /// @returns Either a pointer to the address, or NULL if not found.
 BitData *getMapping(AssemblerState *state, const char *label) {
-    struct LabelAddressPair *current = state->map;
-
-    while (current != NULL) {
-        if (!strcmp(current->label, label)) {
-            return &current->address;
+    for (size_t i = 0; i < state->symbolCount; i++) {
+        if (!strcmp(state->symbolTable[i].label, label)) {
+            // Returning pointer to [uint32_t] is safe here
+            // since the value is not defined in this scope.
+            return &state->symbolTable[i].address;
         }
-
-        current = current->next;
     }
 
     return NULL;
+}
+
+void addIR(AssemblerState *state, IR ir) {
+    if (state->irCount >= state->irMaxCount) {
+        // Exponential (doubling) scaling policy.
+        state->irList = realloc(state->irList, state->irMaxCount * 2);
+    }
+
+    state->irList[state->irCount++] = ir;
 }

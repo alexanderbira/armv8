@@ -10,8 +10,22 @@
 /// Function to process a directive, i.e. a line that begins with '.'.
 /// @param line The line to "process".
 /// @return The resulting binary word.
-void handleDirective(unused const char *line, unused AssemblerState *state) {
-    // TODO: Implement, remove [unused]
+/// @pre The incoming [line] is a directive, and is trimmed, i.e. ".<directive> <value>".
+IR handleDirective(unused const char *line, unused AssemblerState *state) {
+    TokenisedLine tokenisedLine = tokenise(line);
+
+    assertFatal(tokenisedLine.operandCount == 1, "[handleDirective] Invalid number of arguments!");
+    char *directive = tokenisedLine.mnemonic + 1;
+
+    if (!strcasecmp(directive, "int")) {
+        BitData immediate;
+        assertFatal(sscanf("%" SCNx32, tokenisedLine.operands[1], &immediate),
+                    "[handleDirective] Failed to parse immediate for `.int`!");
+        destroyTokenisedLine(tokenisedLine);
+        return (IR) {.type = CONSTANT, .ir.memoryData = immediate};
+    } else {
+        throwFatal("[handleDirective] Invalid directive!");
+    }
 }
 
 /// Function to process a label, i.e. a line of alphabet characters ending in ':'.

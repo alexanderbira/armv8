@@ -96,7 +96,7 @@ IR parseImmediate(TokenisedLine *line, unused AssemblerState *state) {
 /// @param state The current state of the assembler.
 /// @return 32-bit binary word of the instruction.
 Instruction translateImmediate(IR *irObject, unused AssemblerState *state) {
-    assertFatal(irObject->type == IMMEDIATE, "[writeBranch] Received non-branch IR!");
+    assertFatal(irObject->type == IMMEDIATE, "[translateImmediate] Received non-branch IR!");
     Immediate_IR *immediate = &irObject->ir.immediateIR;
     Instruction result = IMMEDIATE_C;
 
