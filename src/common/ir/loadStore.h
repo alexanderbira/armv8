@@ -47,6 +47,9 @@
 /// Mask for [xm] in a Register Offset-ed Load Store (Single Data Transfer) instruction.
 #define LOAD_STORE_DATA_XM_REGISTER_M     mask(20, 16)
 
+/// Number of bits in [simm9] in a Pre/Post-Index-ed Load Store (Single Data Transfer) instruction.
+#define LOAD_STORE_DATA_SIMM9_INDEXED_N   9
+
 /// Mask for [simm9] in a Pre/Post-Index-ed Load Store (Single Data Transfer) instruction.
 #define LOAD_STORE_DATA_SIMM9_INDEXED_M   mask(20, 12)
 

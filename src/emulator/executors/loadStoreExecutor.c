@@ -49,16 +49,14 @@ void executeLoadStore(IR *irObject, Registers regs, Memory mem) {
                 case PRE_INDEXED:
                     writeBack = true;
                     int64_t simm9Pre = loadStoreIR->data.sdt.offset.prePostIndex.simm9;
-                    // Sign-extend simm9 from 16 to 64 bits (48 = 64-16)
-                    transferAddress += (simm9Pre << 48) >> 48;
+                    transferAddress += signExtend(simm9Pre, 8 * sizeof(uint16_t));
                     writeBackValue = transferAddress;
                     break;
 
                 case POST_INDEXED:
                     writeBack = true;
                     int64_t simm9Post = loadStoreIR->data.sdt.offset.prePostIndex.simm9;
-                    // Sign-extend simm9 from 16 to 64 bits (48 = 64-16)
-                    writeBackValue = transferAddress + ((simm9Post << 48) >> 48);
+                    writeBackValue = transferAddress + signExtend(simm9Post, 8 * sizeof(uint16_t));
                     break;
 
                 case UNSIGNED_OFFSET:
@@ -77,8 +75,7 @@ void executeLoadStore(IR *irObject, Registers regs, Memory mem) {
         case LOAD_LITERAL:
             transferAddress = getRegPC(regs);
             int64_t simm19 = loadStoreIR->data.simm19.data.immediate;
-            // Sign-extend simm19 from 32 to 64 bits (32 = 64-32)
-            int64_t simm19Extended = (simm19 << 32) >> 32;
+            int64_t simm19Extended = signExtend(simm19, 8 * sizeof(uint32_t));
             transferAddress += simm19Extended * 4;
             break;
 

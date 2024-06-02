@@ -49,7 +49,7 @@ IR decodeLoadStore(Instruction word) {
 
             // Get the 9-bit address offset as a 16-bit unsigned integer
             int16_t simm9 = decompose(word, LOAD_STORE_DATA_SIMM9_INDEXED_M);
-            prePostIndex.simm9 = (int16_t) (simm9 << 7) >> 7; // Sign-extend the address offset (16 - 9 = 7)
+            prePostIndex.simm9 = (int16_t) signExtend(simm9, LOAD_STORE_DATA_SIMM9_INDEXED_N);
             prePostIndex.i = decompose(word, LOAD_STORE_DATA_I_INDEXED_M);
             offset.prePostIndex = prePostIndex;
             data.addressingMode = (prePostIndex.i == 1) ? PRE_INDEXED : POST_INDEXED;
@@ -69,7 +69,7 @@ IR decodeLoadStore(Instruction word) {
 
         // Get the 19-bit offset as a 32-bit unsigned integer
         int32_t offset = decompose(word, LOAD_STORE_LITERAL_SIMM19_M);
-        offset = (offset << 13) >> 13; // Sign-extend the offset (32 - 19 = 13)
+        offset = signExtend(offset, LOAD_STORE_LITERAL_SIMM19_N);
 
         loadStoreIR.type = LOAD_LITERAL;
         loadStoreIR.data.simm19.data.immediate = offset;
