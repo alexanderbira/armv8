@@ -17,8 +17,9 @@ IR parseLoadStore(TokenisedLine *line, unused AssemblerState *state) {
                 "[parseSingleDataTransfer] Incorrect number of operands!");
 
     LoadStore_IR loadStoreIR;
-    bool sf = line->operands[0][0] == 'x';
-    const uint8_t reg = parseRegister(line->operands[0], &sf);
+
+    bool sf;
+    const uint8_t reg = parseRegisterStr(line->operands[0], &sf);
 
     // Only a <literal> or <unsigned offset> is possible.
     if (line->operands[1][0] == '[') {
