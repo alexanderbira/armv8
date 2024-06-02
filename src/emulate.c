@@ -8,6 +8,7 @@
 #include "emulate.h"
 
 int main(int argc, char **argv) {
+
     // Check that [argv] is valid, i.e., has 2-3 args.
     if (argc < 2 || argc > 3) return EXIT_FAILURE;
 
@@ -16,12 +17,12 @@ int main(int argc, char **argv) {
     Registers registers = &registersStruct;
     Memory memory = allocMemFromFile(argv[1]);
 
-    while (true) {
-        BitData pcVal = getRegPC(registers);
-        Instruction instruction = readMem(memory, false, pcVal);
+    // Fetch first instruction
+    BitData pcVal = getRegPC(registers);
+    Instruction instruction = readMem(memory, false, pcVal);
 
-        // Catch halt instruction.
-        if (instruction == HALT_INSTR_C) break;
+    // Fetch, decode, execute cycle while the program has not terminated
+    while (instruction != HALT) {
 
         // Decode and execute.
         IR ir = getDecodeFunction(instruction)(instruction);
@@ -29,6 +30,11 @@ int main(int argc, char **argv) {
 
         // Increment PC only when no branch or jump instructions applied.
         if (pcVal == getRegPC(registers)) incRegPC(registers);
+
+        // Fetch next instruction
+        pcVal = getRegPC(registers);
+        instruction = readMem(memory, false, pcVal);
+
     }
 
     // Dump contents of register and memory, then free memory.

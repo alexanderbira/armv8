@@ -11,6 +11,7 @@
 /// @param word The instruction to decode
 /// @returns The IR of word
 IR decodeRegister(Instruction word) {
+
     Register_IR registerIR = (Register_IR) {
             .sf  = decompose(word, REGISTER_SF_M),
             .M   = decompose(word, REGISTER_M_M),
@@ -24,22 +25,32 @@ IR decodeRegister(Instruction word) {
     Component op = decompose(word, REGISTER_OPERAND_M);
 
     if (registerIR.M == 0 && ((registerIR.opr & REGISTER_ARITHMETIC_GM) == REGISTER_ARITHMETIC_C)) {
+
         registerIR.group = ARITHMETIC;
+
     } else if (registerIR.M == 0 && ((registerIR.opr & REGISTER_BITLOGIC_GM) == REGISTER_BITLOGIC_C)) {
+
         registerIR.group = BIT_LOGIC;
+
     } else if (registerIR.M == 1 && (registerIR.opr == REGISTER_MULTIPLY_C)) {
+
         registerIR.group = MULTIPLY;
+
     } else {
+
         throwFatal("[decodeRegister] Invalid data processing type!");
+
     }
 
     // Determine the type of register instruction using its group
     switch (registerIR.group) {
+
         case ARITHMETIC: {
             registerIR.opc.arithmetic = opc;
             registerIR.shift = (registerIR.opr & REGISTER_SHIFT_M) >> 1;
             break;
         }
+
         case BIT_LOGIC: {
             (registerIR.opr & 0) ?
             (registerIR.opc.logic.standard = opc) :
@@ -48,10 +59,12 @@ IR decodeRegister(Instruction word) {
             registerIR.negated = registerIR.opr & 1;
             break;
         }
+
         case MULTIPLY: {
             registerIR.opc.multiply = opc;
             break;
         }
+
     }
 
     // Set operand constituents depending on whether the instruction is multiply type (M = 1) or not (M = 0).
@@ -60,4 +73,5 @@ IR decodeRegister(Instruction word) {
     (registerIR.operand.imm6 = op);
 
     return (IR) {.type = REGISTER, .ir.registerIR = registerIR};
+
 }

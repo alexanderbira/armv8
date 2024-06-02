@@ -14,17 +14,33 @@
 /// @param sf Whether to consider rm as a 64-bit or 32-bit value
 /// @return The op2 value
 uint64_t bitShift(enum ShiftType shiftType, uint8_t operand, uint64_t rm, bool sf) {
+
+    uint64_t shifted;
+
     switch (shiftType) {
+
         case LSL:
-            return (sf ? rm : (uint32_t) rm) << operand;
+            shifted = rm << operand;
+            break;
+
         case LSR:
-            return (sf ? rm : (uint32_t) rm) >> operand;
+            shifted = rm >> operand;
+            break;
+
         case ASR:
-            return (sf ? (int64_t) rm : (int32_t) rm) >> operand;
+            shifted = (sf ? (int64_t) rm : (int32_t) rm) >> operand;
+            break;
+
         case ROR:
-            return ((sf ? rm : (uint32_t) rm) >> operand) +
-                   (rm << (sf ? (64 - operand) : (32 - operand)));
+            shifted =  rm >> operand;
+            shifted += (rm << (sf ? (64 - operand) : (32 - operand)));
+            break;
+
         default:
             throwFatal("[bitShift] Unrecognised shift type!");
+
     }
+
+    return sf ? shifted : (uint32_t) shifted;
+
 }
