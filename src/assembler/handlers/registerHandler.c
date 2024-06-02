@@ -8,15 +8,22 @@
 /// @param line The [TokenisedLine] of the instruction.
 /// @return The [Reg_IR] struct representing the instruction.
 /// @pre The incoming [line] is a Data Processing (Register) assembly instruction.
-Register_IR handleRegister(TokenisedLine line) {
+IR handleRegister(TokenisedLine line) {
 //    Imm_IR ir;
-    Register_IR ir;
+    Register_IR registerIR;
     // Getting the mnemonic.
     char *mnemonic = line.mnemonic;
     // Assume the instruction is Arithmetic or Bit-Logic, will change M if its Multiply.
-    ir.M = 0;
+    bool M = 0;
     // Assume instruction is Bit-Logic, change if not
-    ir.group = BIT_LOGIC;
+    enum RegisterType group = BIT_LOGIC;
+    // Assume instruction is Airthmetic or Multiply, change if not (all x in spec will be put as 0)
+    uint8_t opr = 8; // bit 1000
+    bool negated;
+    uint8_t rd;
+    uint8_t rn;
+    uint8_t rm;
+    bool sf;
     // decides opc, group, M and negated based on first letter of mnemonic
     switch (mnemonic[0]) {
         case 'a':
@@ -24,79 +31,84 @@ Register_IR handleRegister(TokenisedLine line) {
             // differentiate between ADD and AND type instructions by the second letter (either d or n)
             // differentiate by string length
             if (mnemonic[1] == 'd') {
-                ir.opc.arithmetic = (strlen(mnemonic) == 3) ? ADD : ADDS;
-                ir.group = ARITHMETIC;
+                registerIR.opc.arithmetic = (strlen(mnemonic) == 3) ? ADD : ADDS;
+                group = ARITHMETIC;
             }
             // differentiate by string length
             else {
-                ir.opc.logic.standard = (strlen(mnemonic) == 3) ? AND : ANDS;
+                registerIR.opc.logic.standard = (strlen(mnemonic) == 3) ? AND : ANDS;
                 // both are not negated
-                ir.negated = false;
+                negated = false;
+                opr = 0;
             }
             break;
         }
         case 'b':
         {
             // differentiate between bic, bics by string length
-            ir.opc.logic.negated = (strlen(mnemonic) == 3) ? BIC : BICS;
+            registerIR.opc.logic.negated = (strlen(mnemonic) == 3) ? BIC : BICS;
             // both are negated
-            ir.negated = true;
+            negated = true;
+            opr = 0;
             break;
         }
         case 'e':
         {
             // differentiate between eor, eon by 3rd letter.
             if (mnemonic[2] == 'r') {
-                ir.opc.logic.standard = EOR;
-                ir.negated = false;
+                registerIR.opc.logic.standard = EOR;
+                negated = false;
             }
             else {
-                ir.opc.logic.negated = EON;
-                ir.negated = true;
+                registerIR.opc.logic.negated = EON;
+                negated = true;
             }
+            opr = 0;
             break;
         }
         case 'm':
         {
             // differentiate by the 2nd letter
-            ir.opc.multiply = (mnemonic[1] == 'a') ? MADD : MSUB;
-            // set x depending on MADD or MSUB
-            ir.operand.multiply.x = (ir.opc.multiply == MSUB);
-            ir.M = 1;
-            ir.group = MULTIPLY;
+            registerIR.opc.multiply = (mnemonic[1] == 'a') ? MADD : MSUB;
+            M = 1;
+            group = MULTIPLY;
             break;
         }
         case 'o':
         {
             // differentiate between orr, orn by 3rd letter.
             if (mnemonic[2] == 'r') {
-                ir.opc.logic.standard = ORR;
-                ir.negated = false;
+                registerIR.opc.logic.standard = ORR;
+                negated = false;
             }
             else {
-                ir.opc.logic.negated = ORN;
-                ir.negated = false;
+                registerIR.opc.logic.negated = ORN;
+                negated = false;
             }
+            opr = 0;
             break;
         }
         case 's':
         {
             // differentiate by string length
-            ir.opc.arithmetic = (strlen(mnemonic) == 3) ? SUB : SUBS;
-            ir.group = ARITHMETIC;
+            registerIR.opc.arithmetic = (strlen(mnemonic) == 3) ? SUB : SUBS;
+            group = ARITHMETIC;
             break;
         }
         default: throwFatal("mnemonic is not from a Data Processing (Register) instruction!");
     }
 
-    // decides rd, rn and rm
-    sscanf(line.operands[0], "%*c%hhu", &ir.rd);
-    sscanf(line.operands[1], "%*c%hhu", &ir.rn);
-    sscanf(line.operands[2], "%*c%hhu", &ir.rm);
+    // decides rd, rn and rm in that order.
+    sscanf(line.operands[0], "%*c%hhu", &rd);
+    sscanf(line.operands[1], "%*c%hhu", &rn);
+    sscanf(line.operands[2], "%*c%hhu", &rm);
     // Set sf based on first letter (x or w) of rd
-    ir.sf = (line.operands[0][0] == 'x');
+    sf = (line.operands[0][0] == 'x');
 
+    // set x depending on MADD or MSUB
+    registerIR.operand.multiply.x = (registerIR.opc.multiply == MSUB);
     // handle operand 4 (either Ra (multiply) or shift + immediate)
+    if (group == MULTIPLY) sscanf(line.operands[3], "%*c%hhu", &registerIR.operand.multiply.ra);
 
-    return ir;
+    return (IR) { REGISTER, .ir.registerIR = registerIR };;
 }
