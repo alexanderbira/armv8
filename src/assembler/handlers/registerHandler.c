@@ -8,109 +8,95 @@
 /// @param line The [TokenisedLine] of the instruction.
 /// @return The [Reg_IR] struct representing the instruction.
 /// @pre The incoming [line] is a Data Processing (Register) assembly instruction.
-Register_IR handleReg(TokenisedLine line) {
+Register_IR handleRegister(TokenisedLine line) {
 //    Imm_IR ir;
     Register_IR ir;
     // Getting the mnemonic.
-//    int throwaway;
     char *mnemonic = line.mnemonic;
     // Assume the instruction is Arithmetic or Bit-Logic, will change M if its Multiply.
     ir.M = 0;
+    // Assume instruction is Bit-Logic, change if not
+    ir.group = BIT_LOGIC;
+    // decides opc, group, M and negated based on first letter of mnemonic
     switch (mnemonic[0]) {
         case 'a':
         {
             // differentiate between ADD and AND type instructions by the second letter (either d or n)
             // differentiate by string length
-            if (mnemonic[1] == 'd') ir.opc.arithmetic = (strlen(mnemonic) == 3) ? ADD : ADDS;
+            if (mnemonic[1] == 'd') {
+                ir.opc.arithmetic = (strlen(mnemonic) == 3) ? ADD : ADDS;
+                ir.group = ARITHMETIC;
+            }
             // differentiate by string length
-            else ir.opc.logic.standard = (strlen(mnemonic) == 3) ? AND : ANDS;
+            else {
+                ir.opc.logic.standard = (strlen(mnemonic) == 3) ? AND : ANDS;
+                // both are not negated
+                ir.negated = false;
+            }
             break;
         }
         case 'b':
         {
             // differentiate between bic, bics by string length
             ir.opc.logic.negated = (strlen(mnemonic) == 3) ? BIC : BICS;
+            // both are negated
+            ir.negated = true;
             break;
         }
         case 'e':
         {
             // differentiate between eor, eon by 3rd letter.
-            if (mnemonic[2] == 'r') ir.opc.logic.standard = EOR;
-            else ir.opc.logic.negated = EON;
+            if (mnemonic[2] == 'r') {
+                ir.opc.logic.standard = EOR;
+                ir.negated = false;
+            }
+            else {
+                ir.opc.logic.negated = EON;
+                ir.negated = true;
+            }
             break;
         }
         case 'm':
         {
+            // differentiate by the 2nd letter
             ir.opc.multiply = (mnemonic[1] == 'a') ? MADD : MSUB;
+            // set x depending on MADD or MSUB
+            ir.operand.multiply.x = (ir.opc.multiply == MSUB);
             ir.M = 1;
+            ir.group = MULTIPLY;
             break;
         }
         case 'o':
         {
             // differentiate between orr, orn by 3rd letter.
-            if (mnemonic[2] == 'r') ir.opc.logic.standard = ORR;
-            else ir.opc.logic.negated = ORN;
+            if (mnemonic[2] == 'r') {
+                ir.opc.logic.standard = ORR;
+                ir.negated = false;
+            }
+            else {
+                ir.opc.logic.negated = ORN;
+                ir.negated = false;
+            }
             break;
         }
         case 's':
         {
             // differentiate by string length
             ir.opc.arithmetic = (strlen(mnemonic) == 3) ? SUB : SUBS;
+            ir.group = ARITHMETIC;
             break;
         }
+        default: throwFatal("mnemonic is not from a Data Processing (Register) instruction!");
     }
-    char *rd = line.operands[0];
-    sscanf(rd, "%*c%hhu", &ir.rd);
-    // Set sf
 
-    ir.sf = (rd[0] == 'x');
-//
-//    if (mnemonic[0] == 'm') {
-//        switch (mnemonic[3]) {
-//            case 'n':
-//                ir.opc.wideMoveType = MOVN;
-//                break;
-//            case 'z':
-//                ir.opc.wideMoveType = MOVZ;
-//                break;
-//            case 'k':
-//                ir.opc.wideMoveType = MOVK;
-//                break;
-//        }
-//
-//        ir.opi = WIDE_MOVE;
-//        // Split remaining string into: imm and lsl value (if applicable)
-//        char *imm = line.operands[1];
-//        sscanf(imm, "#%hu", &ir.operand.wideMove.imm16);
-//        // Check if lsl is present, and if present - get shift value.
-//        if (line.operandCount > 2) {
-//            char *shiftValue = split(line.operands[2], " ", &throwaway)[1];
-//            sscanf(shiftValue, "#%hhu", &ir.operand.wideMove.hw);
-//            // Assuming hw is value 0-3.
-//            ir.operand.wideMove.hw /= 16;
-//        }
-//        else ir.operand.wideMove.hw = 0;
-//    } else {
-//        if (mnemonic[0] == 'a') {
-//            if (strlen(mnemonic) == 4) ir.opc.arithType = ADDS;
-//            else ir.opc.arithType = ADD;
-//        } else if (strlen(mnemonic) == 4) ir.opc.arithType = SUBS;
-//        else ir.opc.arithType = SUB;
-//
-//        ir.opi = ARITH;
-//        // Split remaining string into: Rn, imm and lsl value (if applicable)
-//        char *rn = line.operands[1];
-//        char *imm = line.operands[2];
-//        uint8_t sh = 0;
-//
-//        sscanf(rn, "%*c%hhu", &ir.operand.arith.rn);
-//        sscanf(imm, "#%hu", &ir.operand.arith.imm12);
-//        // sh is 0 or 1 depending on whether lsl value is 0 or 12.
-//        if (line.operandCount > 3) {
-//            char *shiftValue = split(line.operands[3], " ", &throwaway)[1];
-//            sscanf(shiftValue, "#%hhu", &sh);
-//            ir.operand.arith.sh = (sh == 12);
-//        }
-//    }
-//    return ir;
+    // decides rd, rn and rm
+    sscanf(line.operands[0], "%*c%hhu", &ir.rd);
+    sscanf(line.operands[1], "%*c%hhu", &ir.rn);
+    sscanf(line.operands[2], "%*c%hhu", &ir.rm);
+    // Set sf based on first letter (x or w) of rd
+    ir.sf = (line.operands[0][0] == 'x');
+
+    // handle operand 4 (either Ra (multiply) or shift + immediate)
+
+    return ir;
 }
