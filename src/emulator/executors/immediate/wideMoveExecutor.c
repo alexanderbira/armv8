@@ -11,11 +11,13 @@
 /// @param immIR IR for an immediate (wide move) instruction
 /// @param regs Pointer to registers
 void wideMoveExecute(Immediate_IR *immediateIR, Registers regs) {
+
     // Operand interpreted as a wide move type instruction
     struct WideMove *operand = &immediateIR->operand.wideMove;
 
-    // Retrieve dest value as a 64-bit or 32-bit value from the destination register, determined by sf
-    uint64_t dest = immediateIR->sf ? getReg(regs, immediateIR->rd) : (uint32_t) getReg(regs, immediateIR->rd);
+    // Retrieve rd value as a 64-bit or 32-bit value from the destination register, determined by sf
+    uint64_t rd = getReg(regs, immediateIR->rd);
+    rd = immediateIR->sf ? rd : (uint32_t) rd;
 
     // Op is imm16 shifted left by either 0, 16, 32 or 48 bits, determined by hw
     uint64_t op = (uint64_t) operand->imm16 << (operand->hw * 16);
@@ -40,7 +42,7 @@ void wideMoveExecute(Immediate_IR *immediateIR, Registers regs) {
 
         // Move wide with keep
         case MOVK: {
-            res = op | (dest & ~((uint64_t) UINT16_MAX << (operand->hw * 16)));
+            res = op | (rd & ~((uint64_t) UINT16_MAX << (operand->hw * 16)));
             break;
         }
 
@@ -48,4 +50,5 @@ void wideMoveExecute(Immediate_IR *immediateIR, Registers regs) {
 
     // Set destination register to the result value, accessed in either 64-bit or 32-bit mode determined by sf
     setReg(regs, immediateIR->rd, immediateIR->sf, res);
+
 }
