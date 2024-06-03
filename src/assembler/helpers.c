@@ -60,7 +60,6 @@ char **split(char *str, const char *delim, int *count) {
     return result;
 }
 
-
 /// Tokenises the given assembly line into its [TokenisedLine] form.
 /// @param line Pointer to the string to be tokenised.
 /// @return The [TokenisedLine] representing the instruction.
@@ -76,9 +75,29 @@ TokenisedLine tokenise(const char *line) {
 
     // Extract the mnemonic.
     size_t mnemonicLength = separator - trimmedLine;
+    *separator = '\0';
+
+    // Extract sub-mnemonic if present.
+    char *mnemonicSeparator = strchr(trimmedLine, '.');
+    if (mnemonicSeparator != NULL) {
+        mnemonicLength = mnemonicSeparator - trimmedLine;
+
+        // Throw away leading '.' when copying.
+        size_t subMnemonicLength = separator - mnemonicSeparator - 1;
+        result.subMnemonic = (char *) malloc(subMnemonicLength + 1);
+        strncpy(result.subMnemonic, mnemonicSeparator + 1, subMnemonicLength);
+        *(result.subMnemonic + subMnemonicLength) = '\0';
+
+        assertFatal(strcmp(result.subMnemonic, ""),
+                    "[tokenise] Sub-mnemonic was present but is empty!");
+        // Note, we do not [assertFatal] on the mnemonic, since that signifies
+        // we have found a directive!
+    }
+
+    // Copy in mnemonic.
     result.mnemonic = (char *) malloc(mnemonicLength + 1);
     strncpy(result.mnemonic, trimmedLine, mnemonicLength);
-    // *(result.mnemonic + mnemonicLength) = '\0';
+    *(result.mnemonic + mnemonicLength) = '\0';
 
     // Extract all the operands together.
     char *operands = separator + 1; // New variable for clarity.
@@ -99,6 +118,8 @@ TokenisedLine tokenise(const char *line) {
 /// @param line [TokenisedLine] to be freed.
 void destroyTokenisedLine(TokenisedLine line) {
     free(line.mnemonic);
+    free(line.subMnemonic);
+
     for (int i = 0; i < line.operandCount; i++) {
         free(line.operands[i]);
     }
