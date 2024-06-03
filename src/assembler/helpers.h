@@ -28,7 +28,7 @@ typedef struct {
 
 char *trim(char *str, const char *except);
 
-char **split(char *str, const char *delim, int *count);
+char **split(const char *str, const char *delim, int *count);
 
 TokenisedLine tokenise(const char *line);
 

@@ -25,38 +25,52 @@ char *trim(char *str, const char *except) {
     return str;
 }
 
-/// Splits the given string ([str]) into parts by the given delimiters ([delim]).
-/// @param[in, out] str Pointer to the string to be split.
+/// Splits the given string [str] into parts by the given delimiters [delim].
+/// @param[in] str Pointer to the string to be split.
 /// @param[in] delim List of delimiter(s).
 /// @param[out] count Number of pieces the incoming string was split into.
 /// @return Pointer to the array of split strings.
-/// @attention Mutates input pointer [str].
-char **split(char *str, const char *delim, int *count) {
-    // Count how many elements will be extracted
+/// @attention Will ignore delimeters inside of brackets (incl. square, curly, round)! Cannot handle nested brackets.
+/// @example \code split("hello [world haha]", " ", &count) = ["hello", "[world haha]"] \endcode
+char **split(const char *str, const char *delim, int *count) {
     *count = 0;
-    char *tmp = str;
-    char *lastComma = NULL;
-    while (*tmp++) {
-        if (strchr(delim, *tmp) != NULL) {
-            (*count)++; // Thanks compiler :)))
-            lastComma = tmp;
+    char *trimmedLine = strdup(str);
+    trimmedLine = trim(trimmedLine, " ");
+
+    // These present the start and end of the current segment.
+    char *start = trimmedLine;
+    char *end = trimmedLine;
+    size_t length = strlen(trimmedLine);
+    bool inBrackets = false;
+
+    char **result = NULL;
+
+    for (size_t i = 0; i < length; i++) {
+        // Cannot handle nested brackets!
+        if (strchr("[{()}]", trimmedLine[i]) != NULL) inBrackets = !inBrackets;
+
+        if (strchr(delim, trimmedLine[i]) != NULL && !inBrackets) {
+            result = realloc(result, *count);
+            result[*count] = malloc(end - start);
+            strncpy(result[*count], start, end - start);
+            start = ++end;
+            (*count)++;
+        } else {
+            end++;
         }
     }
 
-    // Don't forget to count what's after the trailing comma!
-    *count += lastComma < (str + strlen(str) - 1);
-    char **result = malloc(*count * sizeof(char *));
+    assertFatal(!inBrackets, "[split] Malformed brackets!");
 
-    if (result) {
-        int idx = 0;
-        char *token = strtok(str, delim);
-
-        while (token) {
-            *(result + idx++) = strdup(token);
-            token = strtok(NULL, delim);
-        }
+    // Put in last element if present.
+    if (start != end) {
+        result = realloc(result, *count);
+        result[*count] = malloc(end - start);
+        strncpy(result[*count], start, end - start);
+        (*count)++;
     }
 
+    free(trimmedLine);
     return result;
 }
 
