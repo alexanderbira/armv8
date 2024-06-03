@@ -90,6 +90,9 @@ static TokenisedLine convertAlias(TokenisedLine *line) {
     return (TokenisedLine) {operandCount, newMnemonic, .operands = operands };
 }
 
+/// Returns whether a given instruction is a Data Processing (Immediate) instruction.
+/// @param line The [TokenisedLine] of the instruction.
+/// @return true if instruction is Data Processing (Immediate), false if not.
 static bool isImmediateInstrution(TokenisedLine *line) {
     char *mnemonic = line->mnemonic;
     bool isArithmetic = (
