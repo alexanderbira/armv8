@@ -1,6 +1,9 @@
-//
-// Created by Jack on 6/1/2024.
-//
+///
+/// registerHandler.c
+/// Functions to parse from assembly and write as binary a Data Processing (Register) instruction.
+///
+/// Created by Jack on 6/1/2024.
+///
 
 #include "registerHandler.h"
 
