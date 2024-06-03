@@ -4,13 +4,27 @@
 
 #include "dataProcessingHandler.h"
 
+static TokenisedLine convertAlias(TokenisedLine *line);
+static bool isImmediateInstrution(TokenisedLine *line);
+
 /// Converts the assembly form of an Data Processing instruction to IR form.
 /// @param line The [TokenisedLine] of the instruction.
 /// @param state The current state of the assembler.
 /// @return The [IR] struct representing the instruction.
 /// @pre The incoming [line] is a Data Processing (Immediate) assembly instruction.
 IR dataProcessingHandler(TokenisedLine *line, AssemblerState *state) {
-
+    char *mnemonic = line->mnemonic;
+    bool isAlias = (
+        strcmp(mnemonic, "cmp") == 0 ||
+        strcmp(mnemonic, "cmn") == 0 ||
+        strcmp(mnemonic, "neg") == 0 ||
+        strcmp(mnemonic, "negs") == 0 ||
+        strcmp(mnemonic, "tst") == 0 ||
+        strcmp(mnemonic, "mvn") == 0 ||
+        strcmp(mnemonic, "mov") == 0 ||
+        strcmp(mnemonic, "mul") == 0 ||
+        strcmp(mnemonic, "mneg") == 0);
+    TokenisedLine *workingLine = isAlias ? &convertAlias(line) : line;
 }
 
 /// Converts an assembly form instruction to its alias.
@@ -74,4 +88,24 @@ static TokenisedLine convertAlias(TokenisedLine *line) {
         case default: throwFatal("Instruction mnemonic is invalid!");
     }
     return (TokenisedLine) {operandCount, newMnemonic, .operands = operands };
+}
+
+static bool isImmediateInstrution(TokenisedLine *line) {
+    char *mnemonic = line->mnemonic;
+    bool isArithmetic = (
+        strcmp(mnemonic, "add") == 0 ||
+        strcmp(mnemonic, "adds") == 0 ||
+        strcmp(mnemonic, "sub") == 0 ||
+        strcmp(mnemonic, "subs") == 0
+        );
+    bool isWideMove = (
+        strcmp(mnemonic, "movk") == 0 ||
+        strcmp(mnemonic, "movn") == 0 ||
+        strcmp(mnemonic, "movz") == 0
+        );
+    if (isWideMove) return true;
+    if (isArithmetic) {
+        if (line->operands[2][0] == '#') return true;
+    }
+    return false;
 }
