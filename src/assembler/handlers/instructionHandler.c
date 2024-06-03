@@ -8,8 +8,36 @@
 #include "instructionHandler.h"
 
 static const IREntry instructionHandlers[] = {
+        {"add",  parseDataProcessing},
+        {"adds", parseDataProcessing},
+        {"sub",  parseDataProcessing},
+        {"subs", parseDataProcessing},
+        {"cmp",  parseDataProcessing},
+        {"cmn",  parseDataProcessing},
+        {"neg",  parseDataProcessing},
+        {"negs", parseDataProcessing},
+        {"and",  parseDataProcessing},
+        {"ands", parseDataProcessing},
+        {"bic",  parseDataProcessing},
+        {"bics", parseDataProcessing},
+        {"eor",  parseDataProcessing},
+        {"orr",  parseDataProcessing},
+        {"eon",  parseDataProcessing},
+        {"orn",  parseDataProcessing},
+        {"tst",  parseDataProcessing},
+        {"movk", parseDataProcessing},
+        {"movn", parseDataProcessing},
+        {"movz", parseDataProcessing},
+        {"mov",  parseDataProcessing},
+        {"mvn",  parseDataProcessing},
+        {"madd", parseDataProcessing},
+        {"msub", parseDataProcessing},
+        {"mul",  parseDataProcessing},
+        {"mneg", parseDataProcessing},
         { "b", parseBranch },
         { "br", parseBranch },
+        {"str",  parseLoadStore},
+        {"ldr",  parseLoadStore},
         // TODO: Enumerate possible handlers.
 };
 

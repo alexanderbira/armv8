@@ -40,7 +40,7 @@ IR parseBranch(TokenisedLine *line, unused AssemblerState *state) {
             // Try to find the corresponding condition, else throw error.
             bool found = false;
             enum BranchCondition condition = AL; // Default value - will be caught by assert.
-            for (int i = 0; i < sizeof(conditionMappings) / sizeof(struct BranchEntry); i++) {
+            for (size_t i = 0; i < sizeof(conditionMappings) / sizeof(struct BranchEntry); i++) {
                 if (!strcasecmp(conditionMappings[i].name, line->subMnemonic)) {
                     condition = conditionMappings[i].condition;
                     found = true;
