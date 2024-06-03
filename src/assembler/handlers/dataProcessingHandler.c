@@ -36,67 +36,82 @@ IR parseDataProcessing(TokenisedLine *line, AssemblerState *state) {
     return ir;
 }
 
-/// Converts an assembly form instruction to its alias.
-/// @param line The [TokenisedLine] of the instruction.
-/// @return The [TokenisedLine] of the input's alias.
-/// @pre Mnemonic must have an alias.
+/// Converts a [TokenisedLine] of an alias instruction to a normal instruction.
+/// @param line The [TokenisedLine] to be converted.
+/// @return The new [TokenisedLine].
+/// @pre Incoming [line->mnemonic] is a alias mnemonic.
+/// @attention Remember to destroy the original [TokenisedLine]!
 static TokenisedLine convertAlias(TokenisedLine *line) {
-    char *mnemonic = line->mnemonic;
-    char *newMnemonic;
+    // Overallocating by 1 seems reasonable for [char *newMnemonic] and [char **operands].
+    // Max number of chars / pointers is 4 for both.
+    // Using #define for this seems... hard to name :)
+    char *newMnemonic = (char *) malloc(4);
+    char **operands = (char **) malloc(4 * sizeof(char *));
     int operandCount = 3;
-    char *zr = (line->operands[0][0] == 'x') ? "x31" : "w31";
-    char **operands;
 
-    switch (mnemonic[0]) {
+    // Aliased instructions always have zero register as destination.
+    char *zeroRegister = (char *) malloc(3);
+    zeroRegister = (line->operands[0][0] == 'x') ? "x31" : "w31";
+
+    switch (*(line->mnemonic)) {
         case 'c':
-        {
-            if (strcmp(mnemonic, "cmp") == 0) newMnemonic = "subs";
-            else if (strcmp(mnemonic, "cmn") == 0) newMnemonic = "adds";
-            else throwFatal("Instruction mnemonic is invalid!");
-            operands = (char **[][]) {zr, line->operands[0], line->operands[1]};
+            // cmp -> subs, cmn -> adds
+            strcpy(newMnemonic, (*(line->mnemonic + 2) == 'p') ? "subs" : "adds");
+            operands[0] = zeroRegister;
+            operands[1] = strdup(line->operands[0]);
+            operands[2] = strdup(line->operands[1]);
             break;
-        }
         case 'n':
-        {
-            if (strcmp(mnemonic, "neg") == 0) newMnemonic = "sub";
-            else if (strcmp(mnemonic, "negs") == 0) newMnemonic = "subs";
-            else throwFatal("Instruction mnemonic is invalid!");
-            operands = (char **[][]) {line->operands[0], zr, line->operands[1]};
+            // neg -> sub, negs -> subs
+            strcpy(newMnemonic, (strlen(line->mnemonic) == 3) ? "sub" : "subs");
+            operands[0] = strdup(line->operands[0]);
+            operands[1] = zeroRegister;
+            operands[2] = strdup(line->operands[1]);
             break;
-        }
         case 't':
-        {
-            if (strcmp(mnemonic, "tst") == 0) newMnemonic = "ands";
-            else throwFatal("Instruction mnemonic is invalid!");
-            operands = (char **[][]) {zr, line->operands[0], line->operands[1]};
+            // tst -> ands
+            strcpy(newMnemonic, "ands");
+            operands[0] = zeroRegister;
+            operands[1] = strdup(line->operands[0]);
+            operands[2] = strdup(line->operands[1]);
             break;
-        }
         case 'm':
-        {
-            if (strcmp(mnemonic, "mvn") == 0) {
-                newMnemonic = "orn";
-                operands = (char **[][]) {line->operands[0], zr, line->operands[1]};
+            // mnv -> orn, mov -> orr, mul -> madd, mneg -> msub
+            switch (*(line->mnemonic + 1)) {
+                case 'v':
+                    strcpy(newMnemonic, "orn");
+                    operands[0] = strdup(line->operands[0]);
+                    operands[1] = zeroRegister;
+                    operands[2] = strdup(line->operands[1]);
+                    break;
+                case 'o':
+                    strcpy(newMnemonic, "orr");
+                    operands[0] = strdup(line->operands[0]);
+                    operands[1] = zeroRegister;
+                    operands[2] = strdup(line->operands[1]);
+                    break;
+                case 'u':
+                    strcpy(newMnemonic, "madd");
+                    operandCount = 4;
+                    operands[0] = strdup(line->operands[0]);
+                    operands[1] = strdup(line->operands[1]);
+                    operands[2] = strdup(line->operands[2]);
+                    operands[3] = zeroRegister;
+                    break;
+                case 'n':
+                    strcpy(newMnemonic, "msub");
+                    operandCount = 4;
+                    operands[0] = strdup(line->operands[0]);
+                    operands[1] = strdup(line->operands[1]);
+                    operands[2] = strdup(line->operands[2]);
+                    operands[3] = zeroRegister;
+                    break;
             }
-            else if (strcmp(mnemonic, "mov") == 0) {
-                newMnemonic = "orr";
-                operands = (char **[][]) {line->operands[0], zr, line->operands[1]};
-            }
-            else if (strcmp(mnemonic, "mul") == 0) {
-                newMnemonic = "madd";
-                operandCount = 4;
-                operands = (char **[][]) {line->operands[0], line->operands[1], line->operands[2], zr};
-            }
-            else if (strcmp(mnemonic, "mneg") == 0) {
-                newMnemonic = "msub";
-                operandCount = 4;
-                operands = (char **[][]) {line->operands[0], line->operands[1], line->operands[2], zr};
-            }
-            else throwFatal("Instruction mnemonic is invalid!");
             break;
-        }
         default: throwFatal("Instruction mnemonic is invalid!");
     }
-    return (TokenisedLine) {operandCount, newMnemonic, .operands = operands };
+
+    return (TokenisedLine) {operandCount, newMnemonic, NULL, operands};
 }
 
 /// Returns whether a given instruction is a Data Processing (Immediate) instruction.
