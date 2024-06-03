@@ -13,9 +13,10 @@ IR dataProcessingHandler(TokenisedLine *line, AssemblerState *state) {
 
 }
 
-/// Converts an assembly form instruction to its alias (if applicable).
+/// Converts an assembly form instruction to its alias.
 /// @param line The [TokenisedLine] of the instruction.
-/// @return The [TokenisedLine] of the input's alias (or itself, if no alias).
+/// @return The [TokenisedLine] of the input's alias.
+/// @pre Mnemonic must have an alias.
 static TokenisedLine convertAlias(TokenisedLine *line) {
     char *mnemonic = line->mnemonic;
     char *newMnemonic;
