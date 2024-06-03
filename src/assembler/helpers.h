@@ -20,14 +20,15 @@
 
 /// A tokenised assembly instruction.
 typedef struct {
-    int operandCount; /// The number of operands parsed.
-    char *mnemonic;   /// The instruction mnemonic.
-    char **operands;  /// The list of operands.
+    int operandCount;  /// The number of operands parsed.
+    char *mnemonic;    /// The instruction mnemonic.
+    char *subMnemonic; /// The second part of the mnemonic after '.', if present.
+    char **operands;   /// The list of operands.
 } TokenisedLine;
 
 char *trim(char *str, const char *except);
 
-char **split(char *str, const char *delim, int *count);
+char **split(const char *str, const char *delim, int *count);
 
 TokenisedLine tokenise(const char *line);
 

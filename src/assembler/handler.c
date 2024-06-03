@@ -11,17 +11,15 @@
 /// @param line The line to "process".
 /// @return The resulting binary word.
 /// @pre The incoming [line] is a directive, and is trimmed, i.e. ".<directive> <value>".
-IR handleDirective(unused const char *line, unused AssemblerState *state) {
-    TokenisedLine tokenisedLine = tokenise(line);
-
-    assertFatal(tokenisedLine.operandCount == 1, "[handleDirective] Invalid number of arguments!");
-    char *directive = tokenisedLine.mnemonic + 1;
+IR handleDirective(TokenisedLine *tokenisedLine, unused AssemblerState *state) {
+    assertFatal(tokenisedLine->operandCount == 1,
+                "[handleDirective] Invalid number of arguments!");
+    char *directive = tokenisedLine->mnemonic + 1;
 
     if (!strcasecmp(directive, "int")) {
         BitData immediate;
         assertFatal(sscanf("%" SCNx32, tokenisedLine.operands[1], &immediate),
                     "[handleDirective] Failed to parse immediate for `.int`!");
-        destroyTokenisedLine(tokenisedLine);
         return (IR) {.type = CONSTANT, .ir.memoryData = immediate};
     } else {
         throwFatal("[handleDirective] Invalid directive!");
@@ -43,10 +41,8 @@ void handleLabel(const char *line, AssemblerState *state) {
 /// Function to process an instruction.
 /// @param line The line to "process".
 /// @return The resulting binary word.
-IR handleInstruction(const char *line, AssemblerState *state) {
-    TokenisedLine tokenisedLine = tokenise(line);
-    IR result = getParseFunction(tokenisedLine.mnemonic)(&tokenisedLine, state);
-    destroyTokenisedLine(tokenisedLine);
+IR handleInstruction(TokenisedLine *tokenisedLine, AssemblerState *state) {
+    IR result = getParseFunction(tokenisedLine->mnemonic)(tokenisedLine, state);
 
     // Always increment address by 4 since at compile time,
     // jumps are not possible.

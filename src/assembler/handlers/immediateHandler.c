@@ -65,7 +65,7 @@ IR parseImmediate(TokenisedLine *line, unused AssemblerState *state) {
         struct Arithmetic arithmetic;
 
         arithmetic.rn = parseRegisterStr(line->operands[1], &sf);
-        sscanf(line->operands[2], "#%" SCNu16, &arithmetic.imm12); // TODO: Assert no overflow.
+        sscanf(line->operands[2], "#%" SCNu16, &arithmetic.imm12);
 
         // Get shift is <lsl> is present.
         arithmetic.sh = false;

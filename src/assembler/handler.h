@@ -20,10 +20,10 @@
 #include "state.h"
 #include "handlers/instructionHandler.h"
 
-IR handleDirective(const char *line, AssemblerState *state);
+IR handleDirective(TokenisedLine *tokenisedLine, unused AssemblerState *state);
 
 void handleLabel(const char *line, AssemblerState *state);
 
-IR handleInstruction(const char *line, AssemblerState *state);
+IR handleInstruction(TokenisedLine *tokenisedLine, AssemblerState *state);
 
 #endif // ASSEMBLER_HANDLER_H

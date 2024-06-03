@@ -16,7 +16,7 @@
 #include "../helpers.h"
 #include "../state.h"
 
-IR parseRegister(TokenisedLine *line, AssemblerState *state);
+IR parseRegister(TokenisedLine *line, unused AssemblerState *state);
 
 Instruction translateRegister(IR *irObject, unused AssemblerState *state);
 

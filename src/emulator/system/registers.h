@@ -13,6 +13,7 @@
 #include <stddef.h>
 
 #include "../../common/const.h"
+#include "../../common/error.h"
 
 /// A struct representing the PSTATE fields of the processor.
 typedef struct {

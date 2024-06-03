@@ -25,41 +25,54 @@ char *trim(char *str, const char *except) {
     return str;
 }
 
-/// Splits the given string ([str]) into parts by the given delimiters ([delim]).
-/// @param[in, out] str Pointer to the string to be split.
+/// Splits the given string [str] into parts by the given delimiters [delim].
+/// @param[in] str Pointer to the string to be split.
 /// @param[in] delim List of delimiter(s).
 /// @param[out] count Number of pieces the incoming string was split into.
 /// @return Pointer to the array of split strings.
-/// @attention Mutates input pointer [str].
-char **split(char *str, const char *delim, int *count) {
-    // Count how many elements will be extracted
+/// @attention Will ignore delimeters inside of brackets (incl. square, curly, round)! Cannot handle nested brackets.
+/// @example \code split("hello [world haha]", " ", &count) = ["hello", "[world haha]"] \endcode
+char **split(const char *str, const char *delim, int *count) {
     *count = 0;
-    char *tmp = str;
-    char *lastComma = NULL;
-    while (*tmp++) {
-        if (strchr(delim, *tmp) != NULL) {
-            (*count)++; // Thanks compiler :)))
-            lastComma = tmp;
+    char *trimmedLine = strdup(str);
+    trimmedLine = trim(trimmedLine, " ");
+
+    // These present the start and end of the current segment.
+    char *start = trimmedLine;
+    char *end = trimmedLine;
+    size_t length = strlen(trimmedLine);
+    bool inBrackets = false;
+
+    char **result = NULL;
+
+    for (size_t i = 0; i < length; i++) {
+        // Cannot handle nested brackets!
+        // if (strchr("[{()}]", trimmedLine[i]) != NULL) inBrackets = !inBrackets;
+
+        if (strchr(delim, trimmedLine[i]) != NULL && !inBrackets) {
+            result = realloc(result, *count);
+            result[*count] = malloc(end - start);
+            strncpy(result[*count], start, end - start);
+            start = ++end;
+            (*count)++;
+        } else {
+            end++;
         }
     }
 
-    // Don't forget to count what's after the trailing comma!
-    *count += lastComma < (str + strlen(str) - 1);
-    char **result = malloc(*count * sizeof(char *));
+    assertFatal(!inBrackets, "[split] Malformed brackets!");
 
-    if (result) {
-        int idx = 0;
-        char *token = strtok(str, delim);
-
-        while (token) {
-            *(result + idx++) = strdup(token);
-            token = strtok(NULL, delim);
-        }
+    // Put in last element if present.
+    if (start != end) {
+        result = realloc(result, *count);
+        result[*count] = malloc(end - start);
+        strncpy(result[*count], start, end - start);
+        (*count)++;
     }
 
+    free(trimmedLine);
     return result;
 }
-
 
 /// Tokenises the given assembly line into its [TokenisedLine] form.
 /// @param line Pointer to the string to be tokenised.
@@ -76,9 +89,29 @@ TokenisedLine tokenise(const char *line) {
 
     // Extract the mnemonic.
     size_t mnemonicLength = separator - trimmedLine;
+    *separator = '\0';
+
+    // Extract sub-mnemonic if present.
+    char *mnemonicSeparator = strchr(trimmedLine, '.');
+    if (mnemonicSeparator != NULL) {
+        mnemonicLength = mnemonicSeparator - trimmedLine;
+
+        // Throw away leading '.' when copying.
+        size_t subMnemonicLength = separator - mnemonicSeparator - 1;
+        result.subMnemonic = (char *) malloc(subMnemonicLength + 1);
+        strncpy(result.subMnemonic, mnemonicSeparator + 1, subMnemonicLength);
+        *(result.subMnemonic + subMnemonicLength) = '\0';
+
+        assertFatal(strcmp(result.subMnemonic, ""),
+                    "[tokenise] Sub-mnemonic was present but is empty!");
+        // Note, we do not [assertFatal] on the mnemonic, since that signifies
+        // we have found a directive!
+    }
+
+    // Copy in mnemonic.
     result.mnemonic = (char *) malloc(mnemonicLength + 1);
     strncpy(result.mnemonic, trimmedLine, mnemonicLength);
-    // *(result.mnemonic + mnemonicLength) = '\0';
+    *(result.mnemonic + mnemonicLength) = '\0';
 
     // Extract all the operands together.
     char *operands = separator + 1; // New variable for clarity.
@@ -99,6 +132,8 @@ TokenisedLine tokenise(const char *line) {
 /// @param line [TokenisedLine] to be freed.
 void destroyTokenisedLine(TokenisedLine line) {
     free(line.mnemonic);
+    free(line.subMnemonic);
+
     for (int i = 0; i < line.operandCount; i++) {
         free(line.operands[i]);
     }
