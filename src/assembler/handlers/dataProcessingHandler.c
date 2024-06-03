@@ -2,13 +2,13 @@
 /// dataProcessingHandler.c
 /// Functions to parse from assembly a Data Processing instruction.
 ///
-/// Created by Jack on 6/3/2024.
+/// Created by Jack Wong on 03/06/2024.
 ///
 
 #include "dataProcessingHandler.h"
 
 static TokenisedLine convertAlias(TokenisedLine *line);
-static bool isImmediateInstrution(TokenisedLine *line);
+static bool isImmediateInstruction(TokenisedLine *line);
 
 /// Converts the assembly form of an Data Processing instruction to IR form.
 /// @param line The [TokenisedLine] of the instruction.
@@ -18,18 +18,17 @@ static bool isImmediateInstrution(TokenisedLine *line);
 IR parseDataProcessing(TokenisedLine *line, AssemblerState *state) {
     IR ir;
     char *mnemonic = line->mnemonic;
-    bool isAlias = (
-        strcmp(mnemonic, "cmp") == 0 ||
-        strcmp(mnemonic, "cmn") == 0 ||
-        strcmp(mnemonic, "neg") == 0 ||
-        strcmp(mnemonic, "negs") == 0 ||
-        strcmp(mnemonic, "tst") == 0 ||
-        strcmp(mnemonic, "mvn") == 0 ||
-        strcmp(mnemonic, "mov") == 0 ||
-        strcmp(mnemonic, "mul") == 0 ||
-        strcmp(mnemonic, "mneg") == 0);
-    TokenisedLine *workingLine = isAlias ? &convertAlias(line) : line;
-    if (isImmediateInstrution(workingLine)) ir = parseImmediate(workingLine, state);
+    bool isAlias = false;
+    char *aliases[9] = {"cmp", "cmn", "neg", "negs", "tst", "mvn", "mov", "mul", "mneg"};
+    for (int i = 0; i < 9; i++) {
+        if (strcmp(mnemonic, aliases[i]) == 0) {
+            isAlias = true;
+            break;
+        }
+    }
+    TokenisedLine converted = convertAlias(line);
+    TokenisedLine *workingLine = isAlias ? &converted : line;
+    if (isImmediateInstruction(workingLine)) ir = parseImmediate(workingLine, state);
     // assuming it can't be any other instruction type
     else ir = parseRegister(workingLine, state);
     // only destroy if a new TokenisedLine was made (since the one passed in to parseDataProcessing is handled elsewhere)
@@ -95,7 +94,7 @@ static TokenisedLine convertAlias(TokenisedLine *line) {
             else throwFatal("Instruction mnemonic is invalid!");
             break;
         }
-        case default: throwFatal("Instruction mnemonic is invalid!");
+        default: throwFatal("Instruction mnemonic is invalid!");
     }
     return (TokenisedLine) {operandCount, newMnemonic, .operands = operands };
 }
@@ -103,7 +102,7 @@ static TokenisedLine convertAlias(TokenisedLine *line) {
 /// Returns whether a given instruction is a Data Processing (Immediate) instruction.
 /// @param line The [TokenisedLine] of the instruction.
 /// @return true if instruction is Data Processing (Immediate), false if not.
-static bool isImmediateInstrution(TokenisedLine *line) {
+static bool isImmediateInstruction(TokenisedLine *line) {
     char *mnemonic = line->mnemonic;
     bool isArithmetic = (
         strcmp(mnemonic, "add") == 0 ||

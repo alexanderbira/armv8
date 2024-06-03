@@ -2,7 +2,7 @@
 /// registerHandler.c
 /// Functions to parse from assembly and write as binary a Data Processing (Register) instruction.
 ///
-/// Created by Jack on 6/1/2024.
+/// Created by Jack Wong on 01/06/2024.
 ///
 
 #include "registerHandler.h"
