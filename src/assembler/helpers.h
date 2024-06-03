@@ -26,6 +26,24 @@ typedef struct {
     char **operands;   /// The list of operands.
 } TokenisedLine;
 
+/// An address code for a single data transfer instruction.
+typedef struct {
+    /// The destination register.
+    uint8_t xn;
+
+    /// The type of the other operand.
+    enum OtherType {
+        UNSIGNED, SIGNED, REG
+    } type;
+
+    /// The other operand.
+    union {
+        uint16_t imm;
+        int16_t simm;
+        uint8_t reg;
+    } data;
+} AddressCode;
+
 char *trim(char *str, const char *except);
 
 char **split(const char *str, const char *delim, int *count);
@@ -37,5 +55,7 @@ void destroyTokenisedLine(TokenisedLine line);
 Literal parseLiteral(const char *literal);
 
 uint8_t parseRegisterStr(const char *name, bool *sf);
+
+AddressCode parseAddressCode(const char *operand);
 
 #endif // ASSEMBLER_HELPERS_H
