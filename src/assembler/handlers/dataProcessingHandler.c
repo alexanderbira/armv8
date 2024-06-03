@@ -1,6 +1,9 @@
-//
-// Created by Jack on 6/3/2024.
-//
+///
+/// dataProcessingHandler.c
+/// Functions to parse from assembly a Data Processing instruction.
+///
+/// Created by Jack on 6/3/2024.
+///
 
 #include "dataProcessingHandler.h"
 
@@ -11,8 +14,9 @@ static bool isImmediateInstrution(TokenisedLine *line);
 /// @param line The [TokenisedLine] of the instruction.
 /// @param state The current state of the assembler.
 /// @return The [IR] struct representing the instruction.
-/// @pre The incoming [line] is a Data Processing (Immediate) assembly instruction.
-IR dataProcessingHandler(TokenisedLine *line, AssemblerState *state) {
+/// @pre The incoming [line] is a Data Processing assembly instruction.
+IR parseDataProcessing(TokenisedLine *line, AssemblerState *state) {
+    IR ir;
     char *mnemonic = line->mnemonic;
     bool isAlias = (
         strcmp(mnemonic, "cmp") == 0 ||
@@ -25,6 +29,12 @@ IR dataProcessingHandler(TokenisedLine *line, AssemblerState *state) {
         strcmp(mnemonic, "mul") == 0 ||
         strcmp(mnemonic, "mneg") == 0);
     TokenisedLine *workingLine = isAlias ? &convertAlias(line) : line;
+    if (isImmediateInstrution(workingLine)) ir = parseImmediate(workingLine, state);
+    // assuming it can't be any other instruction type
+    else ir = parseRegister(workingLine, state);
+    // only destroy if a new TokenisedLine was made (since the one passed in to parseDataProcessing is handled elsewhere)
+    if (isAlias) destroyTokenisedLine(*workingLine);
+    return ir;
 }
 
 /// Converts an assembly form instruction to its alias.

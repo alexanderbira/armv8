@@ -10,7 +10,9 @@
 #include "../../common/ir/ir.h"
 #include "../helpers.h"
 #include "../state.h"
+#include <immediateHandler.h>
+#include <registerHandler.h>
 
-IR dataProcessingHandler(TokenisedLine *line, AssemblerState *state);
+IR parseDataProcessing(TokenisedLine *line, AssemblerState *state);
 
 #endif //DATAPROCESSINGHANDLER_H
