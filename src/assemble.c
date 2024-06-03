@@ -26,28 +26,24 @@ int main(int argc, char **argv) {
         // Check if line is blank.
         if (strlen(line) == 0) continue;
 
-        // Check if line is directive.
-        if (line[0] == '.') {
-            IR ir = handleDirective(trimmedLine, &state);
-            addIR(&state, ir);
-        }
-
         // Check if line is a label.
         char *colon = strchr(line, ':');
         if (colon != NULL) {
             // Ensure all preceding chars are alphabet.
+            bool isLabel = true;
             for (char *p = line; p < colon; p++) {
-                if (!isalpha((unsigned char) *p)) {
-                    IR ir = handleInstruction(trimmedLine, &state);
-                    addIR(&state, ir);
-                }
+                if (!isalpha((unsigned char) *p)) isLabel = false;
             }
 
-            handleLabel(trimmedLine, &state);
+            if (isLabel) handleLabel(trimmedLine, &state);
         }
 
-        // By default, return instruction.
-        IR ir = handleInstruction(trimmedLine, &state);
+        // By default, handle either directive or instructions.
+        TokenisedLine tokenisedLine = tokenise(line);
+        IR ir = (tokenisedLine.mnemonic == NULL)
+                ? handleDirective(&tokenisedLine, &state)
+                : handleInstruction(&tokenisedLine, &state);
+        destroyTokenisedLine(tokenisedLine);
         addIR(&state, ir);
     }
 
