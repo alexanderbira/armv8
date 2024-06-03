@@ -1,6 +1,9 @@
-//
-// Created by Jack on 6/1/2024.
-//
+///
+/// registerHandler.h
+/// Functions to parse from assembly and write as binary a Data Processing (Register) instruction.
+///
+/// Created by Jack Wong on 01/06/2024.
+///
 
 #ifndef ASSEMBLER_REGISTER_H
 #define ASSEMBLER_REGISTER_H
