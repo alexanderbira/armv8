@@ -5,7 +5,6 @@
 /// Created by Lancelot Liu on 26/05/2024.
 ///
 
-#include <assert.h>
 #include "registers.h"
 
 /// Initialises a register to desired state at startup.
@@ -36,7 +35,7 @@ Registers_s createRegs(void) {
 /// @return The value of the register, or 0 if [id] is out of range.
 BitData getReg(Registers regs, size_t id) {
     if (id == 31) return 0; // Zero Register
-    assert(id < NUM_GPRS);
+    assertFatal(id < NUM_GPRS, "[getReg] Invalid register ID!");
     return regs->gprs[id];
 }
 
@@ -64,8 +63,8 @@ bool getRegState(Registers regs, PStateField field) {
         case Z: return regs->pstate.zr;
         case C: return regs->pstate.cr;
         case V: return regs->pstate.ov;
-        // TODO: Change after error handling protocol settled.
-        default: return false;
+        default:
+            throwFatal("[getRegState] Invalid PState field!");
     }
 }
 
@@ -76,7 +75,7 @@ bool getRegState(Registers regs, PStateField field) {
 /// @param value The value to write.
 void setReg(Registers regs, size_t id, bool as64, BitData value) {
     if (id == 31) return; // Zero Register
-    assert(id < NUM_GPRS);
+    assertFatal(id < NUM_GPRS, "[getReg] Invalid register ID!");
     regs->gprs[id] = as64 ? value : (uint32_t) value;
 }
 
@@ -111,6 +110,8 @@ void setRegState(Registers regs, PStateField field, bool state) {
         case Z: regs->pstate.zr = state; break;
         case C: regs->pstate.cr = state; break;
         case V: regs->pstate.ov = state; break;
+        default:
+            throwFatal("[getRegState] Invalid PState field!");
     }
 }
 
