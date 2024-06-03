@@ -8,7 +8,7 @@
 /// @param line The [TokenisedLine] of the instruction.
 /// @return The [Reg_IR] struct representing the instruction.
 /// @pre The incoming [line] is a Data Processing (Register) assembly instruction.
-IR parseRegister(TokenisedLine *line, AssemblerState *state) {
+IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
     Register_IR registerIR;
 
     union RegisterOpCode opc;
@@ -154,7 +154,7 @@ Instruction translateRegister(IR *irObject, unused AssemblerState *state) {
     Instruction instruction = REGISTER_;
 
     // Load [sf]
-    instruction = (Instruction) registerIR->sf << 31;
+    instruction |= (Instruction) registerIR->sf << 31;
 
     // Load [opc], trust value since defined in enum.
     switch (registerIR->group) {
@@ -178,7 +178,7 @@ Instruction translateRegister(IR *irObject, unused AssemblerState *state) {
     }
 
     // Load [M], trust since Boolean.
-    instruction = (Instruction) registerIR->M << REGISTER_M_S;
+    instruction |= (Instruction) registerIR->M << REGISTER_M_S;
 
     // Load [opr], [rm].
     instruction |= (Instruction) truncater(registerIR->opr, REGISTER_OPR_N) << REGISTER_OPR_S;

@@ -20,7 +20,6 @@ int main(int argc, char **argv) {
     AssemblerState state = createState();
     char line[256];
 
-    // TODO: Handle line too long... is it possible?
     while (fgets(line, sizeof(line), fileIn)) {
         char *trimmedLine = trim(line, " ");
 
