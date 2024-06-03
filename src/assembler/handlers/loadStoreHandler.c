@@ -14,7 +14,7 @@
 IR parseLoadStore(TokenisedLine *line, unused AssemblerState *state) {
 
     assertFatal(line->operandCount == 2 || line->operandCount == 3,
-                "[parseSingleDataTransfer] Incorrect number of operands!");
+                "[parseLoadStore] Incorrect number of operands!");
 
     LoadStore_IR loadStoreIR;
 
@@ -36,7 +36,6 @@ IR parseLoadStore(TokenisedLine *line, unused AssemblerState *state) {
             u = true;
             mode = UNSIGNED_OFFSET;
             offset.uoffset = 0;
-
 
 
         } else {

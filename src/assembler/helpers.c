@@ -47,7 +47,7 @@ char **split(const char *str, const char *delim, int *count) {
 
     for (size_t i = 0; i < length; i++) {
         // Cannot handle nested brackets!
-        if (strchr("[{()}]", trimmedLine[i]) != NULL) inBrackets = !inBrackets;
+        // if (strchr("[{()}]", trimmedLine[i]) != NULL) inBrackets = !inBrackets;
 
         if (strchr(delim, trimmedLine[i]) != NULL && !inBrackets) {
             result = realloc(result, *count);
@@ -176,42 +176,4 @@ uint8_t parseRegisterStr(const char *name, bool *sf) {
                     "[parseRegister] Invalid register name!");
         return 0x1F;
     }
-}
-
-/// Parses an address code for a single data transfer instruction.
-/// @param operand The operand containing the address code.
-/// @return An [AddressCode].
-/// @pre [operand] is trimmed. This should be the case if [operand] is gotten from [tokenise].
-AddressCode parseAddressCode(const char *operand) {
-    AddressCode code;
-    char *registerName = malloc(3);
-    char *otherName = malloc(strlen(operand));
-
-    assertFatal(*operand == '[', "[parseAddressCode] Not an address code! (Missing opening brackets.)");
-
-    // Register names are at most three characters.
-    // White space around / between comma will be trimmed away.
-    // Trailing exclamation mark can be absent - sscanf supports partial success.
-    // Example Operand: "[x13, #838383]!"
-    assertFatal(sscanf(operand, "[%3s,%[^]!]s]!", registerName, otherName) == 2,
-                "[parseAddressCode] Failed to parse code!");
-    code.xn = parseRegisterStr(registerName, NULL);
-    char *otherTrimmed = trim(otherName, " ");
-
-    if (*(operand + strlen(operand) - 1) == '!') {
-        code.type = SIGNED;
-        assertFatal(sscanf(otherTrimmed, "#%" SCNi16, &code.data.simm) == 1,
-                    "[parseAddressCode] Failed to parse signed immediate!");
-    } else if (strchr(operand, '#') != NULL) {
-        code.type = UNSIGNED;
-        assertFatal(sscanf(otherTrimmed, "#%" SCNx16, &code.data.simm) == 1,
-                    "[parseAddressCode] Failed to parse unsigned immediate!");
-    } else {
-        code.type = REG;
-        code.data.reg = parseRegisterStr(otherTrimmed, NULL);
-    }
-
-    free(registerName);
-    free(otherName);
-    return code;
 }

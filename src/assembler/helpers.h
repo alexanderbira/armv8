@@ -56,6 +56,4 @@ Literal parseLiteral(const char *literal);
 
 uint8_t parseRegisterStr(const char *name, bool *sf);
 
-AddressCode parseAddressCode(const char *operand);
-
 #endif // ASSEMBLER_HELPERS_H
