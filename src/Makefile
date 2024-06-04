@@ -54,4 +54,4 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) $(CFLAGS) $(CXXFLAGS) -c $< -o $@
 
 clean:
-	$(RM) -r $(OBJ_DIR) $(BIN_DIR)
+	$(RM) -r $(OBJ_DIR) $(BIN_DIR) emulate assemble
