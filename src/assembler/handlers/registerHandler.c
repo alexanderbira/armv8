@@ -112,9 +112,11 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
         operand = (union RegisterOperand) {.multiply = multiply};
     } else {
         uint8_t imm6 = 0;
-        shift = LSL;
+        shift = 0;
 
         int matched;
+
+
 
         if (line->operandCount == 4 && strchr(line->operands[3],' ') != NULL) {
             char **shiftAndValue = split(line->operands[3], " ", &matched);
@@ -164,7 +166,7 @@ Instruction translateRegister(IR *irObject, unused AssemblerState *state) {
     Instruction instruction = REGISTER_;
 
     // Load [sf]
-    instruction |= (Instruction) registerIR->sf << 31;
+    instruction |= (Instruction) registerIR->sf << IMMEDIATE_SF_S;
 
     // Load [opc], trust value since defined in enum.
     switch (registerIR->group) {

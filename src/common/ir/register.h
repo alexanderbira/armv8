@@ -74,7 +74,7 @@
 #define REGISTER_RN_N           5
 
 /// Number of bits to shift [rn] in [operand] in a Register instruction.
-#define REGISTER_RN_S           10
+#define REGISTER_RN_S           5
 
 /// Mask for [rn] in a Register instruction.
 #define REGISTER_RN_M           mask(9, 5)
