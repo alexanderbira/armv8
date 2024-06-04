@@ -21,7 +21,7 @@
 #define IMMEDIATE_ARITHMETIC_SH_S    22
 
 /// Number of bits to shift for [imm12] in an Immediate (Arithmetic) instruction.
-#define IMMEDIATE_ARITHMETIC_IMM12_S 22
+#define IMMEDIATE_ARITHMETIC_IMM12_S 10
 
 /// Number of bits in [imm12] in an Immediate (Arithmetic) instruction.
 #define IMMEDIATE_ARITHMETIC_IMM12_N 12
