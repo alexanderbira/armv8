@@ -28,8 +28,11 @@ IR parseDataProcessing(TokenisedLine *line, AssemblerState *state) {
         }
     }
 
-    TokenisedLine converted = convertAlias(line);
-    TokenisedLine *workingLine = isAlias ? &converted : line;
+    TokenisedLine *workingLine = line;
+    if (isAlias) {
+        TokenisedLine converted = convertAlias(line);
+        workingLine = &converted;
+    }
 
     if (isImmediateInstruction(workingLine)) {
         ir = parseImmediate(workingLine, state);
