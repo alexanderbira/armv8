@@ -33,7 +33,7 @@ IR handleDirective(TokenisedLine *tokenisedLine, unused AssemblerState *state) {
 void handleLabel(const char *line, AssemblerState *state) {
     // Remove trailing colon. See precondition.
     char *label = strdup(line);
-    *(label + strlen(label) - 1) = '\0';
+    *strchr(label, ':') = '\0';
 
     addMapping(state, label, state->address);
 }

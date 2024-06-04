@@ -15,22 +15,23 @@
 int main(int argc, char **argv) {
     // Check that [argv] is valid, i.e., has 3 args.
     if (argc != 3) return EXIT_FAILURE;
-
     FILE *fileIn = fopen(argv[1], "r");
+
     AssemblerState state = createState();
     char line[256];
 
     while (fgets(line, sizeof(line), fileIn)) {
-        char *trimmedLine = trim(line, " ");
+        char *trimmedLine = trim(line, " \n");
 
         // Check if line is blank.
         if (strlen(line) == 0) continue;
 
         // Check if line is a label.
+        bool isLabel = false;
         char *colon = strchr(line, ':');
         if (colon != NULL) {
             // Ensure all preceding chars are alphabet.
-            bool isLabel = true;
+            isLabel = true;
             for (char *p = line; p < colon; p++) {
                 if (!isalpha((unsigned char) *p)) isLabel = false;
             }
@@ -38,18 +39,19 @@ int main(int argc, char **argv) {
             if (isLabel) handleLabel(trimmedLine, &state);
         }
 
-        // By default, handle either directive or instructions.
-        TokenisedLine tokenisedLine = tokenise(line);
-        IR ir = (tokenisedLine.mnemonic == NULL)
-                ? handleDirective(&tokenisedLine, &state)
-                : handleInstruction(&tokenisedLine, &state);
-        destroyTokenisedLine(tokenisedLine);
-        addIR(&state, ir);
+        if (!isLabel) {
+            // By default, handle either directive or instructions.
+            TokenisedLine tokenisedLine = tokenise(line);
+            IR ir = (tokenisedLine.mnemonic == NULL)
+                    ? handleDirective(&tokenisedLine, &state)
+                    : handleInstruction(&tokenisedLine, &state);
+            destroyTokenisedLine(tokenisedLine);
+            addIR(&state, ir);
+        }
     }
 
     fclose(fileIn);
     FILE *fileOut = fopen(argv[2], "wb");
-
     for (size_t i = 0; i < state.irCount; i++) {
         IR ir = state.irList[i];
         Instruction instruction = getTranslateFunction(ir.type)(&ir, &state);
