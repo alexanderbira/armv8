@@ -55,7 +55,7 @@ static TokenisedLine convertAlias(TokenisedLine *line) {
     // Overallocating by 1 seems reasonable for [char *newMnemonic] and [char **operands].
     // Max number of chars / pointers is 4 for both.
     // Using #define for this seems... hard to name :)
-    char *newMnemonic = (char *) malloc(4);
+    char *newMnemonic = (char *) malloc(5);
     char **operands = (char **) malloc(4 * sizeof(char *));
     int operandCount = 3; // operandCount is either 3 or 4. Default to 3.
 
