@@ -14,14 +14,18 @@
 /// @attention Mutates input pointer [str].
 char *trim(char *str, const char *except) {
     // Trim leading space.
-    for (; *str && strchr(except, *str) != NULL; str++);
+    char *start = str;
+    for (; *start && strchr(except, *start) != NULL; start++);
 
     // Trim trailing space.
     char *end = str + strlen(str) - 1;
     for (; end > str && strchr(except, *end) != NULL; end--);
 
-    // Terminate and return string.
-    *++end = '\0';
+    // (Possibly) shift, terminate and return string.
+    // Calculate the new length of the trimmed string.
+    size_t newLength = end - start + 1;
+    if (start != str) memmove(str, start, newLength);
+    str[newLength] = '\0';
     return str;
 }
 
@@ -124,9 +128,9 @@ TokenisedLine tokenise(const char *line) {
 void destroyTokenisedLine(TokenisedLine line) {
     free(line.mnemonic);
     free(line.subMnemonic);
-    for (int i = 0; i < line.operandCount; i++) {
-        free(line.operands[i]);
-    }
+//    for (int i = 0; i < line.operandCount; i++) {
+//        free(line.operands[i]);
+//    }
     free(line.operands);
 }
 

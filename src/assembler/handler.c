@@ -36,6 +36,7 @@ void handleLabel(const char *line, AssemblerState *state) {
     *strchr(label, ':') = '\0';
 
     addMapping(state, label, state->address);
+    free(label);
 }
 
 /// Function to process an instruction.

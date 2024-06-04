@@ -47,7 +47,7 @@ IR parseDataProcessing(TokenisedLine *line, AssemblerState *state) {
         // Number of operands in translated aliases is always one more.
         line->operands = realloc(line->operands, line->operandCount++ + 1);
         char *oldMnemonic = line->mnemonic;
-        line->mnemonic = malloc(5);
+        line->mnemonic = (char *) malloc(5);
 
         switch (oldMnemonic[0]) {
             case 'c':
