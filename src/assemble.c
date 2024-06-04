@@ -21,7 +21,7 @@ int main(int argc, char **argv) {
     char line[256];
 
     while (fgets(line, sizeof(line), fileIn)) {
-        char *trimmedLine = trim(line, " \n");
+        char *trimmedLine = trim(line, WHITESPACE);
 
         // Check if line is blank.
         if (strlen(trimmedLine) == 0) continue;
