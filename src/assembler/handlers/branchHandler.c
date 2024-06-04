@@ -79,6 +79,7 @@ Instruction translateBranch(IR *irObject, AssemblerState *state) {
             if (simm26->isLabel) {
                 BitData *address = NULL;
                 address = getMapping(state, simm26->data.label);
+                *address /= 4;
                 assertFatal(address != NULL, "[translateBranch] No mapping for label!");
                 return result | truncater(*address, BRANCH_UNCONDITIONAL_SIMM26_N);
             }
@@ -95,6 +96,7 @@ Instruction translateBranch(IR *irObject, AssemblerState *state) {
             if (conditional->simm19.isLabel) {
                 BitData *address = NULL;
                 address = getMapping(state, conditional->simm19.data.label);
+                *address /= 4;
                 assertFatal(address != NULL, "[translateBranch] No mapping for label!");
                 result |= truncater(*address, BRANCH_CONDITIONAL_SIMM19_N);
             } else {
