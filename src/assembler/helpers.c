@@ -113,10 +113,9 @@ TokenisedLine tokenise(const char *line) {
         // we have found a directive!
     }
 
-    // Copy in mnemonic.
+    // Copy in mnemonic. Null terminate supplied previously.
     result.mnemonic = (char *) malloc(mnemonicLength + 1);
     strncpy(result.mnemonic, trimmedLine, mnemonicLength);
-    *(result.mnemonic + mnemonicLength) = '\0';
 
     // Extract all the operands together.
     char *operands = separator + 1; // New variable for clarity.
@@ -180,4 +179,15 @@ uint8_t parseRegisterStr(const char *name, bool *sf) {
                     "[parseRegister] Invalid register name!");
         return 0x1F;
     }
+}
+
+/// The same as [strcmp], but takes in [void *]s.
+/// @param v1 The first item.
+/// @param v2 The second item.
+/// @return The result of \code strcmp((const char *) v1, (const char *) v2) \endcode
+/// @attention Use only when you are sure your pointers are [char *]!
+int strcmpVoid(const void *v1, const void *v2) {
+    const char *s1 = v1;
+    const char *s2 = v2;
+    return strcmp(s1, s2);
 }
