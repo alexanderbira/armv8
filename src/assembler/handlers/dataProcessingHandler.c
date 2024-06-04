@@ -8,9 +8,9 @@
 #include "dataProcessingHandler.h"
 
 static const char *aliasMnemonics[] = {
-        "cmp", "cmn", "neg",
-        "negs", "tst", "mvn",
-        "mov", "mul", "mneg"
+        "cmn", "cmp", "mneg",
+        "mov", "mul", "mvn",
+        "neg", "negs", "tst",
 };
 
 static const size_t numAliasMnemonics = sizeof(aliasMnemonics) / sizeof(char *);
@@ -37,7 +37,7 @@ IR parseDataProcessing(TokenisedLine *line, AssemblerState *state) {
                 "[parseDataProcessing] Incorrect number of operands!");
 
     // If [line] is an aliased instruction, convert it first.
-    bool isAlias = bsearch(line->mnemonic, *aliasMnemonics, numAliasMnemonics,
+    bool isAlias = bsearch(&line->mnemonic, aliasMnemonics, numAliasMnemonics,
                            sizeof(char *), strcmpVoid) != NULL;
     if (isAlias) {
         // Aliased instructions always have zero register as destination.
@@ -104,15 +104,15 @@ IR parseDataProcessing(TokenisedLine *line, AssemblerState *state) {
     }
 
     // If instruction is wide-move, or arithmetic with immediate, it is an Immediate instruction.
-    bool isImmediate = bsearch(line->mnemonic, *wideMoveMnemonics, numWideMoveMnemonics,
+    bool isImmediate = bsearch(&line->mnemonic, wideMoveMnemonics, numWideMoveMnemonics,
                                sizeof(char *), strcmpVoid) != NULL;
     if (!isImmediate) {
-        isImmediate = bsearch(line->mnemonic, *arithmeticMnemonics, numArithmeticMnemonics,
+        isImmediate = bsearch(&line->mnemonic, arithmeticMnemonics, numArithmeticMnemonics,
                               sizeof(char *), strcmpVoid) != NULL;
         assertFatal(line->operandCount >= 3,
                     "[parseDataProcessing] Incorrect number of operands when calculating [isImmediate]!");
         // Immediate in instructions of [arithmeticMnemonics] always positioned in 3rd operand.
-        isImmediate &= strchr(line->operands[2], '#') != NULL;
+        isImmediate &= (strchr(line->operands[2], '#') != NULL);
     }
 
     return isImmediate ? parseImmediate(line, state) : parseRegister(line, state);

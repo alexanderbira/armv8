@@ -192,7 +192,7 @@ uint64_t parseImmediateStr(const char *operand, size_t bitWidth) {
 /// @return The result of \code strcmp((const char *) v1, (const char *) v2) \endcode
 /// @attention Use only when you are sure your pointers are [char *]!
 int strcmpVoid(const void *v1, const void *v2) {
-    const char *s1 = (const char *) v1;
-    const char *s2 = (const char *) v2;
+    const char *s1 = *(const char **) v1;
+    const char *s2 = *(const char **) v2;
     return strcmp(s1, s2);
 }
