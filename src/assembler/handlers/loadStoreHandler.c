@@ -116,8 +116,8 @@ IR parseLoadStore(TokenisedLine *line, unused AssemblerState *state) {
 /// @return 32-bit binary word of the instruction.
 Instruction translateLoadStore(IR *irObject, AssemblerState *state) {
 
-    assertFatal(irObject->type == SINGLE_DATA_TRANSFER,
-                "[writeSingleDataTransfer] Received non-single data transfer IR!");
+    assertFatal(irObject->type == LOAD_STORE,
+                "[translateLoadStore] Received non-single data transfer IR!");
     LoadStore_IR *loadStore = &irObject->ir.loadStoreIR;
     Instruction result;
 
@@ -149,7 +149,7 @@ Instruction translateLoadStore(IR *irObject, AssemblerState *state) {
 
             result |= loadStore->data.sdt.xn << LOAD_STORE_DATA_XN_S;
             result |= loadStore->rt;
-            return result;
+            break;
 
         case LOAD_LITERAL:
             result  = LOAD_STORE_LITERAL;
@@ -159,7 +159,7 @@ Instruction translateLoadStore(IR *irObject, AssemblerState *state) {
             if (simm19->isLabel) {
                 BitData *address = NULL;
                 address = getMapping(state, simm19->data.label);
-                assertFatal(address != NULL, "[writeBranch] No mapping for label!");
+                assertFatal(address != NULL, "[translateLoadStore] No mapping for label!");
                 result |= truncater(*address, LOAD_STORE_LITERAL_SIMM19_N)
                           << LOAD_STORE_LITERAL_SIMM19_S;
             } else {
@@ -167,6 +167,7 @@ Instruction translateLoadStore(IR *irObject, AssemblerState *state) {
             }
 
             result |= truncater(loadStore->rt, LOAD_STORE_RT_N);
-            return result;
+            break;
     }
+    return result;
 }
