@@ -20,6 +20,8 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
     uint8_t opr = REGISTER_BITLOGIC_GM; // At first, assume [opr] as if instruction is bit-logic.
     bool negated;
 
+    registerIR.opc.multiply = false;
+
     switch (line->mnemonic[0]) {
 
         case 'a':
@@ -109,27 +111,32 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
         multiply = (struct Multiply) {x, ra};
         operand = (union RegisterOperand) {.multiply = multiply};
     } else {
-        uint8_t imm6;
+        uint8_t imm6 = 0;
+        shift = LSL;
+
         int matched;
-        char **shiftAndValue = split(line->operands[3], " ", &matched);
 
-        // fill imm6
-        sscanf(shiftAndValue[2], "%*c%hhu", &imm6);
-
-        // switch based on first letter of shift name
-        switch (shiftAndValue[0][0]) {
-            case 'l':
-                // differentiate based on third letter of shift name
-                shift = (shiftAndValue[0][2] == 'l') ? LSL : LSR;
-                break;
-            case 'a':
-                shift = ASR;
-                break;
-            case 'r':
-                shift = ROR;
-                break;
-            default: throwFatal("Shift supplied was not a shift.");
+        if (line->operandCount == 4 && strchr(line->operands[3],' ') != NULL) {
+            char **shiftAndValue = split(line->operands[3], " ", &matched);
+            // fill imm6
+            sscanf(shiftAndValue[2], "%*c%hhu", &imm6);
+            // switch based on first letter of shift name
+            switch (shiftAndValue[0][0]) {
+                case 'l':
+                    // differentiate based on third letter of shift name
+                    shift = (shiftAndValue[0][2] == 'l') ? LSL : LSR;
+                    break;
+                case 'a':
+                    shift = ASR;
+                    break;
+                case 'r':
+                    shift = ROR;
+                    break;
+                default:
+                    throwFatal("Shift supplied was not a shift.");
+            }
         }
+
 
         operand = (union RegisterOperand) {.imm6 = imm6};
     }
