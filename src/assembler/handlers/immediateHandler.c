@@ -70,13 +70,15 @@ IR parseImmediate(TokenisedLine *line, unused AssemblerState *state) {
         // Get shift is <lsl> is present.
         arithmetic.sh = false;
         if (line->operandCount == 4) {
+            arithmetic.sh = true;
             // Take only immediate since arithmetic instructions can only take logical left shifts.
             int matched;
-            char *shiftValue = split(line->operands[2], " ", &matched)[1];
+            char *shiftValue = split(line->operands[3], " ", &matched)[1];
             assertFatal(matched == 2, "[parseImmediate] Incorrect shift parameter!");
-            assertFatal(sscanf(shiftValue, "#%" SCNu8, (uint8_t *) &arithmetic.sh),
+            int shiftAmount;
+            assertFatal(sscanf(shiftValue, "#%" SCNu8, (uint8_t *) &shiftAmount),
                         "[parseImmediate] Could not read shift!");
-            arithmetic.sh = (arithmetic.sh != 0);
+            assertFatal(shiftAmount == 0xC, "[parseImmediate] Incorrect shift amount!");
         }
 
         immediateIR = (Immediate_IR) {
