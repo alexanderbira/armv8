@@ -83,10 +83,11 @@ char **split(const char *str, const char *delim, int *count) {
 /// @return The [TokenisedLine] representing the instruction.
 /// @throw InvalidInstruction Will fatal error if the instruction is not valid. This is not a post-condition!
 TokenisedLine tokenise(const char *line) {
+    char *lineCopy    = strdup(line);
     TokenisedLine result;
-    char *lineCopy = strdup(line);
-    char *trimmedLine = trim(lineCopy, ", ");
+    result.subMnemonic = NULL;
 
+    char *trimmedLine = trim(lineCopy, ", \n");
     // Find the first space in the line, separating the mnemonic from the operands.
     char *separator = strchr(lineCopy, ' ');
     assertFatal(separator, "[tokenise] Invalid assembly instruction!");
@@ -137,7 +138,6 @@ TokenisedLine tokenise(const char *line) {
 void destroyTokenisedLine(TokenisedLine line) {
     free(line.mnemonic);
     free(line.subMnemonic);
-
     for (int i = 0; i < line.operandCount; i++) {
         free(line.operands[i]);
     }
