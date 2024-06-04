@@ -117,7 +117,7 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
         if (line->operandCount == 4 && strchr(line->operands[3],' ') != NULL) {
             char **shiftAndValue = split(line->operands[3], " ", &matched);
             // fill imm6
-            imm6 = parseImmediateStr(shiftAndValue[2], REGISTER_OPERAND_IMM6_N);
+            imm6 = parseImmediateStr(shiftAndValue[1], REGISTER_OPERAND_IMM6_N);
             // switch based on first letter of shift name
             switch (shiftAndValue[0][0]) {
                 case 'l':

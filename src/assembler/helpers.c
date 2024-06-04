@@ -128,9 +128,9 @@ TokenisedLine tokenise(const char *line) {
 void destroyTokenisedLine(TokenisedLine line) {
     free(line.mnemonic);
     free(line.subMnemonic);
-//    for (int i = 0; i < line.operandCount; i++) {
-//        free(line.operands[i]);
-//    }
+    for (int i = 0; i < line.operandCount; i++) {
+        free(line.operands[i]);
+    }
     free(line.operands);
 }
 
