@@ -30,12 +30,12 @@ char *trim(char *str, const char *except) {
 /// @param[in] delim List of delimiter(s).
 /// @param[out] count Number of pieces the incoming string was split into.
 /// @return Pointer to the array of split strings.
-/// @attention Will ignore delimeters inside of brackets (incl. square, curly, round)! Cannot handle nested brackets.
-/// @example \code split("hello [world haha]", " ", &count) = ["hello", "[world haha]"] \endcode
+// /// @attention Will ignore delimeters inside of brackets (incl. square, curly, round)! Cannot handle nested brackets.
+// /// @example \code split("hello [world haha]", " ", &count) = ["hello", "[world haha]"] \endcode
 char **split(const char *str, const char *delim, int *count) {
     *count = 0;
     char *trimmedLine = strdup(str);
-    trimmedLine = trim(trimmedLine, " ");
+    trimmedLine = trim(trimmedLine, WHITESPACE);
 
     // These present the start and end of the current segment.
     char *start = trimmedLine;
@@ -45,14 +45,14 @@ char **split(const char *str, const char *delim, int *count) {
 
     char **result = NULL;
 
-    for (size_t i = 0; i < length; i++) {
+    for (size_t i = 0; i < length + 1; i++) {
         // Cannot handle nested brackets!
         // if (strchr("[{()}]", trimmedLine[i]) != NULL) inBrackets = !inBrackets;
 
-        if (strchr(delim, trimmedLine[i]) != NULL && !inBrackets) {
+        if ((!trimmedLine[i] || strchr(delim, trimmedLine[i]) != NULL) && !inBrackets) {
             size_t operandLength = end - start;
-            result = realloc(result, *count);
-            result[*count] = malloc(operandLength + 1);
+            result = (char **) realloc(result, (*count + 1) * sizeof(char *));
+            result[*count] = (char *) malloc(operandLength + 1);
             strncpy(result[*count], start, operandLength);
             *(result[*count] + operandLength) = '\0';
             start = ++end;
@@ -63,17 +63,6 @@ char **split(const char *str, const char *delim, int *count) {
     }
 
     assertFatal(!inBrackets, "[split] Malformed brackets!");
-
-    // Put in last element if present.
-    if (start != end) {
-        size_t operandLength = end - start;
-        result = realloc(result, *count);
-        result[*count] = malloc(operandLength + 1);
-        strncpy(result[*count], start, operandLength);
-        *(result[*count] + operandLength) = '\0';
-        (*count)++;
-    }
-
     free(trimmedLine);
     return result;
 }
@@ -83,7 +72,7 @@ char **split(const char *str, const char *delim, int *count) {
 /// @return The [TokenisedLine] representing the instruction.
 /// @throw InvalidInstruction Will fatal error if the instruction is not valid. This is not a post-condition!
 TokenisedLine tokenise(const char *line) {
-    char *lineCopy    = strdup(line);
+    char *lineCopy = strdup(line);
     TokenisedLine result;
     result.subMnemonic = NULL;
 
@@ -119,11 +108,9 @@ TokenisedLine tokenise(const char *line) {
 
     // Extract all the operands together.
     char *operands = separator + 1; // New variable for clarity.
-    char *trimmedOperands = trim(operands, " ");
 
     // Separate operands by comma, then trim each.
-    result.operands = split(trimmedOperands, ",", &result.operandCount);
-
+    result.operands = split(operands, ",", &result.operandCount);
     for (int i = 0; i < result.operandCount; i++) {
         result.operands[i] = trim(result.operands[i], " ");
     }
@@ -176,7 +163,7 @@ uint8_t parseRegisterStr(const char *name, bool *sf) {
         return result;
     } else {
         assertFatal(!strcmp(name + 1, "sp") || !strcmp(name + 1, "zr"),
-                    "[parseRegister] Invalid register name!");
+                    "[parseRegisterStr] Invalid register name!");
         return 0x1F;
     }
 }
@@ -187,7 +174,7 @@ uint8_t parseRegisterStr(const char *name, bool *sf) {
 /// @return The result of \code strcmp((const char *) v1, (const char *) v2) \endcode
 /// @attention Use only when you are sure your pointers are [char *]!
 int strcmpVoid(const void *v1, const void *v2) {
-    const char *s1 = v1;
-    const char *s2 = v2;
+    const char *s1 = (const char *) v1;
+    const char *s2 = (const char *) v2;
     return strcmp(s1, s2);
 }
