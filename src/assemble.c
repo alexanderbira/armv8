@@ -24,7 +24,7 @@ int main(int argc, char **argv) {
         char *trimmedLine = trim(line, " \n");
 
         // Check if line is blank.
-        if (strlen(line) == 0) continue;
+        if (strlen(trimmedLine) == 0) continue;
 
         // Check if line is a label.
         bool isLabel = false;
