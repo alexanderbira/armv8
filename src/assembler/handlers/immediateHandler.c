@@ -31,7 +31,7 @@ IR parseImmediate(TokenisedLine *line, unused AssemblerState *state) {
         }
 
         struct WideMove wideMove;
-        sscanf(line->operands[1], "#%" SCNu16, &wideMove.imm16);
+        wideMove.imm16 = parseImmediateStr(line->operands[1], IMMEDIATE_WIDE_MOVE_IMM16_N);
 
         // Get shift is <lsl> is present.
         wideMove.hw = 0x0;
@@ -40,10 +40,14 @@ IR parseImmediate(TokenisedLine *line, unused AssemblerState *state) {
             int matched;
             char *shiftValue = split(line->operands[2], " ", &matched)[1];
             assertFatal(matched == 2, "[parseImmediate] Incorrect shift parameter!");
-            sscanf(shiftValue, "#%" SCNu8, &wideMove.hw);
 
-            // Assuming hw is value 0-3.
-            wideMove.hw /= 16;
+            // The "hw" in assembly is actually 16 times the value in the binary instruction.
+            uint8_t hwTemp = parseImmediateStr(shiftValue, 8 * sizeof(uint8_t));
+            assertFatal(hwTemp % 16 == 0, "[parseImmediate] Wide move shift is not multiple of 16!");
+
+            // The maximum value [hw] can be is 0b11, i.e., 3. (3 * 16 = 48)
+            assertFatal(hwTemp <= 48, "[parseImmediate] Wide move shift value is too high!");
+            wideMove.hw = hwTemp / 16;
         }
 
         immediateIR = (Immediate_IR) {
@@ -65,7 +69,7 @@ IR parseImmediate(TokenisedLine *line, unused AssemblerState *state) {
         struct Arithmetic arithmetic;
 
         arithmetic.rn = parseRegisterStr(line->operands[1], &sf);
-        sscanf(line->operands[2], "#%" SCNu16, &arithmetic.imm12);
+        arithmetic.imm12 = parseImmediateStr(line->operands[2], IMMEDIATE_ARITHMETIC_IMM12_N);
 
         // Get shift is <lsl> is present.
         arithmetic.sh = false;
@@ -75,9 +79,7 @@ IR parseImmediate(TokenisedLine *line, unused AssemblerState *state) {
             int matched;
             char *shiftValue = split(line->operands[3], " ", &matched)[1];
             assertFatal(matched == 2, "[parseImmediate] Incorrect shift parameter!");
-            int shiftAmount;
-            assertFatal(sscanf(shiftValue, "#%" SCNu8, (uint8_t *) &shiftAmount),
-                        "[parseImmediate] Could not read shift!");
+            uint8_t shiftAmount = parseImmediateStr(shiftValue, 8 * sizeof(uint8_t));
             assertFatal(shiftAmount == 0xC, "[parseImmediate] Incorrect shift amount!");
         }
 

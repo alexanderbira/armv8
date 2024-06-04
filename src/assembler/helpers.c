@@ -172,6 +172,20 @@ uint8_t parseRegisterStr(const char *name, bool *sf) {
     }
 }
 
+uint64_t parseImmediateStr(const char *operand, size_t bitWidth) {
+    uint64_t maxValue = (bitWidth == 64) ? UINT64_MAX : (1 << bitWidth) - 1;
+    uint64_t value;
+
+    // Scan for hex immediate; if failure, scan for decimal.
+    bool matched = sscanf(operand, "#0x%" SCNx64, &value) == 1;
+    if (!matched) matched = sscanf(operand, "#%" SCNu64, &value) == 1;
+
+    assertFatal(matched, "[parseImmediateStr] Invalid immediate value!");
+    assertFatal(value <= maxValue, "[parseImmediateStr] Scanned immediate overflows [bitWidth]!");
+
+    return value;
+}
+
 /// The same as [strcmp], but takes in [void *]s.
 /// @param v1 The first item.
 /// @param v2 The second item.

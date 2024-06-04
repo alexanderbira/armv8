@@ -99,16 +99,12 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
     union RegisterOperand operand;
     enum ShiftType shift;
     if (group == MULTIPLY) {
-        struct Multiply multiply;
-        uint8_t ra;
-
-        // set x depending on MADD or MSUB
+        uint8_t ra = parseRegisterStr(line->operands[3], NULL);
         bool x = (registerIR.opc.multiply == MSUB);
-        sscanf(line->operands[3], "%*c%hhu", &ra);
 
         // shift is set as LSL since LSL = 0
         shift = LSL;
-        multiply = (struct Multiply) {x, ra};
+        struct Multiply multiply = (struct Multiply) {x, ra};
         operand = (union RegisterOperand) {.multiply = multiply};
     } else {
         uint8_t imm6 = 0;
@@ -121,7 +117,7 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
         if (line->operandCount == 4 && strchr(line->operands[3],' ') != NULL) {
             char **shiftAndValue = split(line->operands[3], " ", &matched);
             // fill imm6
-            sscanf(shiftAndValue[2], "%*c%hhu", &imm6);
+            imm6 = parseImmediateStr(shiftAndValue[2], REGISTER_OPERAND_IMM6_N);
             // switch based on first letter of shift name
             switch (shiftAndValue[0][0]) {
                 case 'l':

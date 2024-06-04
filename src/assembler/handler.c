@@ -17,9 +17,7 @@ IR handleDirective(TokenisedLine *tokenisedLine, unused AssemblerState *state) {
     char *directive = tokenisedLine->mnemonic + 1;
 
     if (!strcasecmp(directive, "int")) {
-        BitData immediate;
-        assertFatal(sscanf("%" SCNx32, tokenisedLine->operands[1], &immediate),
-                    "[handleDirective] Failed to parse immediate for `.int`!");
+        BitData immediate = parseImmediateStr(tokenisedLine->operands[1], 8 * sizeof(BitData));
         return (IR) {.type = CONSTANT, .ir.memoryData = immediate};
     } else {
         throwFatal("[handleDirective] Invalid directive!");

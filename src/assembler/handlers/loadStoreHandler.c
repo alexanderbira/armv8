@@ -36,55 +36,36 @@ IR parseLoadStore(TokenisedLine *line, unused AssemblerState *state) {
             u = true;
             mode = UNSIGNED_OFFSET;
             offset.uoffset = 0;
-
-
         } else {
-
             char* lastOperand = line->operands[2];
 
             switch (lastOperand[strlen(lastOperand)-1]) {
-
-                case '!': {
-                    // Pre-indexed
+                case '!':
+                    // Pre-Index
                     mode = PRE_INDEXED;
                     offset.prePostIndex.i = true;
-                    int16_t simm9;
-                    assertFatal(sscanf("#%" SCNd16, line->operands[2], &simm9) == 1,
-                                "[parseLoadStore] Could not scan <simm>!");
-                    offset.prePostIndex.simm9 = simm9;
+                    offset.prePostIndex.simm9 = parseImmediateStr(line->operands[2],
+                                                                  LOAD_STORE_DATA_SIMM9_INDEXED_N);
                     break;
-                }
-
                 case ']':
                     if (lastOperand[0] == '#') {
                         // Unsigned Offset
-                        u = true;
                         mode = UNSIGNED_OFFSET;
-                        uint16_t imm12;
-                        assertFatal(sscanf("#%" SCNu16, line->operands[2], &imm12) == 1,
-                                    "[parseLoadStore] Could not scan <imm>!");
-                        offset.uoffset = imm12;
-
+                        u = true;
+                        offset.uoffset = parseImmediateStr(line->operands[2],
+                                                           LOAD_STORE_DATA_OFFSET_N);
                     } else {
-                        //Register-offset
+                        //Register Offset
                         mode = REGISTER_OFFSET;
-                        uint8_t xm;
-                        assertFatal(sscanf("*%" SCNu8, line->operands[1], &xm) == 1,
-                                    "[parseLoadStore] Could not scan <xm>!");
-                        offset.xm = xm;
+                        offset.xm = parseRegisterStr(line->operands[1], NULL);
                     }
                     break;
-
-                default: {
-                    // Post-index
+                default:
+                    // Post-Index
                     mode = POST_INDEXED;
                     offset.prePostIndex.i = false;
-                    int16_t simm9;
-                    assertFatal(sscanf("#%" SCNd16, line->operands[2], &simm9) == 1,
-                                "[parseLoadStore] Could not scan <simm>!");
-                    offset.prePostIndex.simm9 = simm9;
-                }
-
+                    offset.prePostIndex.simm9 = parseImmediateStr(line->operands[2],
+                                                                  LOAD_STORE_DATA_SIMM9_INDEXED_N);;
             }
         }
 
