@@ -50,9 +50,11 @@ char **split(const char *str, const char *delim, int *count) {
         // if (strchr("[{()}]", trimmedLine[i]) != NULL) inBrackets = !inBrackets;
 
         if (strchr(delim, trimmedLine[i]) != NULL && !inBrackets) {
+            size_t operandLength = end - start;
             result = realloc(result, *count);
-            result[*count] = malloc(end - start);
-            strncpy(result[*count], start, end - start);
+            result[*count] = malloc(operandLength + 1);
+            strncpy(result[*count], start, operandLength);
+            *(result[*count] + operandLength) = '\0';
             start = ++end;
             (*count)++;
         } else {
@@ -64,9 +66,11 @@ char **split(const char *str, const char *delim, int *count) {
 
     // Put in last element if present.
     if (start != end) {
+        size_t operandLength = end - start;
         result = realloc(result, *count);
-        result[*count] = malloc(end - start);
-        strncpy(result[*count], start, end - start);
+        result[*count] = malloc(operandLength + 1);
+        strncpy(result[*count], start, operandLength);
+        *(result[*count] + operandLength) = '\0';
         (*count)++;
     }
 
