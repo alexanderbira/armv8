@@ -38,6 +38,7 @@ assemble
 !/**/
 !*.*
 *.dsYM/
+src/obj
 
 # === Testing Binary Object Files ===
 # If you need these, get them yourself!
