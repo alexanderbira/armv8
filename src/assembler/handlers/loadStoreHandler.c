@@ -131,7 +131,8 @@ Instruction translateLoadStore(IR *irObject, AssemblerState *state) {
 
             switch (loadStore->data.sdt.addressingMode) {
                 case UNSIGNED_OFFSET:
-                    result |= loadStore->data.sdt.offset.uoffset << LOAD_STORE_DATA_OFFSET_S;
+                    // Divide by 8 if registers accessed as 64-bit, otherwise (if 32-bit) divide by 4
+                    result |= loadStore->data.sdt.offset.uoffset << (LOAD_STORE_DATA_OFFSET_S - (2 + loadStore->sf));
                     break;
 
                 case PRE_INDEXED:
@@ -159,6 +160,7 @@ Instruction translateLoadStore(IR *irObject, AssemblerState *state) {
             if (simm19->isLabel) {
                 BitData *address = NULL;
                 address = getMapping(state, simm19->data.label);
+                *address /= 4;
                 assertFatal(address != NULL, "[translateLoadStore] No mapping for label!");
                 result |= truncater(*address, LOAD_STORE_LITERAL_SIMM19_N)
                           << LOAD_STORE_LITERAL_SIMM19_S;
