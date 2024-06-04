@@ -7,8 +7,25 @@
 
 #include "dataProcessingHandler.h"
 
-static TokenisedLine convertAlias(TokenisedLine *line);
-static bool isImmediateInstruction(TokenisedLine *line);
+static const char *aliasMnemonics[] = {
+        "cmp", "cmn", "neg",
+        "negs", "tst", "mvn",
+        "mov", "mul", "mneg"
+};
+
+static const int numAliasMnemonics = sizeof(aliasMnemonics) / sizeof(char *);
+
+static const char *wideMoveMnemonics[] = {
+        "movk", "movn", "movz"
+};
+
+static const int numWideMoveMnemonics = sizeof(wideMoveMnemonics) / sizeof(char *);
+
+static const char *arithmeticMnemonics[] = {
+        "add", "adds", "sub", "subs"
+};
+
+static const int numArithmeticMnemonics = sizeof(arithmeticMnemonics) / sizeof(char *);
 
 /// Converts the assembly form of an Data Processing instruction to IR form.
 /// @param line The [TokenisedLine] of the instruction.
@@ -16,149 +33,87 @@ static bool isImmediateInstruction(TokenisedLine *line);
 /// @return The [IR] struct representing the instruction.
 /// @pre The incoming [line] is a Data Processing assembly instruction.
 IR parseDataProcessing(TokenisedLine *line, AssemblerState *state) {
-    IR ir;
-    char *mnemonic = line->mnemonic;
+    assertFatal(line->operandCount >= 2 && line->operandCount <= 4,
+                "[parseDataProcessing] Incorrect number of operands!");
 
-    bool isAlias = false;
-    char *aliases[9] = {"cmp", "cmn", "neg", "negs", "tst", "mvn", "mov", "mul", "mneg"};
-    for (int i = 0; i < 9; i++) {
-        if (strcmp(mnemonic, aliases[i]) == 0) {
-            isAlias = true;
-            break;
+    // If [line] is an aliased instruction, convert it first.
+    bool isAlias = bsearch(line->mnemonic, aliasMnemonics, numAliasMnemonics,
+                           sizeof(char *), strcmpVoid) != NULL;
+    if (isAlias) {
+        // Aliased instructions always have zero register as destination.
+        char *zeroRegister = (char *) malloc(3);
+        strcpy(zeroRegister, (line->operands[0][0] == 'x') ? "x31" : "w31");
+
+        // Number of operands in translated aliases is always one more.
+        line->operands = realloc(line->operands, line->operandCount++ + 1);
+        char *oldMnemonic = line->mnemonic;
+        line->mnemonic = malloc(5);
+
+        switch (oldMnemonic[0]) {
+            case 'c':
+                // cmp -> subs, cmn -> adds
+                strcpy(line->mnemonic, (*(line->mnemonic + 2) == 'p') ? "subs" : "adds");
+                line->operands[2] = line->operands[1];
+                line->operands[1] = line->operands[0];
+                line->operands[0] = zeroRegister;
+                break;
+            case 'n':
+                // neg -> sub, negs -> subs
+                strcpy(line->mnemonic, (strlen(line->mnemonic) == 3) ? "sub" : "subs");
+                line->operands[2] = line->operands[1];
+                line->operands[1] = zeroRegister;
+                break;
+            case 't':
+                // tst -> ands
+                strcpy(line->mnemonic, "ands");
+                line->operands[2] = line->operands[1];
+                line->operands[1] = line->operands[0];
+                line->operands[0] = zeroRegister;
+                break;
+            case 'm':
+                switch (line->mnemonic[1]) {
+                    case 'v':
+                        // mvn -> orn
+                        strcpy(line->mnemonic, "orn");
+                        line->operands[2] = line->operands[1];
+                        line->operands[1] = zeroRegister;
+                        break;
+                    case 'o':
+                        // mov -> orr
+                        strcpy(line->mnemonic, "orr");
+                        line->operands[2] = line->operands[1];
+                        line->operands[1] = zeroRegister;
+                        break;
+                    case 'u':
+                        // mul -> madd
+                        strcpy(line->mnemonic, "madd");
+                        line->operands[3] = zeroRegister;
+                        break;
+                    case 'n':
+                        // mneg -> msub
+                        strcpy(line->mnemonic, "msub");
+                        line->operands[3] = zeroRegister;
+                        break;
+                }
+                break;
+            default:
+                throwFatal("Instruction mnemonic is invalid!");
         }
+
+        free(oldMnemonic);
     }
 
-    TokenisedLine *workingLine = line;
-    if (isAlias) {
-        TokenisedLine converted = convertAlias(line);
-        workingLine = &converted;
+    // If instruction is wide-move, or arithmetic with immediate, it is an Immediate instruction.
+    bool isImmediate = bsearch(line->mnemonic, wideMoveMnemonics, numWideMoveMnemonics,
+                               sizeof(char *), strcmpVoid) != NULL;
+    if (!isImmediate) {
+        isImmediate = bsearch(line->mnemonic, arithmeticMnemonics, numArithmeticMnemonics,
+                              sizeof(char *), strcmpVoid) != NULL;
+        assertFatal(line->operandCount >= 3,
+                    "[parseDataProcessing] Incorrect number of operands when calculating [isImmediate]!");
+        // Immediate in instructions of [arithmeticMnemonics] always positioned in 3rd operand.
+        isImmediate &= strchr(line->operands[2], '#') != NULL;
     }
 
-    if (isImmediateInstruction(workingLine)) {
-        ir = parseImmediate(workingLine, state);
-    } else {
-        // assuming it can't be any other instruction type
-        ir = parseRegister(workingLine, state);
-    }
-
-    if (isAlias) {
-        // only destroy if a new TokenisedLine was made (since the one passed in to parseDataProcessing is handled elsewhere)
-        destroyTokenisedLine(*workingLine);
-    }
-
-    return ir;
-}
-
-/// Converts a [TokenisedLine] of an alias instruction to a normal instruction.
-/// @param line The [TokenisedLine] to be converted.
-/// @return The new [TokenisedLine].
-/// @pre Incoming [line->mnemonic] is a alias mnemonic.
-/// @attention Remember to destroy the original [TokenisedLine]!
-static TokenisedLine convertAlias(TokenisedLine *line) {
-    // Overallocating by 1 seems reasonable for [char *newMnemonic] and [char **operands].
-    // Max number of chars / pointers is 4 for both.
-    // Using #define for this seems... hard to name :)
-    char *newMnemonic = (char *) malloc(5);
-    char **operands = (char **) malloc(4 * sizeof(char *));
-    int operandCount = 3; // operandCount is either 3 or 4. Default to 3.
-
-    // Aliased instructions always have zero register as destination.
-    char *zeroRegister = (char *) malloc(3);
-    strcpy(zeroRegister, (line->operands[0][0] == 'x') ? "x31" : "w31");
-
-    switch (line->mnemonic[0]) {
-
-        case 'c':
-            // cmp -> subs, cmn -> adds
-            strcpy(newMnemonic, (*(line->mnemonic + 2) == 'p') ? "subs" : "adds");
-            operands[0] = zeroRegister;
-            operands[1] = strdup(line->operands[0]);
-            operands[2] = strdup(line->operands[1]);
-            break;
-
-        case 'n':
-            // neg -> sub, negs -> subs
-            strcpy(newMnemonic, (strlen(line->mnemonic) == 3) ? "sub" : "subs");
-            operands[0] = strdup(line->operands[0]);
-            operands[1] = zeroRegister;
-            operands[2] = strdup(line->operands[1]);
-            break;
-
-        case 't':
-            // tst -> ands
-            strcpy(newMnemonic, "ands");
-            operands[0] = zeroRegister;
-            operands[1] = strdup(line->operands[0]);
-            operands[2] = strdup(line->operands[1]);
-            break;
-
-        case 'm':
-            switch (line->mnemonic[1]) {
-
-                case 'v':
-                    // mvn -> orn
-                    strcpy(newMnemonic, "orn");
-                    operands[0] = strdup(line->operands[0]);
-                    operands[1] = zeroRegister;
-                    operands[2] = strdup(line->operands[1]);
-                    break;
-
-                case 'o':
-                    // mov -> orr
-                    strcpy(newMnemonic, "orr");
-                    operands[0] = strdup(line->operands[0]);
-                    operands[1] = zeroRegister;
-                    operands[2] = strdup(line->operands[1]);
-                    break;
-
-                case 'u':
-                    // mul -> madd
-                    strcpy(newMnemonic, "madd");
-                    operandCount = 4;
-                    operands[0] = strdup(line->operands[0]);
-                    operands[1] = strdup(line->operands[1]);
-                    operands[2] = strdup(line->operands[2]);
-                    operands[3] = zeroRegister;
-                    break;
-
-                case 'n':
-                    // mneg -> msub
-                    strcpy(newMnemonic, "msub");
-                    operandCount = 4;
-                    operands[0] = strdup(line->operands[0]);
-                    operands[1] = strdup(line->operands[1]);
-                    operands[2] = strdup(line->operands[2]);
-                    operands[3] = zeroRegister;
-                    break;
-            }
-            break;
-        default:
-            throwFatal("Instruction mnemonic is invalid!");
-    }
-
-    return (TokenisedLine) {operandCount, newMnemonic, NULL, operands};
-}
-
-/// Returns whether a given instruction is a Data Processing (Immediate) instruction.
-/// @param line The [TokenisedLine] of the instruction.
-/// @return true if instruction is Data Processing (Immediate), false if not.
-static bool isImmediateInstruction(TokenisedLine *line) {
-    char *mnemonic = line->mnemonic;
-
-    bool isWideMove = (
-            strcmp(mnemonic, "movk") == 0 ||
-            strcmp(mnemonic, "movn") == 0 ||
-            strcmp(mnemonic, "movz") == 0
-    );
-    if (isWideMove) return true;
-
-    bool isArithmetic = (
-        strcmp(mnemonic, "add") == 0 ||
-        strcmp(mnemonic, "adds") == 0 ||
-        strcmp(mnemonic, "sub") == 0 ||
-        strcmp(mnemonic, "subs") == 0
-        );
-
-    // Only return true if it's an arithmetic operation with an immediate operand
-    return isArithmetic && line->operands[2][0] == '#';
+    return isImmediate ? parseImmediate(line, state) : parseRegister(line, state);
 }
