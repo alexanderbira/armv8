@@ -101,7 +101,7 @@ Instruction translateImmediate(IR *irObject, unused AssemblerState *state) {
     Instruction result = IMMEDIATE_C;
 
     // Load [sf], trust since boolean.
-    result = (Instruction) immediate->sf << 31;
+    result |= (Instruction) immediate->sf << IMMEDIATE_SF_S;
 
     // Load [opc], trust value since defined in enum.
     union ImmediateOpCode *opc = &immediate->opc;
@@ -115,7 +115,7 @@ Instruction translateImmediate(IR *irObject, unused AssemblerState *state) {
     }
 
     // Load [opi], trust value since defined in enum.
-    result |= (Instruction) immediate->opi << IMMEDIATE_OPC_S;
+    result |= (Instruction) immediate->opi << IMMEDIATE_OPI_S;
 
     // Load [operand].
     switch (immediate->opi) {
