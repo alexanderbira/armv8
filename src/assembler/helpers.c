@@ -173,7 +173,7 @@ uint8_t parseRegisterStr(const char *name, bool *sf) {
 }
 
 uint64_t parseImmediateStr(const char *operand, size_t bitWidth) {
-    uint64_t maxValue = (bitWidth == 64) ? UINT64_MAX : (1 << bitWidth) - 1;
+    uint64_t maxValue = (bitWidth == 64) ? UINT64_MAX : (1ULL << bitWidth) - 1;
     uint64_t value;
 
     // Scan for hex immediate; if failure, scan for decimal.
