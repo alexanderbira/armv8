@@ -56,8 +56,7 @@ char **split(const char *str, const char *delim, int *count) {
         if ((!trimmedLine[i] || strchr(delim, trimmedLine[i]) != NULL) && !inBrackets) {
             size_t operandLength = end - start;
             result = (char **) realloc(result, (*count + 1) * sizeof(char *));
-            result[*count] = (char *) malloc(operandLength + 1);
-            strncpy(result[*count], start, operandLength);
+            result[*count] = strndup(start, operandLength);
             *(result[*count] + operandLength) = '\0';
             start = ++end;
             (*count)++;
@@ -96,9 +95,7 @@ TokenisedLine tokenise(const char *line) {
 
         // Throw away leading '.' when copying.
         size_t subMnemonicLength = separator - mnemonicSeparator - 1;
-        result.subMnemonic = (char *) malloc(subMnemonicLength + 1);
-        strncpy(result.subMnemonic, mnemonicSeparator + 1, subMnemonicLength);
-        *(result.subMnemonic + subMnemonicLength) = '\0';
+        result.subMnemonic = strndup(mnemonicSeparator + 1, subMnemonicLength);
 
         assertFatal(strcmp(result.subMnemonic, ""),
                     "[tokenise] Sub-mnemonic was present but is empty!");
@@ -107,8 +104,7 @@ TokenisedLine tokenise(const char *line) {
     }
 
     // Copy in mnemonic. Null terminate supplied previously.
-    result.mnemonic = (char *) malloc(mnemonicLength + 1);
-    strncpy(result.mnemonic, trimmedLine, mnemonicLength);
+    result.mnemonic = strndup(trimmedLine, mnemonicLength);
 
     // Extract all the operands together.
     char *operands = separator + 1; // New variable for clarity.
