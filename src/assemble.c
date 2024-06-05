@@ -52,10 +52,15 @@ int main(int argc, char **argv) {
 
     fclose(fileIn);
     FILE *fileOut = fopen(argv[2], "wb");
+
+    // Reset current address - jump offset calculations rely on this.
+    state.address = 0x0;
+
     for (size_t i = 0; i < state.irCount; i++) {
         IR ir = state.irList[i];
         Instruction instruction = getTranslateFunction(ir.type)(&ir, &state);
         fwrite(&instruction, sizeof(Instruction), 1, fileOut);
+        state.address += 0x4;
     }
 
     destroyState(state);
