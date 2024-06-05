@@ -41,31 +41,29 @@ IR parseDataProcessing(TokenisedLine *line, AssemblerState *state) {
                            sizeof(char *), strcmpVoid) != NULL;
     if (isAlias) {
         // Aliased instructions always have zero register as destination.
-        char *zeroRegister = (char *) malloc(3);
-        strcpy(zeroRegister, (line->operands[0][0] == 'x') ? "x31" : "w31");
+        char *zeroRegister = strdup((line->operands[0][0] == 'x') ? "x31" : "w31");
 
         // Number of operands in translated aliases is always one more.
         line->operands = realloc(line->operands, line->operandCount++ + 1);
         char *oldMnemonic = line->mnemonic;
-        line->mnemonic = (char *) malloc(5);
 
         switch (oldMnemonic[0]) {
             case 'c':
                 // cmp -> subs, cmn -> adds
-                strcpy(line->mnemonic, (*(line->mnemonic + 2) == 'p') ? "subs" : "adds");
+                line->mnemonic = strdup((*(line->mnemonic + 2) == 'p') ? "subs" : "adds");
                 line->operands[2] = line->operands[1];
                 line->operands[1] = line->operands[0];
                 line->operands[0] = zeroRegister;
                 break;
             case 'n':
                 // neg -> sub, negs -> subs
-                strcpy(line->mnemonic, (strlen(line->mnemonic) == 3) ? "sub" : "subs");
+                line->mnemonic = strdup((strlen(line->mnemonic) == 3) ? "sub" : "subs");
                 line->operands[2] = line->operands[1];
                 line->operands[1] = zeroRegister;
                 break;
             case 't':
                 // tst -> ands
-                strcpy(line->mnemonic, "ands");
+                line->mnemonic = strdup("ands");
                 line->operands[2] = line->operands[1];
                 line->operands[1] = line->operands[0];
                 line->operands[0] = zeroRegister;
@@ -74,24 +72,24 @@ IR parseDataProcessing(TokenisedLine *line, AssemblerState *state) {
                 switch (line->mnemonic[1]) {
                     case 'v':
                         // mvn -> orn
-                        strcpy(line->mnemonic, "orn");
+                        line->mnemonic = strdup("orn");
                         line->operands[2] = line->operands[1];
                         line->operands[1] = zeroRegister;
                         break;
                     case 'o':
                         // mov -> orr
-                        strcpy(line->mnemonic, "orr");
+                        line->mnemonic = strdup("orr");
                         line->operands[2] = line->operands[1];
                         line->operands[1] = zeroRegister;
                         break;
                     case 'u':
                         // mul -> madd
-                        strcpy(line->mnemonic, "madd");
+                        line->mnemonic = strdup("madd");
                         line->operands[3] = zeroRegister;
                         break;
                     case 'n':
                         // mneg -> msub
-                        strcpy(line->mnemonic, "msub");
+                        line->mnemonic = strdup("msub");
                         line->operands[3] = zeroRegister;
                         break;
                 }

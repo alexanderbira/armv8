@@ -27,14 +27,12 @@ IR handleDirective(TokenisedLine *tokenisedLine, unused AssemblerState *state) {
 /// Function to process a label, i.e. a line of alphabet characters ending in ':'.
 /// @param line The line to "process".
 /// @return The resulting binary word.
-/// @pre The incoming [line] is a label,  i.e. a line of alphabet characters ending in ':', and is trimmed.
+/// @pre The incoming [line] is a label and is trimmed.
 void handleLabel(const char *line, AssemblerState *state) {
-    // Remove trailing colon. See precondition.
     char *label = strdup(line);
     *strchr(label, ':') = '\0';
 
     addMapping(state, label, state->address);
-    free(label);
 }
 
 /// Function to process an instruction.
@@ -43,8 +41,7 @@ void handleLabel(const char *line, AssemblerState *state) {
 IR handleInstruction(TokenisedLine *tokenisedLine, AssemblerState *state) {
     IR result = getParseFunction(tokenisedLine->mnemonic)(tokenisedLine, state);
 
-    // Always increment address by 4 since at compile time,
-    // jumps are not possible.
+    // Always increment address by 4 since at compile time.
     state->address += 0x4;
     return result;
 }
