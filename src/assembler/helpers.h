@@ -43,6 +43,6 @@ uint64_t parseImmediateStr(const char *operand);
 
 int strcmpVoid(const void *v1, const void *v2);
 
-void evaluateOffset(union literalData data, AssemblerState *state)
+void evaluateOffset(union literalData *data, AssemblerState *state)
 
 #endif // ASSEMBLER_HELPERS_H
