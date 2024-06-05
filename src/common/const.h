@@ -113,6 +113,6 @@ static inline Component decompose(Instruction word, Mask mask) {
     ((__typeof__(__VALUE__))((__VALUE__) << (8 * sizeof(__VALUE__) - (__ACTUAL_WIDTH__))) >> \
     (8 * sizeof(__VALUE__) - (__ACTUAL_WIDTH__)))
 
-#define WHITESPACE " \n"
+#define WHITESPACE " \n\t\r"
 
 #endif // COMMON_CONST_H
