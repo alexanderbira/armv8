@@ -194,3 +194,13 @@ int strcmpVoid(const void *v1, const void *v2) {
     const char *s2 = *(const char **) v2;
     return strcmp(s1, s2);
 }
+
+void evaluateOffset(union literalData data, AssemblerState *state) {
+    // Calculate offset, then divide by 4 to encode.
+    BitData *immediate = getMapping(state, data.label);
+    assertFatal(immediate != NULL, "[translateBranch] No mapping for label!");
+
+    data.immediate = *immediate;
+    data.immediate -= state->address;
+    data.immediate /= 4;
+}

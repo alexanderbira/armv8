@@ -17,6 +17,7 @@
 #include "../common/const.h"
 #include "../common/error.h"
 #include "../common/ir/ir.h"
+#include "state.h"
 
 /// A tokenised assembly instruction.
 typedef struct {
@@ -41,5 +42,7 @@ uint8_t parseRegisterStr(const char *name, bool *sf);
 uint64_t parseImmediateStr(const char *operand);
 
 int strcmpVoid(const void *v1, const void *v2);
+
+void evaluateOffset(union literalData data, AssemblerState *state)
 
 #endif // ASSEMBLER_HELPERS_H

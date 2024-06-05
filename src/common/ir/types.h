@@ -17,7 +17,7 @@ typedef struct {
     bool isLabel;
 
     /// The contents of the literal.
-    union {
+    union literalData {
         /// The string label of the literal.
         char *label;
 
