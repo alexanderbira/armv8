@@ -63,7 +63,7 @@ IR parseLoadStore(TokenisedLine *line, unused AssemblerState *state) {
                     mode = POST_INDEXED;
                     offset.prePostIndex.i = false;
                     offset.prePostIndex.simm9 = parseImmediateStr(line->operands[2],
-                                                                  LOAD_STORE_DATA_SIMM9_INDEXED_N);;
+                                                                  LOAD_STORE_DATA_SIMM9_INDEXED_N);
             }
         }
 
@@ -118,7 +118,7 @@ Instruction translateLoadStore(IR *irObject, AssemblerState *state) {
                 case POST_INDEXED:
                     result |= LOAD_STORE_DATA_PRE_POST_INDEX;
                     result |= loadStore->data.sdt.offset.prePostIndex.i << LOAD_STORE_DATA_I_INDEXED_S;
-                    result |= loadStore->data.sdt.offset.prePostIndex.simm9 << LOAD_STORE_DATA_OFFSET_S;
+                    result |= loadStore->data.sdt.offset.prePostIndex.simm9 << LOAD_STORE_DATA_SIMM9_INDEXED_S;
                     break;
 
                 case REGISTER_OFFSET:

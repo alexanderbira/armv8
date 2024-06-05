@@ -59,6 +59,9 @@
 /// Number of bits in [simm9] in a Pre/Post-Index-ed Load Store (Single Data Transfer) instruction.
 #define LOAD_STORE_DATA_SIMM9_INDEXED_N   9
 
+/// Number of bits to shift for [simm9] in a Pre/Post-Index-ed Load Store (Single Data Transfer) instruction.
+#define LOAD_STORE_DATA_SIMM9_INDEXED_S   12
+
 /// Mask for [simm9] in a Pre/Post-Index-ed Load Store (Single Data Transfer) instruction.
 #define LOAD_STORE_DATA_SIMM9_INDEXED_M   mask(20, 12)
 
