@@ -22,7 +22,7 @@ IR handleDirective(TokenisedLine *tokenisedLine, unused AssemblerState *state) {
         strcpy(immediateStr + 1, tokenisedLine->operands[0]);
 
         // Very cheesy trick to reuse [parseImmediateStr].
-        BitData immediate = parseImmediateStr(immediateStr, 8 * sizeof(BitData));
+        BitData immediate = parseImmediateStr(immediateStr);
         free(immediateStr);
         state->address += 0x4;
         return (IR) {.type = CONSTANT, .ir.memoryData = immediate};

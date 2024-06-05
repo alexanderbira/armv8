@@ -169,8 +169,10 @@ uint8_t parseRegisterStr(const char *name, bool *sf) {
     }
 }
 
-uint64_t parseImmediateStr(const char *operand, size_t bitWidth) {
-    uint64_t maxValue = (bitWidth == 64) ? UINT64_MAX : (1ULL << bitWidth) - 1;
+/// Parses an immediate value from a string (0X... for hex, #... for dec) to a uint64_t
+/// @param operand The string to parse the immediate value from
+/// @return The literal extracted from the string
+uint64_t parseImmediateStr(const char *operand) {
     uint64_t value;
 
     // Scan for hex immediate; if failure, scan for decimal.
@@ -178,7 +180,6 @@ uint64_t parseImmediateStr(const char *operand, size_t bitWidth) {
     if (!matched) matched = sscanf(operand, "#%" SCNu64, &value) == 1;
 
     assertFatal(matched, "[parseImmediateStr] Invalid immediate value!");
-    assertFatal(value <= maxValue, "[parseImmediateStr] Scanned immediate overflows [bitWidth]!");
 
     return value;
 }

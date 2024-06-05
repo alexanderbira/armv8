@@ -42,16 +42,14 @@ IR parseLoadStore(TokenisedLine *line, unused AssemblerState *state) {
                     // Pre-Index
                     mode = PRE_INDEXED;
                     offset.prePostIndex.i = true;
-                    offset.prePostIndex.simm9 = parseImmediateStr(line->operands[2],
-                                                                  LOAD_STORE_DATA_SIMM9_INDEXED_N);
+                    offset.prePostIndex.simm9 = parseImmediateStr(line->operands[2]);
                     break;
                 case ']':
                     if (lastOperand[0] == '#') {
                         // Unsigned Offset
                         mode = UNSIGNED_OFFSET;
                         u = true;
-                        offset.uoffset = parseImmediateStr(line->operands[2],
-                                                           LOAD_STORE_DATA_OFFSET_N);
+                        offset.uoffset = parseImmediateStr(line->operands[2]);
                     } else {
                         //Register Offset
                         mode = REGISTER_OFFSET;
@@ -62,8 +60,7 @@ IR parseLoadStore(TokenisedLine *line, unused AssemblerState *state) {
                     // Post-Index
                     mode = POST_INDEXED;
                     offset.prePostIndex.i = false;
-                    offset.prePostIndex.simm9 = parseImmediateStr(line->operands[2],
-                                                                  LOAD_STORE_DATA_SIMM9_INDEXED_N);
+                    offset.prePostIndex.simm9 = parseImmediateStr(line->operands[2]);
             }
         }
 
@@ -94,7 +91,6 @@ IR parseLoadStore(TokenisedLine *line, unused AssemblerState *state) {
 /// @param state The current state of the assembler.
 /// @return 32-bit binary word of the instruction.
 Instruction translateLoadStore(IR *irObject, AssemblerState *state) {
-
     assertFatal(irObject->type == LOAD_STORE,
                 "[translateLoadStore] Received non-single data transfer IR!");
     LoadStore_IR *loadStore = &irObject->ir.loadStoreIR;
@@ -118,7 +114,8 @@ Instruction translateLoadStore(IR *irObject, AssemblerState *state) {
                 case POST_INDEXED:
                     result |= LOAD_STORE_DATA_PRE_POST_INDEX;
                     result |= loadStore->data.sdt.offset.prePostIndex.i << LOAD_STORE_DATA_I_INDEXED_S;
-                    result |= loadStore->data.sdt.offset.prePostIndex.simm9 << LOAD_STORE_DATA_SIMM9_INDEXED_S;
+                    result |= truncater(loadStore->data.sdt.offset.prePostIndex.simm9, LOAD_STORE_DATA_SIMM9_INDEXED_N)
+                            << LOAD_STORE_DATA_SIMM9_INDEXED_S;
                     break;
 
                 case REGISTER_OFFSET:

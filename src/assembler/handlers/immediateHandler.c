@@ -31,7 +31,7 @@ IR parseImmediate(TokenisedLine *line, unused AssemblerState *state) {
         }
 
         struct WideMove wideMove;
-        wideMove.imm16 = parseImmediateStr(line->operands[1], IMMEDIATE_WIDE_MOVE_IMM16_N);
+        wideMove.imm16 = parseImmediateStr(line->operands[1]);
 
         // Get shift is <lsl> is present.
         wideMove.hw = 0x0;
@@ -42,7 +42,7 @@ IR parseImmediate(TokenisedLine *line, unused AssemblerState *state) {
             assertFatal(matched == 2, "[parseImmediate] Incorrect shift parameter!");
 
             // The "hw" in assembly is actually 16 times the value in the binary instruction.
-            uint8_t hwTemp = parseImmediateStr(shiftValue, 8 * sizeof(uint8_t));
+            uint8_t hwTemp = parseImmediateStr(shiftValue);
             assertFatal(hwTemp % 16 == 0, "[parseImmediate] Wide move shift is not multiple of 16!");
 
             // The maximum value [hw] can be is 0b11, i.e., 3. (3 * 16 = 48)
@@ -69,7 +69,7 @@ IR parseImmediate(TokenisedLine *line, unused AssemblerState *state) {
         struct Arithmetic arithmetic;
 
         arithmetic.rn = parseRegisterStr(line->operands[1], &sf);
-        arithmetic.imm12 = parseImmediateStr(line->operands[2], IMMEDIATE_ARITHMETIC_IMM12_N);;
+        arithmetic.imm12 = parseImmediateStr(line->operands[2]);
 
         // Get shift is <lsl> is present.
         arithmetic.sh = false;
@@ -78,7 +78,7 @@ IR parseImmediate(TokenisedLine *line, unused AssemblerState *state) {
             int matched;
             char *shiftValue = split(line->operands[3], " ", &matched)[1];
             assertFatal(matched == 2, "[parseImmediate] Incorrect shift parameter!");
-            uint8_t shiftAmount = parseImmediateStr(shiftValue, 8 * sizeof(uint8_t));
+            uint8_t shiftAmount = parseImmediateStr(shiftValue);
             assertFatal(shiftAmount == 0 || shiftAmount == 0xC, "[parseImmediate] Incorrect shift amount!");
             if (shiftAmount == 0xC) {
                 arithmetic.sh = true;
