@@ -14,14 +14,18 @@
 /// @attention Mutates input pointer [str].
 char *trim(char *str, const char *except) {
     // Trim leading space.
-    for (; *str && strchr(except, *str) != NULL; str++);
+    char *start = str;
+    for (; *start && strchr(except, *start) != NULL; start++);
 
     // Trim trailing space.
     char *end = str + strlen(str) - 1;
     for (; end > str && strchr(except, *end) != NULL; end--);
 
-    // Terminate and return string.
-    *++end = '\0';
+    // (Possibly) shift, terminate and return string.
+    // Calculate the new length of the trimmed string.
+    size_t newLength = end - start + 1;
+    if (start != str) memmove(str, start, newLength);
+    str[newLength] = '\0';
     return str;
 }
 
@@ -30,12 +34,12 @@ char *trim(char *str, const char *except) {
 /// @param[in] delim List of delimiter(s).
 /// @param[out] count Number of pieces the incoming string was split into.
 /// @return Pointer to the array of split strings.
-/// @attention Will ignore delimeters inside of brackets (incl. square, curly, round)! Cannot handle nested brackets.
-/// @example \code split("hello [world haha]", " ", &count) = ["hello", "[world haha]"] \endcode
+// /// @attention Will ignore delimeters inside of brackets (incl. square, curly, round)! Cannot handle nested brackets.
+// /// @example \code split("hello [world haha]", " ", &count) = ["hello", "[world haha]"] \endcode
 char **split(const char *str, const char *delim, int *count) {
     *count = 0;
     char *trimmedLine = strdup(str);
-    trimmedLine = trim(trimmedLine, " ");
+    trimmedLine = trim(trimmedLine, WHITESPACE);
 
     // These present the start and end of the current segment.
     char *start = trimmedLine;
@@ -45,14 +49,15 @@ char **split(const char *str, const char *delim, int *count) {
 
     char **result = NULL;
 
-    for (size_t i = 0; i < length; i++) {
+    for (size_t i = 0; i < length + 1; i++) {
         // Cannot handle nested brackets!
         // if (strchr("[{()}]", trimmedLine[i]) != NULL) inBrackets = !inBrackets;
 
-        if (strchr(delim, trimmedLine[i]) != NULL && !inBrackets) {
-            result = realloc(result, *count);
-            result[*count] = malloc(end - start);
-            strncpy(result[*count], start, end - start);
+        if ((!trimmedLine[i] || strchr(delim, trimmedLine[i]) != NULL) && !inBrackets) {
+            size_t operandLength = end - start;
+            result = (char **) realloc(result, (*count + 1) * sizeof(char *));
+            result[*count] = strndup(start, operandLength);
+            *(result[*count] + operandLength) = '\0';
             start = ++end;
             (*count)++;
         } else {
@@ -61,15 +66,6 @@ char **split(const char *str, const char *delim, int *count) {
     }
 
     assertFatal(!inBrackets, "[split] Malformed brackets!");
-
-    // Put in last element if present.
-    if (start != end) {
-        result = realloc(result, *count);
-        result[*count] = malloc(end - start);
-        strncpy(result[*count], start, end - start);
-        (*count)++;
-    }
-
     free(trimmedLine);
     return result;
 }
@@ -79,10 +75,12 @@ char **split(const char *str, const char *delim, int *count) {
 /// @return The [TokenisedLine] representing the instruction.
 /// @throw InvalidInstruction Will fatal error if the instruction is not valid. This is not a post-condition!
 TokenisedLine tokenise(const char *line) {
-    TokenisedLine result;
     char *lineCopy = strdup(line);
-    char *trimmedLine = trim(lineCopy, ", ");
+    TokenisedLine result;
+    result.mnemonic = NULL;
+    result.subMnemonic = NULL;
 
+    char *trimmedLine = trim(lineCopy, ", \n");
     // Find the first space in the line, separating the mnemonic from the operands.
     char *separator = strchr(lineCopy, ' ');
     assertFatal(separator, "[tokenise] Invalid assembly instruction!");
@@ -98,9 +96,7 @@ TokenisedLine tokenise(const char *line) {
 
         // Throw away leading '.' when copying.
         size_t subMnemonicLength = separator - mnemonicSeparator - 1;
-        result.subMnemonic = (char *) malloc(subMnemonicLength + 1);
-        strncpy(result.subMnemonic, mnemonicSeparator + 1, subMnemonicLength);
-        *(result.subMnemonic + subMnemonicLength) = '\0';
+        result.subMnemonic = strndup(mnemonicSeparator + 1, subMnemonicLength);
 
         assertFatal(strcmp(result.subMnemonic, ""),
                     "[tokenise] Sub-mnemonic was present but is empty!");
@@ -108,18 +104,14 @@ TokenisedLine tokenise(const char *line) {
         // we have found a directive!
     }
 
-    // Copy in mnemonic.
-    result.mnemonic = (char *) malloc(mnemonicLength + 1);
-    strncpy(result.mnemonic, trimmedLine, mnemonicLength);
-    *(result.mnemonic + mnemonicLength) = '\0';
+    // Copy in mnemonic. Null terminate supplied previously.
+    if (mnemonicLength) result.mnemonic = strndup(trimmedLine, mnemonicLength);
 
     // Extract all the operands together.
     char *operands = separator + 1; // New variable for clarity.
-    char *trimmedOperands = trim(operands, " ");
 
     // Separate operands by comma, then trim each.
-    result.operands = split(trimmedOperands, ",", &result.operandCount);
-
+    result.operands = split(operands, ",", &result.operandCount);
     for (int i = 0; i < result.operandCount; i++) {
         result.operands[i] = trim(result.operands[i], " ");
     }
@@ -133,7 +125,6 @@ TokenisedLine tokenise(const char *line) {
 void destroyTokenisedLine(TokenisedLine line) {
     free(line.mnemonic);
     free(line.subMnemonic);
-
     for (int i = 0; i < line.operandCount; i++) {
         free(line.operands[i]);
     }
@@ -173,7 +164,33 @@ uint8_t parseRegisterStr(const char *name, bool *sf) {
         return result;
     } else {
         assertFatal(!strcmp(name + 1, "sp") || !strcmp(name + 1, "zr"),
-                    "[parseRegister] Invalid register name!");
+                    "[parseRegisterStr] Invalid register name!");
         return 0x1F;
     }
+}
+
+/// Parses an immediate value from a string (0X... for hex, #... for dec) to a uint64_t
+/// @param operand The string to parse the immediate value from
+/// @return The literal extracted from the string
+uint64_t parseImmediateStr(const char *operand) {
+    uint64_t value;
+
+    // Scan for hex immediate; if failure, scan for decimal.
+    bool matched = sscanf(operand, "#0x%" SCNx64, &value) == 1;
+    if (!matched) matched = sscanf(operand, "#%" SCNu64, &value) == 1;
+
+    assertFatal(matched, "[parseImmediateStr] Invalid immediate value!");
+
+    return value;
+}
+
+/// The same as [strcmp], but takes in [void *]s.
+/// @param v1 The first item.
+/// @param v2 The second item.
+/// @return The result of \code strcmp((const char *) v1, (const char *) v2) \endcode
+/// @attention Use only when you are sure your pointers are [char *]!
+int strcmpVoid(const void *v1, const void *v2) {
+    const char *s1 = *(const char **) v1;
+    const char *s2 = *(const char **) v2;
+    return strcmp(s1, s2);
 }

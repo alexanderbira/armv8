@@ -16,8 +16,7 @@
 #include "../../common/ir/ir.h"
 #include "../state.h"
 #include "branchHandler.h"
-#include "registerHandler.h"
-#include "immediateHandler.h"
+#include "dataProcessingHandler.h"
 #include "loadStoreHandler.h"
 
 /// A function which processes a tokenised assembly instruction into its intermediate representation.

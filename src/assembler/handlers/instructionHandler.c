@@ -8,17 +8,44 @@
 #include "instructionHandler.h"
 
 static const IREntry instructionHandlers[] = {
+        { "add", parseDataProcessing },
+        { "adds", parseDataProcessing },
+        { "sub", parseDataProcessing },
+        { "subs", parseDataProcessing },
+        { "cmp", parseDataProcessing },
+        { "cmn", parseDataProcessing },
+        { "neg", parseDataProcessing },
+        { "negs", parseDataProcessing },
+        { "and", parseRegister },
+        { "ands", parseRegister },
+        { "bic", parseRegister },
+        { "bics", parseRegister },
+        { "eor", parseRegister },
+        { "eon", parseRegister },
+        { "orr", parseRegister },
+        { "orn", parseRegister },
+        { "tst", parseDataProcessing },
+        { "mvn", parseRegister },
+        { "mov", parseDataProcessing },
+        { "movn", parseImmediate },
+        { "movk", parseImmediate },
+        { "movz", parseImmediate },
+        { "madd", parseRegister },
+        { "msub", parseRegister },
+        { "mul", parseDataProcessing },
+        { "mneg", parseDataProcessing },
         { "b", parseBranch },
         { "br", parseBranch },
-        // TODO: Enumerate possible handlers.
+        { "ldr", parseLoadStore },
+        { "str", parseLoadStore },
 };
 
 static const InstructionEntry translationHandlers[] = {
         {IMMEDIATE,  translateImmediate},
-        {REGISTER, translateRegister},
+        {REGISTER,   translateRegister},
         {LOAD_STORE, translateLoadStore},
         {BRANCH,     translateBranch},
-        {CONSTANT, translateImmediate},
+        {CONSTANT,   translateConstant},
 };
 
 /// Gets the corresponding [IRGenerator].

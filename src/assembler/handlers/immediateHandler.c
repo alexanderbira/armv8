@@ -31,7 +31,7 @@ IR parseImmediate(TokenisedLine *line, unused AssemblerState *state) {
         }
 
         struct WideMove wideMove;
-        sscanf(line->operands[1], "#%" SCNu16, &wideMove.imm16);
+        wideMove.imm16 = parseImmediateStr(line->operands[1]);
 
         // Get shift is <lsl> is present.
         wideMove.hw = 0x0;
@@ -40,10 +40,14 @@ IR parseImmediate(TokenisedLine *line, unused AssemblerState *state) {
             int matched;
             char *shiftValue = split(line->operands[2], " ", &matched)[1];
             assertFatal(matched == 2, "[parseImmediate] Incorrect shift parameter!");
-            sscanf(shiftValue, "#%" SCNu8, &wideMove.hw);
 
-            // Assuming hw is value 0-3.
-            wideMove.hw /= 16;
+            // The "hw" in assembly is actually 16 times the value in the binary instruction.
+            uint8_t hwTemp = parseImmediateStr(shiftValue);
+            assertFatal(hwTemp % 16 == 0, "[parseImmediate] Wide move shift is not multiple of 16!");
+
+            // The maximum value [hw] can be is 0b11, i.e., 3. (3 * 16 = 48)
+            assertFatal(hwTemp <= 48, "[parseImmediate] Wide move shift value is too high!");
+            wideMove.hw = hwTemp / 16;
         }
 
         immediateIR = (Immediate_IR) {
@@ -65,18 +69,20 @@ IR parseImmediate(TokenisedLine *line, unused AssemblerState *state) {
         struct Arithmetic arithmetic;
 
         arithmetic.rn = parseRegisterStr(line->operands[1], &sf);
-        sscanf(line->operands[2], "#%" SCNu16, &arithmetic.imm12);
+        arithmetic.imm12 = parseImmediateStr(line->operands[2]);
 
         // Get shift is <lsl> is present.
         arithmetic.sh = false;
         if (line->operandCount == 4) {
             // Take only immediate since arithmetic instructions can only take logical left shifts.
             int matched;
-            char *shiftValue = split(line->operands[2], " ", &matched)[1];
+            char *shiftValue = split(line->operands[3], " ", &matched)[1];
             assertFatal(matched == 2, "[parseImmediate] Incorrect shift parameter!");
-            assertFatal(sscanf(shiftValue, "#%" SCNu8, (uint8_t *) &arithmetic.sh),
-                        "[parseImmediate] Could not read shift!");
-            arithmetic.sh = (arithmetic.sh != 0);
+            uint8_t shiftAmount = parseImmediateStr(shiftValue);
+            assertFatal(shiftAmount == 0 || shiftAmount == 0xC, "[parseImmediate] Incorrect shift amount!");
+            if (shiftAmount == 0xC) {
+                arithmetic.sh = true;
+            }
         }
 
         immediateIR = (Immediate_IR) {
@@ -101,7 +107,7 @@ Instruction translateImmediate(IR *irObject, unused AssemblerState *state) {
     Instruction result = IMMEDIATE_C;
 
     // Load [sf], trust since boolean.
-    result = (Instruction) immediate->sf << 31;
+    result |= (Instruction) immediate->sf << IMMEDIATE_SF_S;
 
     // Load [opc], trust value since defined in enum.
     union ImmediateOpCode *opc = &immediate->opc;
@@ -115,7 +121,7 @@ Instruction translateImmediate(IR *irObject, unused AssemblerState *state) {
     }
 
     // Load [opi], trust value since defined in enum.
-    result |= (Instruction) immediate->opi << IMMEDIATE_OPC_S;
+    result |= (Instruction) immediate->opi << IMMEDIATE_OPI_S;
 
     // Load [operand].
     switch (immediate->opi) {

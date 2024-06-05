@@ -14,12 +14,17 @@
 IR handleDirective(TokenisedLine *tokenisedLine, unused AssemblerState *state) {
     assertFatal(tokenisedLine->operandCount == 1,
                 "[handleDirective] Invalid number of arguments!");
-    char *directive = tokenisedLine->mnemonic + 1;
 
-    if (!strcasecmp(directive, "int")) {
-        BitData immediate;
-        assertFatal(sscanf("%" SCNx32, tokenisedLine.operands[1], &immediate),
-                    "[handleDirective] Failed to parse immediate for `.int`!");
+    if (!strcasecmp(tokenisedLine->subMnemonic, "int")) {
+        // Reserve space for line, null terminator, and prepended '#'.
+        char *immediateStr = (char *) malloc(strlen(tokenisedLine->operands[0]) + 2);
+        *immediateStr = '#';
+        strcpy(immediateStr + 1, tokenisedLine->operands[0]);
+
+        // Very cheesy trick to reuse [parseImmediateStr].
+        BitData immediate = parseImmediateStr(immediateStr);
+        free(immediateStr);
+        state->address += 0x4;
         return (IR) {.type = CONSTANT, .ir.memoryData = immediate};
     } else {
         throwFatal("[handleDirective] Invalid directive!");
@@ -29,11 +34,10 @@ IR handleDirective(TokenisedLine *tokenisedLine, unused AssemblerState *state) {
 /// Function to process a label, i.e. a line of alphabet characters ending in ':'.
 /// @param line The line to "process".
 /// @return The resulting binary word.
-/// @pre The incoming [line] is a label,  i.e. a line of alphabet characters ending in ':', and is trimmed.
+/// @pre The incoming [line] is a label and is trimmed.
 void handleLabel(const char *line, AssemblerState *state) {
-    // Remove trailing colon. See precondition.
     char *label = strdup(line);
-    *(label + strlen(label) - 1) = '\0';
+    *strchr(label, ':') = '\0';
 
     addMapping(state, label, state->address);
 }
@@ -44,8 +48,7 @@ void handleLabel(const char *line, AssemblerState *state) {
 IR handleInstruction(TokenisedLine *tokenisedLine, AssemblerState *state) {
     IR result = getParseFunction(tokenisedLine->mnemonic)(tokenisedLine, state);
 
-    // Always increment address by 4 since at compile time,
-    // jumps are not possible.
+    // Always increment address by 4 since at compile time.
     state->address += 0x4;
     return result;
 }

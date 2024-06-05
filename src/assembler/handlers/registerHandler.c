@@ -16,9 +16,11 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
 
     union RegisterOpCode opc;
     bool M = 0; // At first, assume [M] as if instruction is arithmetic / bit-logic.
-    enum RegisterType group = BIT_LOGIC; // At first, assume [group] as if instruction is bit-logic.
-    uint8_t opr = REGISTER_BITLOGIC_GM; // At first, assume [opr] as if instruction is bit-logic.
+    enum RegisterType group; // At first, assume [group] as if instruction is bit-logic.
+    uint8_t opr;
     bool negated;
+
+    registerIR.opc.multiply = false;
 
     switch (line->mnemonic[0]) {
 
@@ -27,13 +29,15 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
             if (line->mnemonic[1] == 'd') {
                 opc.arithmetic = (strlen(line->mnemonic) == 3) ? ADD : ADDS;
                 group = ARITHMETIC;
+                opr = REGISTER_ARITHMETIC_C;
             }
             // differentiate by string length
             else {
                 opc.logic.standard = (strlen(line->mnemonic) == 3) ? AND : ANDS;
                 // both are not negated
                 negated = false;
-                opr = 0;
+                group = BIT_LOGIC;
+                opr = REGISTER_BITLOGIC_C;
             }
             break;
 
@@ -42,7 +46,8 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
             opc.logic.negated = (strlen(line->mnemonic) == 3) ? BIC : BICS;
             // both are negated
             negated = true;
-            opr = 0;
+            group = BIT_LOGIC;
+            opr = REGISTER_BITLOGIC_C;
             break;
 
         case 'e':
@@ -55,14 +60,17 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
                 opc.logic.negated = EON;
                 negated = true;
             }
-            opr = 0;
+            group = BIT_LOGIC;
+            opr = REGISTER_BITLOGIC_C;
             break;
 
         case 'm':
             // differentiate by the 2nd letter
             opc.multiply = (line->mnemonic[1] == 'a') ? MADD : MSUB;
             M = 1;
+            negated = opc.multiply == MSUB;
             group = MULTIPLY;
+            opr = REGISTER_MULTIPLY_C;
             break;
 
         case 'o':
@@ -73,15 +81,17 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
             }
             else {
                 opc.logic.negated = ORN;
-                negated = false;
+                negated = true;
             }
-            opr = 0;
+            group = BIT_LOGIC;
+            opr = REGISTER_BITLOGIC_C;
             break;
 
         case 's':
             // differentiate by string length
             opc.arithmetic = (strlen(line->mnemonic) == 3) ? SUB : SUBS;
             group = ARITHMETIC;
+            opr = REGISTER_ARITHMETIC_C;
             break;
 
         default:
@@ -97,41 +107,46 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
     union RegisterOperand operand;
     enum ShiftType shift;
     if (group == MULTIPLY) {
-        struct Multiply multiply;
-        uint8_t ra;
-
-        // set x depending on MADD or MSUB
-        bool x = (registerIR.opc.multiply == MSUB);
-        sscanf(line->operands[3], "%*c%hhu", &ra);
+        uint8_t ra = parseRegisterStr(line->operands[3], NULL);
+        bool x = (opc.multiply == MSUB);
 
         // shift is set as LSL since LSL = 0
         shift = LSL;
-        multiply = (struct Multiply) {x, ra};
+        struct Multiply multiply = (struct Multiply) {x, ra};
+
         operand = (union RegisterOperand) {.multiply = multiply};
     } else {
-        uint8_t imm6;
+        uint8_t imm6 = 0;
+        shift = 0;
+
         int matched;
-        char **shiftAndValue = split(line->operands[3], " ", &matched);
 
-        // fill imm6
-        sscanf(shiftAndValue[2], "%*c%hhu", &imm6);
-
-        // switch based on first letter of shift name
-        switch (shiftAndValue[0][0]) {
-            case 'l':
-                // differentiate based on third letter of shift name
-                shift = (shiftAndValue[0][2] == 'l') ? LSL : LSR;
-                break;
-            case 'a':
-                shift = ASR;
-                break;
-            case 'r':
-                shift = ROR;
-                break;
-            default: throwFatal("Shift supplied was not a shift.");
+        if (line->operandCount == 4 && strchr(line->operands[3],' ') != NULL) {
+            char **shiftAndValue = split(line->operands[3], " ", &matched);
+            // fill imm6
+            imm6 = parseImmediateStr(shiftAndValue[1]);
+            // switch based on first letter of shift name
+            switch (shiftAndValue[0][0]) {
+                case 'l':
+                    // differentiate based on third letter of shift name
+                    shift = (shiftAndValue[0][2] == 'l') ? LSL : LSR;
+                    break;
+                case 'a':
+                    shift = ASR;
+                    break;
+                case 'r':
+                    shift = ROR;
+                    break;
+                default:
+                    throwFatal("Shift supplied was not a shift.");
+            }
         }
 
+
         operand = (union RegisterOperand) {.imm6 = imm6};
+
+        opr |= shift << 1;
+        opr |= negated;
     }
 
     registerIR = (Register_IR) {
@@ -157,7 +172,7 @@ Instruction translateRegister(IR *irObject, unused AssemblerState *state) {
     Instruction instruction = REGISTER_;
 
     // Load [sf]
-    instruction |= (Instruction) registerIR->sf << 31;
+    instruction |= (Instruction) registerIR->sf << IMMEDIATE_SF_S;
 
     // Load [opc], trust value since defined in enum.
     switch (registerIR->group) {
@@ -175,7 +190,7 @@ Instruction translateRegister(IR *irObject, unused AssemblerState *state) {
             break;
 
         case MULTIPLY:
-            instruction |= (Instruction) truncater(registerIR->opc.multiply, REGISTER_OPC_N) << REGISTER_OPC_S;
+
             break;
 
     }

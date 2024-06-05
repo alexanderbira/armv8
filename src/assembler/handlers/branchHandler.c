@@ -40,7 +40,7 @@ IR parseBranch(TokenisedLine *line, unused AssemblerState *state) {
             // Try to find the corresponding condition, else throw error.
             bool found = false;
             enum BranchCondition condition = AL; // Default value - will be caught by assert.
-            for (int i = 0; i < sizeof(conditionMappings) / sizeof(struct BranchEntry); i++) {
+            for (size_t i = 0; i < sizeof(conditionMappings) / sizeof(struct BranchEntry); i++) {
                 if (!strcasecmp(conditionMappings[i].name, line->subMnemonic)) {
                     condition = conditionMappings[i].condition;
                     found = true;
@@ -77,10 +77,13 @@ Instruction translateBranch(IR *irObject, AssemblerState *state) {
             result = BRANCH_UNCONDITIONAL_C;
             Literal *simm26 = &branch->data.simm26;
             if (simm26->isLabel) {
-                BitData *address = NULL;
-                address = getMapping(state, simm26->data.label);
-                assertFatal(address != NULL, "[translateBranch] No mapping for label!");
-                return result | truncater(*address, BRANCH_UNCONDITIONAL_SIMM26_N);
+                // Calculate offset, then divide by 4 to encode.
+                BitData *immediate = getMapping(state, simm26->data.label);
+                assertFatal(immediate != NULL, "[translateBranch] No mapping for label!");
+
+                simm26->data.immediate = *immediate;
+                simm26->data.immediate -= state->address;
+                simm26->data.immediate /= 4;
             }
 
             return result | truncater(simm26->data.immediate, BRANCH_UNCONDITIONAL_SIMM26_N);
@@ -91,17 +94,20 @@ Instruction translateBranch(IR *irObject, AssemblerState *state) {
 
         case BRANCH_CONDITIONAL:
             result = BRANCH_CONDITIONAL_C;
-            struct Conditional *conditional = &branch->data.conditional;
-            if (conditional->simm19.isLabel) {
-                BitData *address = NULL;
-                address = getMapping(state, conditional->simm19.data.label);
-                assertFatal(address != NULL, "[translateBranch] No mapping for label!");
-                result |= truncater(*address, BRANCH_CONDITIONAL_SIMM19_N);
-            } else {
-                result |= truncater(conditional->simm19.data.immediate, BRANCH_CONDITIONAL_SIMM19_N);
-            }
-            return result | truncater(conditional->condition, BRANCH_CONDITIONAL_COND_N);
+            Literal *simm19 = &branch->data.conditional.simm19;
+            if (simm19->isLabel) {
+                // Calculate offset, then divide by 4 to encode.
+                BitData *immediate = getMapping(state, simm19->data.label);
+                assertFatal(immediate != NULL, "[translateBranch] No mapping for label!");
 
+                simm19->data.immediate = *immediate;
+                simm19->data.immediate -= state->address;
+                simm19->data.immediate /= 4;
+            }
+
+            result |= truncater(simm19->data.immediate, BRANCH_CONDITIONAL_SIMM19_N)
+                    << BRANCH_CONDITIONAL_SIMM19_S;
+            return result | truncater(branch->data.conditional.condition, BRANCH_CONDITIONAL_COND_N);
     }
 
     throwFatal("[translateBranch] Unknown type of branch instruction!");

@@ -7,25 +7,18 @@
 
 #include "error.h"
 
-/// Assert a condition, pretty-printing and error and exiting if it is not met.
-/// @param condition The condition to assert over.
-/// @param message The failure message.
-/// @throws -1 Exits the program if [condition] is not met.
-void assertFatal(bool condition, char message[]) {
+void assertFatal_(bool condition, char message[], char *file, int line) {
     if (!condition) {
         fprintf(stderr, "%s\n", message);
-        fprintf(stderr, "   In file %s, line %d \n\n", __FILE__, __LINE__);
+        fprintf(stderr, "   In file %s, line %d \n\n", file, line);
         perror("    Fatal Error");
         exit(-1);
     }
 }
 
-/// Pretty-prints the given error and exits the program.
-/// \param message The failure message.
-/// @throws -1 Exits the program.
-noreturn void throwFatal(char message[]) {
+noreturn void throwFatal_(char message[], char *file, int line) {
     fprintf(stderr, "%s\n", message);
-    fprintf(stderr, "   In file %s, line %d", __FILE__, __LINE__);
+    fprintf(stderr, "   In file %s, line %d", file, line);
     perror("    Fatal Error");
     exit(-1);
 }

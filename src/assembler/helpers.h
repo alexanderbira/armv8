@@ -38,4 +38,8 @@ Literal parseLiteral(const char *literal);
 
 uint8_t parseRegisterStr(const char *name, bool *sf);
 
+uint64_t parseImmediateStr(const char *operand);
+
+int strcmpVoid(const void *v1, const void *v2);
+
 #endif // ASSEMBLER_HELPERS_H
