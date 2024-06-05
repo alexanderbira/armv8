@@ -30,13 +30,10 @@ int main(int argc, char **argv) {
         bool isLabel = false;
         char *colon = strchr(line, ':');
         if (colon != NULL) {
-            // Ensure all preceding chars are alphabet.
+            // Ensure first character is valid.
             isLabel = true;
-            for (char *p = line; p < colon; p++) {
-                if (!isalpha((unsigned char) *p)) isLabel = false;
-            }
-
-            if (isLabel) handleLabel(trimmedLine, &state);
+            if (!isalpha(line[0]) && line[0] != '_' && line[0] != '.') isLabel = false;
+            handleLabel(trimmedLine, &state);
         }
 
         if (!isLabel) {
