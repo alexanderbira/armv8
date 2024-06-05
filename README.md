@@ -1,9 +1,20 @@
 # Arm-v8
 
-> "No one's gonna look at this project and be like, oh, what is this doing? Cuz no one's gonna see this project. (Except the group leader, but he knows what we're doing.)"
->
-> "Don't commit this."
->
-> - *Alexander Biraben-Renard*, *May 2024*.
+This is `Group 5`'s repository for the Arm-v8 Emulator/Assembler/Extended project.
 
-This is `Group 5`'s repository for the Arm-v8 Emulator/Assembler/Extended project. 
+## Guide to blinking the RPi
+1. `cd` into `src`:
+```bash
+cd src
+```
+2. Compile the assembler:
+```bash
+make assemble
+```
+3. Assemble `led_blink.s`:
+```bash
+./assemble rpi/led_blink.s kernel8.img
+```
+4. Transfer `kernel8.img` onto the RPi's SD card and power it!
+
+
