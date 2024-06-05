@@ -24,6 +24,7 @@ IR handleDirective(TokenisedLine *tokenisedLine, unused AssemblerState *state) {
         // Very cheesy trick to reuse [parseImmediateStr].
         BitData immediate = parseImmediateStr(immediateStr, 8 * sizeof(BitData));
         free(immediateStr);
+        state->address += 0x4;
         return (IR) {.type = CONSTANT, .ir.memoryData = immediate};
     } else {
         throwFatal("[handleDirective] Invalid directive!");
