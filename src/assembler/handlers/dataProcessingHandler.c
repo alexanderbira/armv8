@@ -45,29 +45,50 @@ IR parseDataProcessing(TokenisedLine *line, AssemblerState *state) {
         // Aliased instructions always have zero register as destination.
         char *zeroRegister = strdup((line->operands[0][0] == 'x') ? "x31" : "w31");
         char *oldMnemonic = line->mnemonic;
+        int oldOperandCount = line->operandCount;
 
         switch (oldMnemonic[0]) {
             case 'c':
                 // cmp -> subs, cmn -> adds
-                setLine(line, (*(line->mnemonic + 2) == 'p') ? "subs" : "adds", 3,
-                        zeroRegister, line->operands[0], line->operands[1]);
+                if (oldOperandCount == 2) {
+                    setLine(line, (*(line->mnemonic + 2) == 'p') ? "subs" : "adds", 3,
+                            zeroRegister, line->operands[0], line->operands[1]);
+                } else {
+                    setLine(line, (*(line->mnemonic + 2) == 'p') ? "subs" : "adds", 4,
+                            zeroRegister, line->operands[0], line->operands[1], line->operands[2]);
+                }
                 break;
             case 'n':
                 // neg -> sub, negs -> subs
-                setLine(line, (strlen(line->mnemonic) == 3) ? "sub" : "subs", 3,
-                        line->operands[0], zeroRegister, line->operands[1]);
+                if (oldOperandCount == 2) {
+                    setLine(line, (strlen(line->mnemonic) == 3) ? "sub" : "subs", 3,
+                            line->operands[0], zeroRegister, line->operands[1]);
+                } else {
+                    setLine(line, (strlen(line->mnemonic) == 3) ? "sub" : "subs", 4,
+                            line->operands[0], zeroRegister, line->operands[1], line->operands[2]);
+                }
                 break;
             case 't':
                 // tst -> ands
-                setLine(line, "ands", 3,
-                        zeroRegister, line->operands[0], line->operands[1]);
+                if (oldOperandCount == 2) {
+                    setLine(line, "ands", 3,
+                            zeroRegister, line->operands[0], line->operands[1]);
+                } else {
+                    setLine(line, "ands", 4,
+                            zeroRegister, line->operands[0], line->operands[1], line->operands[2]);
+                }
                 break;
             case 'm':
                 switch (line->mnemonic[1]) {
                     case 'v':
                         // mvn -> orn
-                        setLine(line, "orn", 3,
-                                line->operands[0], zeroRegister, line->operands[2]);
+                        if (oldOperandCount == 2) {
+                            setLine(line, "orn", 3,
+                                    line->operands[0], zeroRegister, line->operands[1]);
+                        } else {
+                            setLine(line, "orn", 4,
+                                    line->operands[0], zeroRegister, line->operands[1], line->operands[2]);
+                        }
                         break;
                     case 'o':
                         // mov -> orr
