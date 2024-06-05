@@ -21,16 +21,14 @@ IR parseLoadStore(TokenisedLine *line, unused AssemblerState *state) {
     bool sf;
     const uint8_t reg = parseRegisterStr(line->operands[0], &sf);
 
-    // Only a <literal> or <unsigned offset> is possible.
     if (line->operands[1][0] == '[') {
         // SDT
         bool u = false;
         enum AddressingMode mode;
         union Offset offset;
         uint8_t xn;
-        assertFatal(sscanf("[*%" SCNu8, line->operands[1], &xn) == 1,
+        assertFatal(sscanf(line->operands[1], "[%*c%" SCNu8, &xn) == 1,
                     "[parseLoadStore] Could not scan <xn>!");
-
         if (line->operandCount == 2) {
             // Zero Unsigned Offset
             u = true;
@@ -57,7 +55,7 @@ IR parseLoadStore(TokenisedLine *line, unused AssemblerState *state) {
                     } else {
                         //Register Offset
                         mode = REGISTER_OFFSET;
-                        offset.xm = parseRegisterStr(line->operands[1], NULL);
+                        offset.xm = parseRegisterStr(line->operands[2], NULL);
                     }
                     break;
                 default:
