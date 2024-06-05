@@ -69,18 +69,20 @@ IR parseImmediate(TokenisedLine *line, unused AssemblerState *state) {
         struct Arithmetic arithmetic;
 
         arithmetic.rn = parseRegisterStr(line->operands[1], &sf);
-        arithmetic.imm12 = parseImmediateStr(line->operands[2], IMMEDIATE_ARITHMETIC_IMM12_N);
+        arithmetic.imm12 = parseImmediateStr(line->operands[2], IMMEDIATE_ARITHMETIC_IMM12_N);;
 
         // Get shift is <lsl> is present.
         arithmetic.sh = false;
         if (line->operandCount == 4) {
-            arithmetic.sh = true;
             // Take only immediate since arithmetic instructions can only take logical left shifts.
             int matched;
             char *shiftValue = split(line->operands[3], " ", &matched)[1];
             assertFatal(matched == 2, "[parseImmediate] Incorrect shift parameter!");
             uint8_t shiftAmount = parseImmediateStr(shiftValue, 8 * sizeof(uint8_t));
-            assertFatal(shiftAmount == 0xC, "[parseImmediate] Incorrect shift amount!");
+            assertFatal(shiftAmount == 0 || shiftAmount == 0xC, "[parseImmediate] Incorrect shift amount!");
+            if (shiftAmount == 0xC) {
+                arithmetic.sh = true;
+            }
         }
 
         immediateIR = (Immediate_IR) {
