@@ -16,8 +16,8 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
 
     union RegisterOpCode opc;
     bool M = 0; // At first, assume [M] as if instruction is arithmetic / bit-logic.
-    enum RegisterType group = BIT_LOGIC; // At first, assume [group] as if instruction is bit-logic.
-    uint8_t opr = REGISTER_BITLOGIC_GM; // At first, assume [opr] as if instruction is bit-logic.
+    enum RegisterType group; // At first, assume [group] as if instruction is bit-logic.
+    uint8_t opr;
     bool negated;
 
     registerIR.opc.multiply = false;
@@ -29,13 +29,15 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
             if (line->mnemonic[1] == 'd') {
                 opc.arithmetic = (strlen(line->mnemonic) == 3) ? ADD : ADDS;
                 group = ARITHMETIC;
+                opr = REGISTER_ARITHMETIC_C;
             }
             // differentiate by string length
             else {
                 opc.logic.standard = (strlen(line->mnemonic) == 3) ? AND : ANDS;
                 // both are not negated
                 negated = false;
-                opr = 0;
+                group = BIT_LOGIC;
+                opr = REGISTER_BITLOGIC_C;
             }
             break;
 
@@ -44,7 +46,8 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
             opc.logic.negated = (strlen(line->mnemonic) == 3) ? BIC : BICS;
             // both are negated
             negated = true;
-            opr = 0;
+            group = BIT_LOGIC;
+            opr = REGISTER_BITLOGIC_C;
             break;
 
         case 'e':
@@ -57,14 +60,17 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
                 opc.logic.negated = EON;
                 negated = true;
             }
-            opr = 0;
+            group = BIT_LOGIC;
+            opr = REGISTER_BITLOGIC_C;
             break;
 
         case 'm':
             // differentiate by the 2nd letter
             opc.multiply = (line->mnemonic[1] == 'a') ? MADD : MSUB;
             M = 1;
+            negated = opc.multiply == MSUB;
             group = MULTIPLY;
+            opr = REGISTER_MULTIPLY_C;
             break;
 
         case 'o':
@@ -77,13 +83,15 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
                 opc.logic.negated = ORN;
                 negated = false;
             }
-            opr = 0;
+            group = BIT_LOGIC;
+            opr = REGISTER_BITLOGIC_C;
             break;
 
         case 's':
             // differentiate by string length
             opc.arithmetic = (strlen(line->mnemonic) == 3) ? SUB : SUBS;
             group = ARITHMETIC;
+            opr = REGISTER_ARITHMETIC_C;
             break;
 
         default:
@@ -100,19 +108,18 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
     enum ShiftType shift;
     if (group == MULTIPLY) {
         uint8_t ra = parseRegisterStr(line->operands[3], NULL);
-        bool x = (registerIR.opc.multiply == MSUB);
+        bool x = (opc.multiply == MSUB);
 
         // shift is set as LSL since LSL = 0
         shift = LSL;
         struct Multiply multiply = (struct Multiply) {x, ra};
+
         operand = (union RegisterOperand) {.multiply = multiply};
     } else {
         uint8_t imm6 = 0;
         shift = 0;
 
         int matched;
-
-
 
         if (line->operandCount == 4 && strchr(line->operands[3],' ') != NULL) {
             char **shiftAndValue = split(line->operands[3], " ", &matched);
@@ -137,6 +144,9 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
 
 
         operand = (union RegisterOperand) {.imm6 = imm6};
+
+        opr |= shift << 1;
+        opr |= negated;
     }
 
     registerIR = (Register_IR) {
@@ -180,7 +190,7 @@ Instruction translateRegister(IR *irObject, unused AssemblerState *state) {
             break;
 
         case MULTIPLY:
-            instruction |= (Instruction) truncater(registerIR->opc.multiply, REGISTER_OPC_N) << REGISTER_OPC_S;
+
             break;
 
     }
