@@ -26,7 +26,7 @@ static const IREntry instructionHandlers[] = {
         { "orn", parseRegister },
         { "tst", parseDataProcessing },
         { "mvn", parseRegister },
-        { "mov", parseRegister },
+        { "mov", parseDataProcessing },
         { "movn", parseImmediate },
         { "movk", parseImmediate },
         { "movz", parseImmediate },

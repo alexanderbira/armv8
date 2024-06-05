@@ -93,7 +93,7 @@ IR parseDataProcessing(TokenisedLine *line, AssemblerState *state) {
                     case 'o':
                         // mov -> orr
                         setLine(line, "orr", 3,
-                                line->operands[0], zeroRegister, line->operands[2]);
+                                line->operands[0], zeroRegister, line->operands[1]);
                         break;
                     case 'u':
                         // mul -> madd
