@@ -81,7 +81,7 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
             }
             else {
                 opc.logic.negated = ORN;
-                negated = false;
+                negated = true;
             }
             group = BIT_LOGIC;
             opr = REGISTER_BITLOGIC_C;
