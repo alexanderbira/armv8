@@ -8,6 +8,7 @@
 #ifndef ASSEMBLER_DATA_PROCESSING_HANDLER_H
 #define ASSEMBLER_DATA_PROCESSING_HANDLER_H
 
+#include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 
