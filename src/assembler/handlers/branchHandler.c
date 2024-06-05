@@ -107,7 +107,7 @@ Instruction translateBranch(IR *irObject, AssemblerState *state) {
 
             result |= truncater(simm19->data.immediate, BRANCH_CONDITIONAL_SIMM19_N)
                     << BRANCH_CONDITIONAL_SIMM19_S;
-            return result | truncater((uint64_t) &branch->data.conditional.condition, BRANCH_CONDITIONAL_COND_N);
+            return result | truncater(branch->data.conditional.condition, BRANCH_CONDITIONAL_COND_N);
     }
 
     throwFatal("[translateBranch] Unknown type of branch instruction!");
