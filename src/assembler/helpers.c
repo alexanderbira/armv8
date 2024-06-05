@@ -195,6 +195,9 @@ int strcmpVoid(const void *v1, const void *v2) {
     return strcmp(s1, s2);
 }
 
+/// Calculates the offset of a label and stores it in [Literal.data]
+/// @param data The [literalData] of the [Literal] to alter
+/// @param state The current state of the assembler.
 void evaluateOffset(union literalData *data, AssemblerState *state) {
     // Calculate offset, then divide by 4 to encode.
     BitData *immediate = getMapping(state, data->label);
