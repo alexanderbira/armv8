@@ -42,10 +42,10 @@ static const IREntry instructionHandlers[] = {
 
 static const InstructionEntry translationHandlers[] = {
         {IMMEDIATE,  translateImmediate},
-        {REGISTER, translateRegister},
+        {REGISTER,   translateRegister},
         {LOAD_STORE, translateLoadStore},
         {BRANCH,     translateBranch},
-        {CONSTANT, translateImmediate},
+        {CONSTANT,   translateConstant},
 };
 
 /// Gets the corresponding [IRGenerator].

@@ -14,10 +14,16 @@
 IR handleDirective(TokenisedLine *tokenisedLine, unused AssemblerState *state) {
     assertFatal(tokenisedLine->operandCount == 1,
                 "[handleDirective] Invalid number of arguments!");
-    char *directive = tokenisedLine->mnemonic + 1;
 
-    if (!strcasecmp(directive, "int")) {
-        BitData immediate = parseImmediateStr(tokenisedLine->operands[1], 8 * sizeof(BitData));
+    if (!strcasecmp(tokenisedLine->subMnemonic, "int")) {
+        // Reserve space for line, null terminator, and prepended '#'.
+        char *immediateStr = (char *) malloc(strlen(tokenisedLine->operands[0]) + 2);
+        *immediateStr = '#';
+        strcpy(immediateStr + 1, tokenisedLine->operands[0]);
+
+        // Very cheesy trick to reuse [parseImmediateStr].
+        BitData immediate = parseImmediateStr(immediateStr, 8 * sizeof(BitData));
+        free(immediateStr);
         return (IR) {.type = CONSTANT, .ir.memoryData = immediate};
     } else {
         throwFatal("[handleDirective] Invalid directive!");

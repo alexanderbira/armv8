@@ -77,6 +77,7 @@ char **split(const char *str, const char *delim, int *count) {
 TokenisedLine tokenise(const char *line) {
     char *lineCopy = strdup(line);
     TokenisedLine result;
+    result.mnemonic = NULL;
     result.subMnemonic = NULL;
 
     char *trimmedLine = trim(lineCopy, ", \n");
@@ -104,7 +105,7 @@ TokenisedLine tokenise(const char *line) {
     }
 
     // Copy in mnemonic. Null terminate supplied previously.
-    result.mnemonic = strndup(trimmedLine, mnemonicLength);
+    if (mnemonicLength) result.mnemonic = strndup(trimmedLine, mnemonicLength);
 
     // Extract all the operands together.
     char *operands = separator + 1; // New variable for clarity.
