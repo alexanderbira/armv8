@@ -134,7 +134,7 @@ Instruction translateLoadStore(IR *irObject, AssemblerState *state) {
 
             Literal *simm19 = &loadStore->data.simm19;
             if (simm19->isLabel) {
-                evaluateOffset(&simm19->data, state);
+                parseOffset(&simm19->data, state);
             }
 
             result |= truncater(simm19->data.immediate, LOAD_STORE_LITERAL_SIMM19_N)

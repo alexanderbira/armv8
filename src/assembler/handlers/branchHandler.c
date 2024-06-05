@@ -77,7 +77,7 @@ Instruction translateBranch(IR *irObject, AssemblerState *state) {
             result = BRANCH_UNCONDITIONAL_C;
             Literal *simm26 = &branch->data.simm26;
             if (simm26->isLabel) {
-                evaluateOffset(&simm26->data, state);
+                parseOffset(&simm26->data, state);
             }
 
             return result | truncater(simm26->data.immediate, BRANCH_UNCONDITIONAL_SIMM26_N);
@@ -90,7 +90,7 @@ Instruction translateBranch(IR *irObject, AssemblerState *state) {
             result = BRANCH_CONDITIONAL_C;
             Literal *simm19 = &branch->data.conditional.simm19;
             if (simm19->isLabel) {
-                evaluateOffset(&simm19->data, state);
+                parseOffset(&simm19->data, state);
             }
 
             result |= truncater(simm19->data.immediate, BRANCH_CONDITIONAL_SIMM19_N)
