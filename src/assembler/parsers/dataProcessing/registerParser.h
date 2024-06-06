@@ -8,6 +8,8 @@
 #ifndef ASSEMBLER_REGISTER_PARSER_H
 #define ASSEMBLER_REGISTER_PARSER_H
 
+#include <stdint.h>
+
 #include "../../../common/ir/ir.h"
 #include "../../helpers.h"
 #include "../../state.h"

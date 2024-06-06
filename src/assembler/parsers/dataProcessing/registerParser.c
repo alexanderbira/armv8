@@ -14,152 +14,114 @@
 IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
     Register_IR registerIR;
 
-    union RegisterOpCode opc;
-    bool M = 0; // At first, assume [M] as if instruction is arithmetic / bit-logic.
-    enum RegisterType group; // At first, assume [group] as if instruction is bit-logic.
-    uint8_t opr;
-    bool negated;
+    // Populate all fields except [opc], [M], [opr].
+    // Where [M] and derivations of [opr] is given assumptions.
+    registerIR.M = false;        // At first, assume [M] == false.
+    registerIR.negated = false;  // At first, assume [N] == false.
+    registerIR.shift = LSL;      // At first, assume [shift] == LSL since it's ordinal value is 0x0.
+    registerIR.operand.imm6 = 0; // At first, assume the shift amount is 0x0.
 
-    registerIR.opc.multiply = false;
+    // Parse all registers, and ensure their bit-width is identical.
+    bool sfRD, sfRN, sfRM;
+    registerIR.rd = parseRegisterStr(line->operands[0], &sfRD);
+    registerIR.rn = parseRegisterStr(line->operands[1], &sfRN);
+    registerIR.rm = parseRegisterStr(line->operands[2], &sfRM);
+    assertFatal(sfRD == sfRN && sfRN == sfRM, "Register bit-widths not identical!");
+    registerIR.sf = sfRD;
 
-    switch (line->mnemonic[0]) {
-
+    switch (*line->mnemonic) {
         case 'a':
-            // differentiate by string length
             if (line->mnemonic[1] == 'd') {
-                opc.arithmetic = (strlen(line->mnemonic) == 3) ? ADD : ADDS;
-                group = ARITHMETIC;
-                opr = REGISTER_ARITHMETIC_C;
-            }
-                // differentiate by string length
-            else {
-                opc.logic.standard = (strlen(line->mnemonic) == 3) ? AND : ANDS;
-                // both are not negated
-                negated = false;
-                group = BIT_LOGIC;
-                opr = REGISTER_BITLOGIC_C;
+                // add
+                registerIR.group = ARITHMETIC;
+                registerIR.opc.arithmetic = (strlen(line->mnemonic) == 3) ? ADD : ADDS;
+                registerIR.opr = REGISTER_ARITHMETIC_C;
+            } else {
+                // and
+                registerIR.group = BIT_LOGIC;
+                registerIR.opc.logic.standard = (strlen(line->mnemonic) == 3) ? AND : ANDS;
+                registerIR.opr = REGISTER_BITLOGIC_C;
             }
             break;
-
         case 'b':
-            // differentiate between bic, bics by string length
-            opc.logic.negated = (strlen(line->mnemonic) == 3) ? BIC : BICS;
-            // both are negated
-            negated = true;
-            group = BIT_LOGIC;
-            opr = REGISTER_BITLOGIC_C;
+            // bic, bics
+            registerIR.group = BIT_LOGIC;
+            registerIR.opc.logic.negated = (strlen(line->mnemonic) == 3) ? BIC : BICS;
+            registerIR.opr = REGISTER_BITLOGIC_C;
+            registerIR.negated = true;
             break;
-
         case 'e':
-            // differentiate between eor, eon by 3rd letter.
+            // eor, eon
+            registerIR.group = BIT_LOGIC;
+            registerIR.opr = REGISTER_BITLOGIC_C;
             if (line->mnemonic[2] == 'r') {
-                opc.logic.standard = EOR;
-                negated = false;
+                registerIR.opc.logic.standard = EOR;
             } else {
-                opc.logic.negated = EON;
-                negated = true;
+                registerIR.opc.logic.negated = EON;
+                registerIR.negated = true;
             }
-            group = BIT_LOGIC;
-            opr = REGISTER_BITLOGIC_C;
             break;
-
         case 'm':
-            // differentiate by the 2nd letter
-            opc.multiply = (line->mnemonic[1] == 'a') ? MADD : MSUB;
-            M = 1;
-            negated = opc.multiply == MSUB;
-            group = MULTIPLY;
-            opr = REGISTER_MULTIPLY_C;
-            break;
+            // madd, msub
+            registerIR.group = MULTIPLY;
+            registerIR.opc.multiply = (line->mnemonic[1] == 'a') ? MADD : MSUB;
+            registerIR.M = true;
+            registerIR.opr = REGISTER_MULTIPLY_C;
 
+            uint8_t ra = parseRegisterStr(line->operands[3], NULL);
+            bool x = (registerIR.opc.multiply == MSUB);
+            registerIR.operand = (union RegisterOperand) {.multiply = (struct Multiply) {x, ra}};
+            break;
         case 'o':
-            // differentiate between orr, orn by 3rd letter.
+            // orr, orn
+            registerIR.group = BIT_LOGIC;
+            registerIR.opr = REGISTER_BITLOGIC_C;
             if (line->mnemonic[2] == 'r') {
-                opc.logic.standard = ORR;
-                negated = false;
+                registerIR.opc.logic.standard = ORR;
             } else {
-                opc.logic.negated = ORN;
-                negated = true;
+                registerIR.opc.logic.negated = ORN;
+                registerIR.negated = true;
             }
-            group = BIT_LOGIC;
-            opr = REGISTER_BITLOGIC_C;
             break;
-
         case 's':
-            // differentiate by string length
-            opc.arithmetic = (strlen(line->mnemonic) == 3) ? SUB : SUBS;
-            group = ARITHMETIC;
-            opr = REGISTER_ARITHMETIC_C;
+            // sub, subs
+            registerIR.group = ARITHMETIC;
+            registerIR.opr = REGISTER_ARITHMETIC_C;
+            registerIR.opc.arithmetic = (strlen(line->mnemonic) == 3) ? SUB : SUBS;
             break;
-
         default:
-            throwFatal("[parseRegister] Invalid mnemonic!");
+            throwFatal("Invalid mnemonic!");
     }
 
-    bool sf;
-    uint8_t rd = parseRegisterStr(line->operands[0], &sf);
-    uint8_t rn = parseRegisterStr(line->operands[1], &sf);
-    uint8_t rm = parseRegisterStr(line->operands[2], &sf);
+    // Deal with shift, if present.
+    // We know that if the last argument exists, it must be a shift.
+    if (line->operandCount == 4 && registerIR.group != MULTIPLY) {
+        int numMatched;
+        char **shiftAndValue = split(line->operands[3], " ", &numMatched);
+        assertFatal(numMatched == 2, "Incomplete shift parameter!");
 
-    // handle operand 4 (either Ra (multiply) or shift + immediate)
-    union RegisterOperand operand;
-    enum ShiftType shift;
-    if (group == MULTIPLY) {
-        uint8_t ra = parseRegisterStr(line->operands[3], NULL);
-        bool x = (opc.multiply == MSUB);
-
-        // shift is set as LSL since LSL = 0
-        shift = LSL;
-        struct Multiply multiply = (struct Multiply) {x, ra};
-
-        operand = (union RegisterOperand) {.multiply = multiply};
-    } else {
-        uint8_t imm6 = 0;
-        shift = 0;
-
-        int matched;
-
-        if (line->operandCount == 4 && strchr(line->operands[3], ' ') != NULL) {
-            char **shiftAndValue = split(line->operands[3], " ", &matched);
-            // fill imm6
-            imm6 = parseImmediateStr(shiftAndValue[1]);
-            // switch based on first letter of shift name
-            switch (shiftAndValue[0][0]) {
-                case 'l':
-                    // differentiate based on third letter of shift name
-                    shift = (shiftAndValue[0][2] == 'l') ? LSL : LSR;
-                    break;
-                case 'a':
-                    shift = ASR;
-                    break;
-                case 'r':
-                    shift = ROR;
-                    break;
-                default:
-                    throwFatal("Shift supplied was not a shift.");
-            }
+        enum ShiftType shift;
+        switch (shiftAndValue[0][0]) {
+            case 'l':
+                shift = (shiftAndValue[0][2] == 'l') ? LSL : LSR;
+                break;
+            case 'a':
+                shift = ASR;
+                break;
+            case 'r':
+                shift = ROR;
+                break;
+            default:
+                throwFatal("Shift supplied was not a shift.");
         }
 
-
-        operand = (union RegisterOperand) {.imm6 = imm6};
-
-        opr |= shift << 1;
-        opr |= negated;
+        uint8_t imm6 = parseImmediateStr(shiftAndValue[1]);
+        registerIR.operand.imm6 = imm6;
+        registerIR.shift = shift;
     }
 
-    registerIR = (Register_IR) {
-            .sf = sf,
-            .opc = opc,
-            .M = M,
-            .opr = opr,
-            .group = group,
-            .shift = shift,
-            .negated = negated,
-            .rm = rm,
-            .operand = operand,
-            .rn = rn,
-            .rd = rd
-    };
+    registerIR.opr |= registerIR.shift << 1;
+    registerIR.opr |= registerIR.negated;
 
     return (IR) {.type = REGISTER, .ir.registerIR = registerIR};
 }
