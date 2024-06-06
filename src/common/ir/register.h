@@ -20,11 +20,11 @@
 /// Mask for [sf] (the bit-width specifier) in a data processing (register) instruction.
 #define REGISTER_SF_M           maskl(1)
 
-/// Number of bits in [opc] in a data processing (register) instruction.
-#define REGISTER_OPC_N          2
-
 /// Number of bits to shift for [opc] in a data processing (register) instruction.
 #define REGISTER_OPC_S          29
+
+/// Number of bits in [opc] in a data processing (register) instruction.
+#define REGISTER_OPC_N          2
 
 /// Mask for [opc] (operation code) in a data processing (register) instruction.
 #define REGISTER_OPC_M          mask(30, 29)
@@ -35,47 +35,47 @@
 /// Mask for [M] in a data processing (register) instruction.
 #define REGISTER_M_M            mask(28, 28)
 
-/// Number of bits in [opr] in a data processing (register) instruction.
-#define REGISTER_OPR_N          4
-
 /// Number of bits to shift for [opr] in a data processing (register) instruction.
 #define REGISTER_OPR_S          21
+
+/// Number of bits in [opr] in a data processing (register) instruction.
+#define REGISTER_OPR_N          4
 
 /// Mask for [opr] in a data processing (register) instruction.
 #define REGISTER_OPR_M          mask(24, 21)
 
-/// Number of bits in [rm] in a data processing (register) instruction.
-#define REGISTER_RM_N           5
-
 /// Number of bits to shift for [rm] in a data processing (register) instruction.
 #define REGISTER_RM_S           16
+
+/// Number of bits in [rm] in a data processing (register) instruction.
+#define REGISTER_RM_N           5
 
 /// Mask for [rm] in a data processing (register) instruction.
 #define REGISTER_RM_M           mask(20, 16)
 
-/// Number of bits in [imm6] in [operand] in a data processing (register) instruction.
-#define REGISTER_OPERAND_IMM6_N 6
+/// Mask for [operand] in a data processing (register) instruction.
+#define REGISTER_OPERAND_M      mask(15, 10)
 
 /// Number of bits to shift [imm6] in [operand] in a data processing (register) instruction.
 #define REGISTER_OPERAND_IMM6_S 10
 
+/// Number of bits in [imm6] in [operand] in a data processing (register) instruction.
+#define REGISTER_OPERAND_IMM6_N 6
+
 /// Number of bits to shift [x] in [operand] in a data processing (register) instruction.
 #define REGISTER_OPERAND_X_S    15
-
-/// Number of bits in [ra] in [operand] in a data processing (register) instruction.
-#define REGISTER_OPERAND_RA_N   5
 
 /// Number of bits to shift [ra] in [operand] in a data processing (register) instruction.
 #define REGISTER_OPERAND_RA_S   10
 
-/// Mask for [operand] in a data processing (register) instruction.
-#define REGISTER_OPERAND_M      mask(15, 10)
-
-/// Number of bits in [rn] in [operand] in a data processing (register) instruction.
-#define REGISTER_RN_N           5
+/// Number of bits in [ra] in [operand] in a data processing (register) instruction.
+#define REGISTER_OPERAND_RA_N   5
 
 /// Number of bits to shift [rn] in [operand] in a data processing (register) instruction.
 #define REGISTER_RN_S           5
+
+/// Number of bits in [rn] in [operand] in a data processing (register) instruction.
+#define REGISTER_RN_N           5
 
 /// Mask for [rn] in a data processing (register) instruction.
 #define REGISTER_RN_M           mask(9, 5)
@@ -86,20 +86,20 @@
 /// Mask for [rd] in a data processing (register) instruction.
 #define REGISTER_RD_M           maskr(5)
 
-/// Mask for [shift] in [opr] in a data processing (register, arithmetic / bit-logic) instruction.
-#define REGISTER_SHIFT_M        b(0110)
+/// Code for a data processing (register, arithmetic) instruction.
+#define REGISTER_ARITHMETIC_C   b(1000)
 
 /// Mask for a data processing (register, arithmetic) instruction.
 #define REGISTER_ARITHMETIC_M   b(1001)
 
+/// Code for a data processing (register, bit-logic) instruction.
+#define REGISTER_BIT_LOGIC_C    b(0000)
+
 /// Mask for a data processing (register, bit-logic) instruction.
 #define REGISTER_BIT_LOGIC_M    b(1000)
 
-/// Code for a data processing (register, arithmetic) instruction.
-#define REGISTER_ARITHMETIC_C   b(1000)
-
-/// Code for a data processing (register, bit-logic) instruction.
-#define REGISTER_BIT_LOGIC_C    b(0000)
+/// Mask for [shift] in [opr] in a data processing (register, arithmetic / bit-logic) instruction.
+#define REGISTER_SHIFT_M        b(0110)
 
 /// Code for a data processing (register, multiply) instruction.
 #define REGISTER_MULTIPLY_C     b(1000)
