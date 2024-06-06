@@ -14,11 +14,14 @@
 /// The virtual memory size of the emulated machine.
 #define MEMORY_SIZE (2 << 20)
 
-/// The number of general purpose registers in the virtual machine.
-#define NUM_GPRS    31
-
 /// All considered whitespace characters.
 #define WHITESPACE  " \n\t\r"
+
+/// The number of general purpose registers in the virtual machine.
+#define NO_GPRS 31
+
+/// The encoding of the zero register.
+#define ZERO_REGISTER 31
 
 /// Alias for a chunk of data passed to and from the virtual registers or memory.
 typedef uint64_t BitData;

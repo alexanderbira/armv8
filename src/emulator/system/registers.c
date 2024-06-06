@@ -11,7 +11,7 @@
 /// @param regs Pointer to the registers.
 static void initRegs(Registers regs) {
     // All registers are initialised to zero. Zero register not in struct.
-    for (int i = 0; i < NUM_GPRS; i++) {
+    for (int i = 0; i < NO_GPRS; i++) {
         regs->gprs[i] = 0;
     }
     regs->pc = 0;
@@ -34,8 +34,8 @@ Registers_s createRegs(void) {
 /// @param id The ID of the register to access.
 /// @return The value of the register, or 0 if [id] is out of range.
 BitData getReg(Registers regs, size_t id) {
-    if (id == 31) return 0; // Zero Register
-    assertFatal(id < NUM_GPRS, "[getReg] Invalid register ID!");
+    if (id == ZERO_REGISTER) return 0; // Zero Register
+    assertFatal(id < NO_GPRS, "[getReg] Invalid register ID!");
     return regs->gprs[id];
 }
 
@@ -74,8 +74,8 @@ bool getRegState(Registers regs, PStateField field) {
 /// @param as64 Whether or not to write to the 64-bit register, i.e., X[id].
 /// @param value The value to write.
 void setReg(Registers regs, size_t id, bool as64, BitData value) {
-    if (id == 31) return; // Zero Register
-    assertFatal(id < NUM_GPRS, "[getReg] Invalid register ID!");
+    if (id == ZERO_REGISTER) return;
+    assertFatal(id < NO_GPRS, "[getReg] Invalid register ID!");
     regs->gprs[id] = as64 ? value : (uint32_t) value;
 }
 
