@@ -8,10 +8,10 @@
 #ifndef EMULATOR_LOAD_STORE_EXECUTOR_H
 #define EMULATOR_LOAD_STORE_EXECUTOR_H
 
-#include "../../common/error.h"
-#include "../../common/ir/ir.h"
-#include "../system/registers.h"
-#include "../system/memory.h"
+#include "../../../common/error.h"
+#include "../../../common/ir/ir.h"
+#include "../../system/registers.h"
+#include "../../system/memory.h"
 
 void executeLoadStore(IR *irObject, Registers regs, Memory mem);
 
