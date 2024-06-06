@@ -10,7 +10,7 @@
 /// Converts the IR form of a data processing (immediate) instruction to a binary word.
 /// @param irObject The [IR] struct representing the instruction.
 /// @param state The current state of the assembler.
-/// @return 32-bit binary word of the instruction.
+/// @returns 32-bit binary word of the instruction.
 Instruction translateImmediate(IR *irObject, unused AssemblerState *state) {
     assertFatal(irObject->type == IMMEDIATE, "Received non-immediate IR!");
     Immediate_IR *immediate = &irObject->ir.immediateIR;

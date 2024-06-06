@@ -8,7 +8,7 @@
 #include "state.h"
 
 /// Creates a fresh [AssemblerState].
-/// @return A fresh [AssemblerState].
+/// @returns A fresh [AssemblerState].
 AssemblerState createState(void) {
     AssemblerState state;
     state.address = 0x0;
@@ -90,6 +90,9 @@ BitData *getMapping(AssemblerState *state, const char *label) {
     return NULL;
 }
 
+/// Adds an [IR] to the given [AssemblerState]
+/// @param state The [AssemblerState] to modify.
+/// @param ir The [IR] to add.
 void addIR(AssemblerState *state, IR ir) {
     if (state->irCount >= state->irMaxCount) {
         // Exponential (doubling) scaling policy.

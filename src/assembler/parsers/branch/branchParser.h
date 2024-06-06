@@ -17,8 +17,11 @@
 
 /// An entry in an [enum BranchCondition] table.
 typedef struct {
+
     char *subMnemonic;
+
     enum BranchCondition code;
+
 } BranchEntry;
 
 IR parseBranch(TokenisedLine *line, unused AssemblerState *state);

@@ -10,7 +10,7 @@
 /// Converts the IR form of a data processing (register) instruction to a binary word.
 /// @param irObject The [IR] struct representing the instruction.
 /// @param state The current state of the assembler.
-/// @return 32-bit binary word of the instruction.
+/// @returns 32-bit binary word of the instruction.
 Instruction translateRegister(IR *irObject, unused AssemblerState *state) {
     assertFatal(irObject->type == REGISTER, "Received non-register IR!");
     Register_IR *registerIR = &irObject->ir.registerIR;

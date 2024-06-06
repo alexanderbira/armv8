@@ -10,7 +10,7 @@
 /// Converts the IR form of a branch instruction to a binary word.
 /// @param irObject The [IR] struct representing the instruction.
 /// @param state The current state of the assembler.
-/// @return 32-bit binary word of the instruction.
+/// @returns 32-bit binary word of the instruction.
 Instruction translateBranch(IR *irObject, AssemblerState *state) {
     assertFatal(irObject->type == BRANCH, "Received non-branch IR!");
     Branch_IR *branch = &irObject->ir.branchIR;

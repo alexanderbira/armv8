@@ -8,11 +8,9 @@
 #ifndef ASSEMBLER_DELEGATE_H
 #define ASSEMBLER_DELEGATE_H
 
-#include <inttypes.h>
-#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
-#include "../common/const.h"
 #include "../common/ir/ir.h"
 #include "state.h"
 #include "parsers/branch/branchParser.h"
@@ -32,8 +30,11 @@ typedef IR (*Parser)(TokenisedLine *line, AssemblerState *state);
 
 /// An entry in an [Parser] table.
 typedef struct {
+
     const char *mnemonic;
+
     const Parser handler;
+
 } ParserEntry;
 
 /// A function which produces a binary word instruction given its intermediate representation.
@@ -41,8 +42,11 @@ typedef Instruction (*Translator)(IR *irObject, AssemblerState *state);
 
 /// An entry in an [Translator] table.
 typedef struct {
+
     const IRType type;
+
     const Translator handler;
+
 } TranslatorEntry;
 
 Parser getParser(const char *mnemonic);

@@ -10,7 +10,7 @@
 /// Converts the IR form of a load store instruction to a binary word.
 /// @param irObject The [IR] struct representing the instruction.
 /// @param state The current state of the assembler.
-/// @return 32-bit binary word of the instruction.
+/// @returns 32-bit binary word of the instruction.
 Instruction translateLoadStore(IR *irObject, AssemblerState *state) {
     assertFatal(irObject->type == LOAD_STORE,
                 "[translateLoadStore] Received non-single data transfer IR!");
