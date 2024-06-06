@@ -3,11 +3,6 @@ CC       ?= gcc
 CFLAGS   ?= -std=c17 -g\
 	-D_DEFAULT_SOURCE\
 	-Wall -Werror -Wextra -Wpedantic
-CXXFLAGS ?= -Icommon/ -Icommon/ir\
- 	-Iemulator/decoders/ -Iemulator/decoders/immediate -Iemulator/decoders/register\
- 	-Iemulator/decoders/loadStore -Iemulator/decoders/branch\ -Iemulator/executors\
- 	-Iemulator/executors/immediate -Iemulator/executors/register -Iemulator/executors/loadStore\
- 	-Iemulator/executors/branch\ -Iemulator/system -Iemulator\ -Iassembler/ -Iassembler/handlers/
 
 SRC_DIR = .
 OBJ_DIR = obj
@@ -16,26 +11,13 @@ OBJ_DIR = obj
 .PHONY: all clean
 
 # Find all source files
-EMULATOR_SRC_FILES = $(wildcard $(SRC_DIR)/emulator/*.c) \
-	$(wildcard $(SRC_DIR)/emulator/decoders/*.c) \
-	$(wildcard $(SRC_DIR)/emulator/decoders/immediate/*.c) \
-	$(wildcard $(SRC_DIR)/emulator/decoders/register/*.c) \
-	$(wildcard $(SRC_DIR)/emulator/decoders/loadStore/*.c) \
-	$(wildcard $(SRC_DIR)/emulator/decoders/branch/*.c) \
-	$(wildcard $(SRC_DIR)/emulator/executors/*.c) \
-	$(wildcard $(SRC_DIR)/emulator/executors/immediate/*.c) \
-	$(wildcard $(SRC_DIR)/emulator/executors/register/*.c) \
-	$(wildcard $(SRC_DIR)/emulator/executors/loadStore/*.c) \
-	$(wildcard $(SRC_DIR)/emulator/executors/branch/*.c) \
-	$(wildcard $(SRC_DIR)/emulator/system/*.c) \
+EMULATOR_SRC_FILES = $(shell find $(SRC_DIR)/emulator/ -name '*.c') \
 	$(wildcard $(SRC_DIR)/common/*.c) \
 	$(wildcard $(SRC_DIR)/emulate.c)
 
-ASSEMBLER_SRC_FILES = $(wildcard $(SRC_DIR)/assembler/*.c) \
-	$(wildcard $(SRC_DIR)/assembler/*.c) \
-	$(wildcard $(SRC_DIR)/assembler/handlers/*.c) \
+ASSEMBLER_SRC_FILES = $(shell find $(SRC_DIR)/assembler/ -name '*.c') \
 	$(wildcard $(SRC_DIR)/common/*.c) \
-    $(wildcard $(SRC_DIR)/assemble.c)
+	$(wildcard $(SRC_DIR)/assemble.c)
 
 # Object files list
 EMULATOR_OBJ_FILES = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(EMULATOR_SRC_FILES))

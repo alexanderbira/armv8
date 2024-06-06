@@ -48,7 +48,7 @@ typedef enum {
 /// A struct representing, virtually, a machine's register contents.
 typedef struct {
     /// General purpose registers.
-    BitData gprs[NUM_GPRS];
+    BitData gprs[NO_GPRS];
 
     /// Zero register. Always returns zero, ignores writes.
     /// -- Not required since we will hardcode the value. --
