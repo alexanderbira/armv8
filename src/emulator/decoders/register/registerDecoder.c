@@ -28,7 +28,7 @@ IR decodeRegister(Instruction word) {
 
         registerIR.group = ARITHMETIC;
 
-    } else if (registerIR.M == 0 && ((registerIR.opr & REGISTER_BITLOGIC_M) == REGISTER_BITLOGIC_C)) {
+    } else if (registerIR.M == 0 && ((registerIR.opr & REGISTER_BIT_LOGIC_M) == REGISTER_BIT_LOGIC_C)) {
 
         registerIR.group = BIT_LOGIC;
 

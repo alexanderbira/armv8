@@ -40,20 +40,20 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
                 // and
                 registerIR.group = BIT_LOGIC;
                 registerIR.opc.logic.standard = (strlen(line->mnemonic) == 3) ? AND : ANDS;
-                registerIR.opr = REGISTER_BITLOGIC_C;
+                registerIR.opr = REGISTER_BIT_LOGIC_C;
             }
             break;
         case 'b':
             // bic, bics
             registerIR.group = BIT_LOGIC;
             registerIR.opc.logic.negated = (strlen(line->mnemonic) == 3) ? BIC : BICS;
-            registerIR.opr = REGISTER_BITLOGIC_C;
+            registerIR.opr = REGISTER_BIT_LOGIC_C;
             registerIR.negated = true;
             break;
         case 'e':
             // eor, eon
             registerIR.group = BIT_LOGIC;
-            registerIR.opr = REGISTER_BITLOGIC_C;
+            registerIR.opr = REGISTER_BIT_LOGIC_C;
             if (line->mnemonic[2] == 'r') {
                 registerIR.opc.logic.standard = EOR;
             } else {
@@ -75,7 +75,7 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
         case 'o':
             // orr, orn
             registerIR.group = BIT_LOGIC;
-            registerIR.opr = REGISTER_BITLOGIC_C;
+            registerIR.opr = REGISTER_BIT_LOGIC_C;
             if (line->mnemonic[2] == 'r') {
                 registerIR.opc.logic.standard = ORR;
             } else {

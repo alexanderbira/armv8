@@ -93,13 +93,13 @@
 #define REGISTER_ARITHMETIC_M   b(1001)
 
 /// Mask for a data processing (register, bit-logic) instruction.
-#define REGISTER_BITLOGIC_M     b(1000)
+#define REGISTER_BIT_LOGIC_M    b(1000)
 
 /// Code for a data processing (register, arithmetic) instruction.
 #define REGISTER_ARITHMETIC_C   b(1000)
 
 /// Code for a data processing (register, bit-logic) instruction.
-#define REGISTER_BITLOGIC_C     b(0000)
+#define REGISTER_BIT_LOGIC_C    b(0000)
 
 /// Code for a data processing (register, multiply) instruction.
 #define REGISTER_MULTIPLY_C     b(1000)
