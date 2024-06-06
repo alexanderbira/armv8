@@ -18,7 +18,7 @@ IR decodeLoadStore(Instruction word) {
     };
 
     // Decode the rest of the instruction as an SDT or an LL
-    if ((word & LOAD_STORE_DATA_M) == LOAD_STORE_DATA) {
+    if ((word & LOAD_STORE_DATA_M) == LOAD_STORE_DATA_B) {
 
         struct SingleDataTransfer data = (struct SingleDataTransfer) {
                 .u = decompose(word, LOAD_STORE_DATA_U_M),

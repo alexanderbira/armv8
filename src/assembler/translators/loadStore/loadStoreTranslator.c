@@ -20,7 +20,7 @@ Instruction translateLoadStore(IR *irObject, AssemblerState *state) {
     switch (loadStore->type) {
 
         case SINGLE_DATA_TRANSFER:
-            result  = LOAD_STORE_DATA;
+            result  = LOAD_STORE_DATA_B;
             result |= loadStore->sf << LOAD_STORE_SF_S;
             result |= loadStore->data.sdt.u << LOAD_STORE_DATA_U_S;
             result |= loadStore->data.sdt.l << LOAD_STORE_DATA_L_S;
@@ -33,14 +33,14 @@ Instruction translateLoadStore(IR *irObject, AssemblerState *state) {
 
                 case PRE_INDEXED:
                 case POST_INDEXED:
-                    result |= LOAD_STORE_DATA_PRE_POST_INDEX;
+                    result |= LOAD_STORE_DATA_PRE_POST_INDEX_B;
                     result |= loadStore->data.sdt.offset.prePostIndex.i << LOAD_STORE_DATA_I_INDEXED_S;
                     result |= truncater(loadStore->data.sdt.offset.prePostIndex.simm9, LOAD_STORE_DATA_SIMM9_INDEXED_N)
                             << LOAD_STORE_DATA_SIMM9_INDEXED_S;
                     break;
 
                 case REGISTER_OFFSET:
-                    result |= LOAD_STORE_DATA_OFFSET_REGISTER;
+                    result |= LOAD_STORE_DATA_OFFSET_REGISTER_B;
                     result |= loadStore->data.sdt.offset.xm << LOAD_STORE_DATA_XM_REGISTER_S;
                     break;
             }
