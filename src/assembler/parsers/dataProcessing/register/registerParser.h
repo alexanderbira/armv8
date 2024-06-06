@@ -10,9 +10,9 @@
 
 #include <stdint.h>
 
-#include "../../../common/ir/ir.h"
-#include "../../helpers.h"
-#include "../../state.h"
+#include "../../../../common/ir/ir.h"
+#include "../../../helpers.h"
+#include "../../../state.h"
 
 IR parseRegister(TokenisedLine *line, unused AssemblerState *state);
 

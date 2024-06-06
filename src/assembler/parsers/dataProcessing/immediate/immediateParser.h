@@ -8,9 +8,9 @@
 #ifndef ASSEMBLER_IMMEDIATE_PARSER_H
 #define ASSEMBLER_IMMEDIATE_PARSER_H
 
-#include "../../../common/ir/ir.h"
-#include "../../helpers.h"
-#include "../../state.h"
+#include "../../../../common/ir/ir.h"
+#include "../../../helpers.h"
+#include "../../../state.h"
 
 IR parseImmediate(TokenisedLine *line, unused AssemblerState *state);
 
