@@ -24,11 +24,11 @@ IR decodeRegister(Instruction word) {
     Component opc = decompose(word, REGISTER_OPC_M);
     Component op = decompose(word, REGISTER_OPERAND_M);
 
-    if (registerIR.M == 0 && ((registerIR.opr & REGISTER_ARITHMETIC_GM) == REGISTER_ARITHMETIC_C)) {
+    if (registerIR.M == 0 && ((registerIR.opr & REGISTER_ARITHMETIC_M) == REGISTER_ARITHMETIC_C)) {
 
         registerIR.group = ARITHMETIC;
 
-    } else if (registerIR.M == 0 && ((registerIR.opr & REGISTER_BITLOGIC_GM) == REGISTER_BITLOGIC_C)) {
+    } else if (registerIR.M == 0 && ((registerIR.opr & REGISTER_BITLOGIC_M) == REGISTER_BITLOGIC_C)) {
 
         registerIR.group = BIT_LOGIC;
 
