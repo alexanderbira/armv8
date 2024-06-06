@@ -1,6 +1,6 @@
 ///
 /// branchDecoder.h
-/// Decode a branch instruction to its intermediate representation (IR)
+/// Decodes a binary word of a branch instruction to its [IR].
 ///
 /// Created by Alexander Biraben-Renard on 30/05/2024.
 ///

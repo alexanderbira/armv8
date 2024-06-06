@@ -1,13 +1,13 @@
 ///
 /// registerDecoder.c
-/// Decodes a register instruction into its IR
+/// Decodes a binary word of a data processing (register) instruction to its [IR].
 ///
 /// Created by Billy Highley on 30/05/2024.
 ///
 
 #include "registerDecoder.h"
 
-/// Decode a register group instruction to its IR
+/// Decodes a binary word of a data processing (register) instruction to its [IR].
 /// @param word The instruction to decode
 /// @returns The IR of word
 IR decodeRegister(Instruction word) {
