@@ -60,13 +60,10 @@ void destroyState(AssemblerState state) {
 /// @param state The [AssemblerState] to be modified.
 /// @param label The name of the label.
 /// @param address The address of the label.
-void addMapping(AssemblerState *state, const char *label, BitData address) {
-    // Magic Number: 16 == sizeof(BitData) + sizeof(LabelAddressPair *)
-    // I.e., the two fixed sized components of a [LabelAddressPair].
+void addMapping(AssemblerState *state, char *label, BitData address) {
     struct SymbolPair symbolPair;
-    char *copiedLabel = strdup(label);
     symbolPair.address = address;
-    symbolPair.label = copiedLabel;
+    symbolPair.label = label;
 
     if (state->symbolCount >= state->symbolMaxCount) {
         // Exponential (doubling) scaling policy.
