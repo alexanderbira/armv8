@@ -33,7 +33,7 @@ char **split(const char *str, const char *delim, int *count);
 
 TokenisedLine tokenise(const char *line);
 
-void destroyTokenisedLine(TokenisedLine line);
+void destroyTokenisedLine(TokenisedLine *line);
 
 Literal parseLiteral(const char *literal);
 

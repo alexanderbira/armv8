@@ -1,11 +1,11 @@
 ///
-/// registerHandler.c
-/// Functions to parse from assembly and write as binary a Data Processing (Register) instruction.
+/// registerParser.c
+/// Transform a [TokenisedLine] to an [IR] of a Data Processing (Register) instruction.
 ///
 /// Created by Jack Wong on 01/06/2024.
 ///
 
-#include "registerHandler.h"
+#include "registerParser.h"
 
 /// Converts the assembly form of an Data Processing (Register) instruction to IR form.
 /// @param line The [TokenisedLine] of the instruction.
@@ -31,7 +31,7 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
                 group = ARITHMETIC;
                 opr = REGISTER_ARITHMETIC_C;
             }
-            // differentiate by string length
+                // differentiate by string length
             else {
                 opc.logic.standard = (strlen(line->mnemonic) == 3) ? AND : ANDS;
                 // both are not negated
@@ -55,8 +55,7 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
             if (line->mnemonic[2] == 'r') {
                 opc.logic.standard = EOR;
                 negated = false;
-            }
-            else {
+            } else {
                 opc.logic.negated = EON;
                 negated = true;
             }
@@ -78,8 +77,7 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
             if (line->mnemonic[2] == 'r') {
                 opc.logic.standard = ORR;
                 negated = false;
-            }
-            else {
+            } else {
                 opc.logic.negated = ORN;
                 negated = true;
             }
@@ -121,7 +119,7 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
 
         int matched;
 
-        if (line->operandCount == 4 && strchr(line->operands[3],' ') != NULL) {
+        if (line->operandCount == 4 && strchr(line->operands[3], ' ') != NULL) {
             char **shiftAndValue = split(line->operands[3], " ", &matched);
             // fill imm6
             imm6 = parseImmediateStr(shiftAndValue[1]);
@@ -164,59 +162,4 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
     };
 
     return (IR) {.type = REGISTER, .ir.registerIR = registerIR};
-}
-
-Instruction translateRegister(IR *irObject, unused AssemblerState *state) {
-    assertFatal(irObject->type == REGISTER, "[translateRegister] Received non-branch IR!");
-    Register_IR *registerIR = &irObject->ir.registerIR;
-    Instruction instruction = REGISTER_;
-
-    // Load [sf]
-    instruction |= (Instruction) registerIR->sf << IMMEDIATE_SF_S;
-
-    // Load [opc], trust value since defined in enum.
-    switch (registerIR->group) {
-
-        case ARITHMETIC:
-            instruction |= (Instruction) truncater(registerIR->opc.arithmetic, REGISTER_OPC_N) << REGISTER_OPC_S;
-            break;
-
-        case BIT_LOGIC:
-            instruction |= (Instruction)
-                    truncater(registerIR->negated
-                              ? registerIR->opc.logic.negated
-                              : registerIR->opc.logic.standard, REGISTER_OPC_N)
-                    << REGISTER_OPC_S;
-            break;
-
-        case MULTIPLY:
-
-            break;
-
-    }
-
-    // Load [M], trust since Boolean.
-    instruction |= (Instruction) registerIR->M << REGISTER_M_S;
-
-    // Load [opr], [rm].
-    instruction |= (Instruction) truncater(registerIR->opr, REGISTER_OPR_N) << REGISTER_OPR_S;
-    instruction |= (Instruction) truncater(registerIR->rm, REGISTER_RM_N) << REGISTER_RM_S;
-
-    // Load [operand].
-    switch (registerIR->group) {
-        case ARITHMETIC:
-        case BIT_LOGIC:
-            instruction |= (Instruction) truncater(registerIR->operand.imm6, REGISTER_OPERAND_IMM6_N)
-                    << REGISTER_OPERAND_IMM6_S;
-            break;
-        case MULTIPLY:
-            instruction |= (Instruction) registerIR->operand.multiply.x << REGISTER_OPERAND_X_S; // Trust since Boolean.
-            instruction |= (Instruction) truncater(registerIR->operand.multiply.ra, REGISTER_OPERAND_RA_N)
-                    << REGISTER_OPERAND_RA_S;
-            break;
-    }
-
-    // Load [rn], [rd].
-    instruction |= (Instruction) truncater(registerIR->rn, REGISTER_RN_N) << REGISTER_RN_S;
-    return instruction | (Instruction) truncater(registerIR->rd, REGISTER_RD_N);
 }

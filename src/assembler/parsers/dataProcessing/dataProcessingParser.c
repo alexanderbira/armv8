@@ -1,11 +1,11 @@
 ///
-/// dataProcessingHandler.c
-/// Functions to parse from assembly a Data Processing instruction.
+/// dataProcessingParser.c
+/// Transform a [TokenisedLine] to an [IR] of a Data Processing instruction.
 ///
 /// Created by Jack Wong on 03/06/2024.
 ///
 
-#include "dataProcessingHandler.h"
+#include "dataProcessingParser.h"
 
 static const char *aliasMnemonics[] = {
         "cmn", "cmp", "mneg",

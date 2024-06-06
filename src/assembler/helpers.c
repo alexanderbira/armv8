@@ -77,7 +77,6 @@ char **split(const char *str, const char *delim, int *count) {
 TokenisedLine tokenise(const char *line) {
     char *lineCopy = strdup(line);
     TokenisedLine result;
-    result.mnemonic = NULL;
     result.subMnemonic = NULL;
 
     char *trimmedLine = trim(lineCopy, ", \n");
@@ -105,7 +104,7 @@ TokenisedLine tokenise(const char *line) {
     }
 
     // Copy in mnemonic. Null terminate supplied previously.
-    if (mnemonicLength) result.mnemonic = strndup(trimmedLine, mnemonicLength);
+    result.mnemonic = strndup(trimmedLine, mnemonicLength);
 
     // Extract all the operands together.
     char *operands = separator + 1; // New variable for clarity.
@@ -122,13 +121,13 @@ TokenisedLine tokenise(const char *line) {
 
 /// Frees all memory associated with a [TokenisedLine].
 /// @param line [TokenisedLine] to be freed.
-void destroyTokenisedLine(TokenisedLine line) {
-    free(line.mnemonic);
-    free(line.subMnemonic);
-    for (int i = 0; i < line.operandCount; i++) {
-        free(line.operands[i]);
+void destroyTokenisedLine(TokenisedLine *line) {
+    free(line->mnemonic);
+    free(line->subMnemonic);
+    for (int i = 0; i < line->operandCount; i++) {
+        free(line->operands[i]);
     }
-    free(line.operands);
+    free(line->operands);
 }
 
 /// Parses a literal as either a signed immediate constant or a label.

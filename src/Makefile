@@ -24,11 +24,9 @@ EMULATOR_SRC_FILES = $(wildcard $(SRC_DIR)/emulator/*.c) \
 	$(wildcard $(SRC_DIR)/common/*.c) \
 	$(wildcard $(SRC_DIR)/emulate.c)
 
-ASSEMBLER_SRC_FILES = $(wildcard $(SRC_DIR)/assembler/*.c) \
-	$(wildcard $(SRC_DIR)/assembler/*.c) \
-	$(wildcard $(SRC_DIR)/assembler/handlers/*.c) \
+ASSEMBLER_SRC_FILES = $(shell find $(SRC_DIR)/assembler/ -name '*.c') \
 	$(wildcard $(SRC_DIR)/common/*.c) \
-    $(wildcard $(SRC_DIR)/assemble.c)
+	$(wildcard $(SRC_DIR)/assemble.c)
 
 # Object files list
 EMULATOR_OBJ_FILES = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(EMULATOR_SRC_FILES))

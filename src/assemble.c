@@ -9,14 +9,18 @@
 
 /// The entrypoint to the assembler program.
 /// @param argc Number of arguments. Should be 3.
-/// @param argv Arguments. Should contain program name, assembly input, and object code out.
+/// @param argv Arguments. In order: executable name, assembly in, and object code out.
 /// @return Program exit code.
 /// @example \code ./assemble code.s code.o \endcode
 int main(int argc, char **argv) {
     // Check that [argv] is valid, i.e., has 3 args.
-    if (argc != 3) return EXIT_FAILURE;
-    FILE *fileIn = fopen(argv[1], "r");
+    if (argc != 3) {
+        printf("Usage: ./assemble code.s out.bin\n");
+        return EXIT_FAILURE;
+    };
 
+    // First pass, populate program [state] and generate [IR]s.
+    FILE *fileIn = fopen(argv[1], "r");
     AssemblerState state = createState();
     char line[256];
 
@@ -27,27 +31,31 @@ int main(int argc, char **argv) {
         if (strlen(trimmedLine) == 0) continue;
 
         // Check if line is a label.
-        bool isLabel = false;
         char *colon = strchr(line, ':');
         if (colon != NULL) {
-            // Ensure first character is valid.
-            isLabel = true;
-            if (!isalpha(line[0]) && line[0] != '_' && line[0] != '.') isLabel = false;
-            handleLabel(trimmedLine, &state);
+            // Process as label if first character is valid.
+            if (isalpha(line[0]) || line[0] == '_' || line[0] == '.') {
+                char *label = strdup(line);
+                *strchr(label, ':') = '\0';
+
+                addMapping(&state, label, state.address);
+                continue;
+            };
+
+            throwFatal("[main] Found invalid label!");
         }
 
-        if (!isLabel) {
-            // By default, handle either directive or instructions.
-            TokenisedLine tokenisedLine = tokenise(line);
-            IR ir = (tokenisedLine.mnemonic == NULL)
-                    ? handleDirective(&tokenisedLine, &state)
-                    : handleInstruction(&tokenisedLine, &state);
-            destroyTokenisedLine(tokenisedLine);
-            addIR(&state, ir);
-        }
+        // By default, handle either directive or instructions.
+        TokenisedLine tokenisedLine = tokenise(line);
+        IR ir = getParser(tokenisedLine.mnemonic)(&tokenisedLine, &state);
+        state.address += 0x4;
+        destroyTokenisedLine(&tokenisedLine);
+        addIR(&state, ir);
     }
 
     fclose(fileIn);
+
+    // Second pass, translate IRs to binary instruction based on [state].
     FILE *fileOut = fopen(argv[2], "wb");
 
     // Reset current address - jump offset calculations rely on this.
@@ -55,9 +63,9 @@ int main(int argc, char **argv) {
 
     for (size_t i = 0; i < state.irCount; i++) {
         IR ir = state.irList[i];
-        Instruction instruction = getTranslateFunction(ir.type)(&ir, &state);
-        fwrite(&instruction, sizeof(Instruction), 1, fileOut);
+        Instruction instruction = getTranslator(&ir.type)(&ir, &state);
         state.address += 0x4;
+        fwrite(&instruction, sizeof(Instruction), 1, fileOut);
     }
 
     destroyState(state);
