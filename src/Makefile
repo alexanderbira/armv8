@@ -4,9 +4,10 @@ CFLAGS   ?= -std=c17 -g\
 	-D_DEFAULT_SOURCE\
 	-Wall -Werror -Wextra -Wpedantic
 CXXFLAGS ?= -Icommon/ -Icommon/ir\
- 	-Iemulator/decoders/ -Iemulator/executors/ -Iemulator/executors/immediate -Iemulator/executors/register\
- 	-Iemulator/system -Iemulator\
- 	-Iassembler/ -Iassembler/handlers/
+ 	-Iemulator/decoders/ -Iemulator/decoders/immediate -Iemulator/decoders/register\
+ 	-Iemulator/decoders/loadStore -Iemulator/decoders/branch\ -Iemulator/executors\
+ 	-Iemulator/executors/immediate -Iemulator/executors/register -Iemulator/executors/loadStore\
+ 	-Iemulator/executors/branch\ -Iemulator/system -Iemulator\ -Iassembler/ -Iassembler/handlers/
 
 SRC_DIR = .
 OBJ_DIR = obj
@@ -17,9 +18,15 @@ OBJ_DIR = obj
 # Find all source files
 EMULATOR_SRC_FILES = $(wildcard $(SRC_DIR)/emulator/*.c) \
 	$(wildcard $(SRC_DIR)/emulator/decoders/*.c) \
+	$(wildcard $(SRC_DIR)/emulator/decoders/immediate/*.c) \
+	$(wildcard $(SRC_DIR)/emulator/decoders/register/*.c) \
+	$(wildcard $(SRC_DIR)/emulator/decoders/loadStore/*.c) \
+	$(wildcard $(SRC_DIR)/emulator/decoders/branch/*.c) \
 	$(wildcard $(SRC_DIR)/emulator/executors/*.c) \
 	$(wildcard $(SRC_DIR)/emulator/executors/immediate/*.c) \
 	$(wildcard $(SRC_DIR)/emulator/executors/register/*.c) \
+	$(wildcard $(SRC_DIR)/emulator/executors/loadStore/*.c) \
+	$(wildcard $(SRC_DIR)/emulator/executors/branch/*.c) \
 	$(wildcard $(SRC_DIR)/emulator/system/*.c) \
 	$(wildcard $(SRC_DIR)/common/*.c) \
 	$(wildcard $(SRC_DIR)/emulate.c)
