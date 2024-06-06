@@ -65,7 +65,7 @@ IR decodeLoadStore(Instruction word) {
         // Save the SDT to the IR
         loadStoreIR.data.sdt = data;
 
-    } else if ((word & LOAD_STORE_LITERAL_M) == LOAD_STORE_LITERAL) {
+    } else if ((word & LOAD_STORE_LITERAL_M) == LOAD_STORE_LITERAL_B) {
 
         // Get the 19-bit offset as a 32-bit unsigned integer
         int32_t offset = decompose(word, LOAD_STORE_LITERAL_SIMM19_M);

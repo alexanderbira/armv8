@@ -11,17 +11,59 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+/// Mask for [sf] in a load/store instruction.
+#define LOAD_STORE_SF_M                   mask(30, 30)
+
+/// Mask for [rt] (target register) in a load/store instruction.
+#define LOAD_STORE_RT_M                   mask(4, 0)
+
 /// Baseline code for a load/store (literal) instruction.
 #define LOAD_STORE_DATA_B                 b(1011_1000_0000_0000_0000_0000_0000_0000)
+
+/// Mask for a load/store (literal) instruction.
+#define LOAD_STORE_DATA_M                 ((maskl(1)) | (mask(29, 25)) | (mask(23, 23)))
+
+/// Mask for [simm19] in a load/store (literal) instruction.
+#define LOAD_STORE_LITERAL_SIMM19_M       mask(23, 5)
 
 /// Baseline code for a register offset-ed load/store (single data transfer) instruction.
 #define LOAD_STORE_DATA_OFFSET_REGISTER_B b(0000_0000_0010_0000_0110_1000_0000_0000)
 
-/// Baseline code for a register offset-ed load/store (single data transfer) instruction.
+/// Code for [offset] in a register offset-ed load/store (single data transfer) instruction.
+#define LOAD_STORE_DATA_OFFSET_REGISTER_C b(1000_0001_1010)
+
+/// Mask for [offset] in a register offset-ed load/store (single data transfer) instruction.
+#define LOAD_STORE_DATA_OFFSET_REGISTER_M b(1000_0011_1111)
+
+/// Number of bits to shift for [xm] in a register offset-ed load/store (single data transfer) instruction.
+#define LOAD_STORE_DATA_XM_REGISTER_S     16
+
+/// Mask for [xm] in a register offset-ed load/store (single data transfer) instruction.
+#define LOAD_STORE_DATA_XM_REGISTER_M     mask(20, 16)
+
+/// Baseline code for a pre/post-index-ed load/store (single data transfer) instruction.
 #define LOAD_STORE_DATA_PRE_POST_INDEX_B  b(0000_0000_0000_0000_0000_0100_0000_0000)
 
-/// Mask for a load/store (literal) instruction.
-#define LOAD_STORE_DATA_M                 ((maskl(1)) | (mask(29, 25)) | (mask(23, 23)))
+/// Number of bits to shift for [simm9] in a pre/post-index-ed load/store (single data transfer) instruction.
+#define LOAD_STORE_DATA_SIMM9_INDEXED_S   12
+
+/// Number of bits in [simm9] in a pre/post-index-ed load/store (single data transfer) instruction.
+#define LOAD_STORE_DATA_SIMM9_INDEXED_N   9
+
+/// Mask for [simm9] in a pre/post-index-ed load/store (single data transfer) instruction.
+#define LOAD_STORE_DATA_SIMM9_INDEXED_M   mask(20, 12)
+
+/// Number of bits to shift for [i] in a pre/post-index-ed load/store (single data transfer) instruction.
+#define LOAD_STORE_DATA_I_INDEXED_S       11
+
+/// Mask for [i] in a pre/post-index-ed load/store (single data transfer) instruction.
+#define LOAD_STORE_DATA_I_INDEXED_M       mask(11, 11)
+
+/// Code for [offset] in a pre/post-index-ed load/store (single data transfer) instruction.
+#define LOAD_STORE_DATA_OFFSET_INDEXED_C  b(0000_0000_0001)
+
+/// Mask for [offset] in a pre/post-index-ed load/store (single data transfer) instruction.
+#define LOAD_STORE_DATA_OFFSET_INDEXED_M  b(1000_0000_0001)
 
 /// Number of bits to shift for [U] in a single data transfer (load) instruction.
 #define LOAD_STORE_DATA_U_S               24
@@ -44,39 +86,6 @@
 /// Mask for [offset] in a single data transfer (load) instruction.
 #define LOAD_STORE_DATA_OFFSET_M          mask(21, 10)
 
-/// Mask for [offset] in a register offset-ed load/store (single data transfer) instruction.
-#define LOAD_STORE_DATA_OFFSET_REGISTER_M b(1000_0011_1111)
-
-/// Code for [offset] in a register offset-ed load/store (single data transfer) instruction.
-#define LOAD_STORE_DATA_OFFSET_REGISTER_C b(1000_0001_1010)
-
-/// Number of bits to shift for [xm] in a register offset-ed load/store (single data transfer) instruction.
-#define LOAD_STORE_DATA_XM_REGISTER_S     16
-
-/// Mask for [xm] in a register offset-ed load/store (single data transfer) instruction.
-#define LOAD_STORE_DATA_XM_REGISTER_M     mask(20, 16)
-
-/// Number of bits in [simm9] in a pre/post-index-ed load/store (single data transfer) instruction.
-#define LOAD_STORE_DATA_SIMM9_INDEXED_N   9
-
-/// Number of bits to shift for [simm9] in a pre/post-index-ed load/store (single data transfer) instruction.
-#define LOAD_STORE_DATA_SIMM9_INDEXED_S   12
-
-/// Mask for [simm9] in a pre/post-index-ed load/store (single data transfer) instruction.
-#define LOAD_STORE_DATA_SIMM9_INDEXED_M   mask(20, 12)
-
-/// Number of bits to shift for [i] in a pre/post-index-ed load/store (single data transfer) instruction.
-#define LOAD_STORE_DATA_I_INDEXED_S       11
-
-/// Mask for [I] in a pre/post-index-ed load/store (single data transfer) instruction.
-#define LOAD_STORE_DATA_I_INDEXED_M       mask(11, 11)
-
-/// Mask for [offset] in a pre/post-index-ed load/store (single data transfer) instruction.
-#define LOAD_STORE_DATA_OFFSET_INDEXED_M  b(1000_0000_0001)
-
-/// Code for [offset] in a pre/post-index-ed load/store (single data transfer) instruction.
-#define LOAD_STORE_DATA_OFFSET_INDEXED_C  b(0000_0000_0001)
-
 /// Number of bits to shift for [xn] in a single data transfer (load) instruction.
 #define LOAD_STORE_DATA_XN_S              5
 
@@ -86,8 +95,11 @@
 /// Mask for [xn] in a single data transfer (load) instruction.
 #define LOAD_STORE_DATA_XN_M              mask(9, 5)
 
+/// Number of bits in [rt] in a single data transfer (load) instruction.
+#define LOAD_STORE_RT_N                   5
+
 /// Baseline mask for a single data transfer (literal) instruction.
-#define LOAD_STORE_LITERAL                b(0001_1000_0000_0000_0000_0000_0000_0000)
+#define LOAD_STORE_LITERAL_B              b(0001_1000_0000_0000_0000_0000_0000_0000)
 
 /// Mask for a single data transfer (literal) instruction
 #define LOAD_STORE_LITERAL_M              ((maskl(1)) | (mask(29, 24)))
@@ -98,20 +110,8 @@
 /// Number of bits in [simm19] in a single data transfer (literal) instruction.
 #define LOAD_STORE_LITERAL_SIMM19_N       19
 
-/// Mask for [simm19] in a load/store (literal) instruction.
-#define LOAD_STORE_LITERAL_SIMM19_M       mask(23, 5)
-
 /// Number of bits to shift for [sf] in a single data transfer (load / literal) instruction.
 #define LOAD_STORE_SF_S                   30
-
-/// Mask for [sf] in a load/store instruction.
-#define LOAD_STORE_SF_M                   mask(30, 30)
-
-/// Number of bits in [rt] in a single data transfer (load) instruction.
-#define LOAD_STORE_RT_N                   5
-
-/// Mask for [rt] (target register) in a load/store instruction.
-#define LOAD_STORE_RT_M                   mask(4, 0)
 
 /// The intermediate representation of a load/store instruction.
 typedef struct {
