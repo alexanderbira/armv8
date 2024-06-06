@@ -5,13 +5,13 @@
 /// Created by Billy Highley on 30/05/2024.
 ///
 
-#ifndef ARITHMETICREGEXECUTE_H
-#define ARITHMETICREGEXECUTE_H
+#ifndef EMULATOR_ARITHMETIC_REGISTER_EXECUTOR_H
+#define EMULATOR_ARITHMETIC_REGISTER_EXECUTOR_H
 
 #include "../../../common/ir/register.h"
 #include "../../system/registers.h"
 #include "bitwiseShifts.h"
 
-void arithmeticRegisterExecute(Register_IR *registerIR, Registers regs);
+void arithmeticRegisterExecute(Register_IR *registerIR, Registers registers);
 
-#endif //ARITHMETICREGEXECUTE_H
+#endif // EMULATOR_ARITHMETIC_REGISTER_EXECUTOR_H

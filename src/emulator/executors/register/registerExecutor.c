@@ -7,23 +7,26 @@
 
 #include "registerExecutor.h"
 
-/// Execute a register group instruction
-/// @param regIR IR for a register instruction
-/// @param regs Pointer to registers
-void executeRegister(IR *irObject, Registers regs, unused Memory mem) {
+/// Executes an [IR] of a data processing (register) instruction.
+/// @param immediateIR The instruction to execute.
+/// @param registers The current virtual registers.
+/// @param memory The current virtual memory.
+void executeRegister(IR *irObject, Registers registers, unused Memory memory) {
     assertFatal(irObject->type == REGISTER,
                 "[executeImmediate] Received non-register instruction!");
     Register_IR *registerIR = &irObject->ir.registerIR;
 
     switch (registerIR->group) {
         case ARITHMETIC:
-            arithmeticRegisterExecute(registerIR, regs);
+            arithmeticRegisterExecute(registerIR, registers);
             break;
+
         case BIT_LOGIC:
-            bitLogicExecute(registerIR, regs);
+            bitLogicExecute(registerIR, registers);
             break;
+
         case MULTIPLY:
-            multiplyExecute(registerIR, regs);
+            multiplyExecute(registerIR, registers);
             break;
     }
 }

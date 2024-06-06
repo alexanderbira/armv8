@@ -16,6 +16,6 @@
 #include "arithmeticImmediateExecutor.h"
 #include "wideMoveExecutor.h"
 
-void executeImmediate(IR *irObject, Registers regs, unused Memory mem);
+void executeImmediate(IR *irObject, Registers registers, unused Memory memory);
 
 #endif // EMULATOR_IMMEDIATE_EXECUTOR_H

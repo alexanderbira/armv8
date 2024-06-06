@@ -8,10 +8,12 @@
 #ifndef EMULATOR_ARITHMETIC_IMMEDIATE_EXECUTOR_H
 #define EMULATOR_ARITHMETIC_IMMEDIATE_EXECUTOR_H
 
+#include "../../../common/const.h"
+#include "../../../common/error.h"
 #include "../../../common/ir/ir.h"
-#include "../../system/memory.h"
 #include "../../system/registers.h"
+#include "../../system/memory.h"
 
-void arithmeticExecute(Immediate_IR *immediateIR, Registers regs);
+void arithmeticExecute(Immediate_IR *immediateIR, Registers registers);
 
 #endif // EMULATOR_ARITHMETIC_IMMEDIATE_EXECUTOR_H
