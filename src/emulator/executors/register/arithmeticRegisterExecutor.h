@@ -10,6 +10,7 @@
 
 #include "../../../common/ir/register.h"
 #include "../../system/registers.h"
+#include "../conditions.h"
 #include "bitwiseShifts.h"
 
 void arithmeticRegisterExecute(Register_IR *registerIR, Registers regs);
