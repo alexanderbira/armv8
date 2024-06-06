@@ -12,10 +12,13 @@
 #include <stdint.h>
 
 /// The virtual memory size of the emulated machine.
-#define MEMORY_SIZE (2 << 20) // 2MB
+#define MEMORY_SIZE (2 << 20)
 
 /// The number of general purpose registers in the virtual machine.
-#define NUM_GPRS 31
+#define NUM_GPRS    31
+
+/// All considered whitespace characters.
+#define WHITESPACE  " \n\t\r"
 
 /// Alias for a chunk of data passed to and from the virtual registers or memory.
 typedef uint64_t BitData;
@@ -112,7 +115,5 @@ static inline Component decompose(Instruction word, Mask mask) {
 #define signExtend(__VALUE__, __ACTUAL_WIDTH__) \
     ((__typeof__(__VALUE__))((__VALUE__) << (8 * sizeof(__VALUE__) - (__ACTUAL_WIDTH__))) >> \
     (8 * sizeof(__VALUE__) - (__ACTUAL_WIDTH__)))
-
-#define WHITESPACE " \n\t\r"
 
 #endif // COMMON_CONST_H
