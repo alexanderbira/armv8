@@ -17,15 +17,15 @@
 /// @param condition The condition to assert over. Type: bool
 /// @param message The failure message. Type: char message[]
 /// @throws -1 Exits the program if [condition] is not met.
-#define assertFatal(condition, message) (assertFatal_(condition, message, __FILE__, __LINE__))
+#define assertFatal(condition, message) (assertFatal_(condition, message, __FILE__, __LINE__, __func__))
 
 /// Pretty-prints the given error and exits the program.
 /// \param message The failure message. Type: char message[]
 /// @throws -1 Exits the program.
-#define throwFatal(message) (throwFatal_(message, __FILE__, __LINE__))
+#define throwFatal(message) (throwFatal_(message, __FILE__, __LINE__, __func__))
 
-void assertFatal_(bool condition, char message[], char *file, int line);
+void assertFatal_(bool condition, char message[], char *file, int line, const char *func);
 
-noreturn void throwFatal_(char message[], char *file, int line);
+noreturn void throwFatal_(char message[], char *file, int line, const char *func);
 
 #endif // COMMON_ERROR_H

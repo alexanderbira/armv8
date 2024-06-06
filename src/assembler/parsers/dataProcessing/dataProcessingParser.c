@@ -1,42 +1,48 @@
 ///
-/// dataProcessingHandler.c
-/// Functions to parse from assembly a Data Processing instruction.
+/// dataProcessingParser.c
+/// Transform a [TokenisedLine] to an [IR] of a Data Processing instruction.
 ///
 /// Created by Jack Wong on 03/06/2024.
 ///
 
-#include "dataProcessingHandler.h"
+#include "dataProcessingParser.h"
 
+/// Mnemonics of all alias instructions.
 static const char *aliasMnemonics[] = {
         "cmn", "cmp", "mneg",
         "mov", "mul", "mvn",
         "neg", "negs", "tst",
 };
 
+/// Number of mnemonics of all alias instructions.
 static const size_t numAliasMnemonics = sizeof(aliasMnemonics) / sizeof(char *);
 
+/// Mnemonics of all wide move instructions.
 static const char *wideMoveMnemonics[] = {
         "movk", "movn", "movz"
 };
 
+/// Number of mnemonics of all wide move instructions.
 static const size_t numWideMoveMnemonics = sizeof(wideMoveMnemonics) / sizeof(char *);
 
+/// Mnemonics of all arithmetic instructions.
 static const char *arithmeticMnemonics[] = {
         "add", "adds", "sub", "subs"
 };
 
+/// Number of mnemonics of all arithmetic instructions.
 static const size_t numArithmeticMnemonics = sizeof(arithmeticMnemonics) / sizeof(char *);
 
 static void setLine(TokenisedLine *line, const char *newMnemonic, int newOperandCount, ...);
 
-/// Converts the assembly form of an Data Processing instruction to IR form.
+/// Transform a [TokenisedLine] to an [IR] of a data processing instruction.
 /// @param line The [TokenisedLine] of the instruction.
 /// @param state The current state of the assembler.
-/// @return The [IR] struct representing the instruction.
-/// @pre The incoming [line] is a Data Processing assembly instruction.
+/// @returns The [IR] form of the data processing instruction.
+/// @pre The [line]'s mnemonic is that of a data processing instruction.
 IR parseDataProcessing(TokenisedLine *line, AssemblerState *state) {
     assertFatal(line->operandCount >= 2 && line->operandCount <= 4,
-                "[parseDataProcessing] Incorrect number of operands!");
+                "Incorrect number of operands!");
 
     // If [line] is an aliased instruction, convert it first.
     bool isAlias = bsearch(&line->mnemonic, aliasMnemonics, numAliasMnemonics,
@@ -50,56 +56,54 @@ IR parseDataProcessing(TokenisedLine *line, AssemblerState *state) {
         switch (oldMnemonic[0]) {
             case 'c':
                 // cmp -> subs, cmn -> adds
-                if (oldOperandCount == 2) {
-                    setLine(line, (*(line->mnemonic + 2) == 'p') ? "subs" : "adds", 3,
-                            zeroRegister, line->operands[0], line->operands[1]);
-                } else {
-                    setLine(line, (*(line->mnemonic + 2) == 'p') ? "subs" : "adds", 4,
+                oldOperandCount == 2
+                    ? setLine(line, (*(line->mnemonic + 2) == 'p') ? "subs" : "adds", 3,
+                            zeroRegister, line->operands[0], line->operands[1])
+                    : setLine(line, (*(line->mnemonic + 2) == 'p') ? "subs" : "adds", 4,
                             zeroRegister, line->operands[0], line->operands[1], line->operands[2]);
-                }
                 break;
+
             case 'n':
                 // neg -> sub, negs -> subs
-                if (oldOperandCount == 2) {
-                    setLine(line, (strlen(line->mnemonic) == 3) ? "sub" : "subs", 3,
-                            line->operands[0], zeroRegister, line->operands[1]);
-                } else {
-                    setLine(line, (strlen(line->mnemonic) == 3) ? "sub" : "subs", 4,
+                oldOperandCount == 2
+                    ? setLine(line, (strlen(line->mnemonic) == 3) ? "sub" : "subs", 3,
+                            line->operands[0], zeroRegister, line->operands[1])
+                    : setLine(line, (strlen(line->mnemonic) == 3) ? "sub" : "subs", 4,
                             line->operands[0], zeroRegister, line->operands[1], line->operands[2]);
-                }
                 break;
+
             case 't':
                 // tst -> ands
-                if (oldOperandCount == 2) {
-                    setLine(line, "ands", 3,
-                            zeroRegister, line->operands[0], line->operands[1]);
-                } else {
-                    setLine(line, "ands", 4,
+                oldOperandCount == 2
+                    ? setLine(line, "ands", 3,
+                            zeroRegister, line->operands[0], line->operands[1])
+                    : setLine(line, "ands", 4,
                             zeroRegister, line->operands[0], line->operands[1], line->operands[2]);
-                }
                 break;
+
             case 'm':
                 switch (line->mnemonic[1]) {
                     case 'v':
                         // mvn -> orn
-                        if (oldOperandCount == 2) {
-                            setLine(line, "orn", 3,
-                                    line->operands[0], zeroRegister, line->operands[1]);
-                        } else {
-                            setLine(line, "orn", 4,
+                        oldOperandCount == 2
+                            ? setLine(line, "orn", 3,
+                                    line->operands[0], zeroRegister, line->operands[1])
+                            : setLine(line, "orn", 4,
                                     line->operands[0], zeroRegister, line->operands[1], line->operands[2]);
-                        }
                         break;
+
                     case 'o':
                         // mov -> orr
                         setLine(line, "orr", 3,
                                 line->operands[0], zeroRegister, line->operands[1]);
                         break;
+
                     case 'u':
                         // mul -> madd
                         setLine(line, "madd", 4,
                                 line->operands[0], line->operands[1], line->operands[2], zeroRegister);
                         break;
+
                     case 'n':
                         // mneg -> msub
                         setLine(line, "msub", 4,
@@ -107,8 +111,8 @@ IR parseDataProcessing(TokenisedLine *line, AssemblerState *state) {
                         break;
                 }
                 break;
-            default:
-                throwFatal("Instruction mnemonic is invalid!");
+
+            default: throwFatal("Instruction mnemonic is invalid!");
         }
 
         // Zero register was not freed by [setLine].
@@ -122,7 +126,7 @@ IR parseDataProcessing(TokenisedLine *line, AssemblerState *state) {
         isImmediate = bsearch(&line->mnemonic, arithmeticMnemonics, numArithmeticMnemonics,
                               sizeof(char *), strcmpVoid) != NULL;
         assertFatal(line->operandCount >= 3,
-                    "[parseDataProcessing] Incorrect number of operands when calculating [isImmediate]!");
+                    "Incorrect number of operands when calculating [isImmediate]!");
         // Immediate in instructions of [arithmeticMnemonics] always positioned in 3rd operand.
         isImmediate &= (strchr(line->operands[2], '#') != NULL);
     }
