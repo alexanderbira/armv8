@@ -15,30 +15,50 @@
 
 /// The type of instruction represented.
 typedef enum {
-    IMMEDIATE,  ///< Data Processing (Immediate)
-    REGISTER,   ///< Data Processing (Register)
-    LOAD_STORE, ///< Load-Store
-    BRANCH,     ///< Branch
-    CONSTANT    ///< (Not Instruction) Direct to Memory Constant
+
+    /// Data processing (immediate).
+    IMMEDIATE,
+
+    /// Data processing (register).
+    REGISTER,
+
+    /// Load/store.
+    LOAD_STORE,
+
+    /// Branch.
+    BRANCH,
+
+    /// (Not Instruction) Direct to Memory Constant
+    CONSTANT
+
 } IRType;
 
 /// The general IR wrapper for all types of assembly instructions.
 typedef struct {
-    /// The type of IR stored in [ir].
+
+    /// The type of the IR.
     IRType type;
 
-    /// The actual specific IR representation.
+    /// The contents of the IR.
     union {
+
+        /// Data processing (immediate) IR.
         Immediate_IR immediateIR;
+
+        /// Data processing (register) IR.
         Register_IR registerIR;
+
+        /// Load/store IR.
         LoadStore_IR loadStoreIR;
+
+        /// Branch IR.
         Branch_IR branchIR;
 
-        /// An "IR" for a plain piece of data to be put into memory.
-        /// Used by directives, so written to avoid creating new nested
-        /// data structures.
+        /// Data (used by directives) IR.
         BitData memoryData;
+
     } ir;
+
 } IR;
 
 #endif // IR_H

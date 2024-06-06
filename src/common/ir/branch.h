@@ -67,7 +67,7 @@ typedef struct {
     /// The type of branch instruction.
     enum BranchType {
 
-        /// Unconditional : branch to the address encoded by literal.
+        /// Unconditional: branch to the address encoded by Literal.
         /// \code PC := PC + offset \endcode
         BRANCH_UNCONDITIONAL,
 
@@ -75,8 +75,8 @@ typedef struct {
         /// \code PC := Xn \endcode
         BRANCH_REGISTER,
 
-        /// Conditional: branch to literal when PSTATE satisfies cond.
-        /// \code if cond, PC := PC + offset \endcode
+        /// Conditional: branch to Literal when PSTATE satisfies cond.
+        /// \code (if cond) PC := PC + offset \endcode
         BRANCH_CONDITIONAL,
 
     } type;
@@ -99,15 +99,15 @@ typedef struct {
             /// [4b] The condition for the conditional branch instruction.
             enum BranchCondition {
 
-                /// Equal.
+                /// Equal to.
                 /// \code Z == 1 \endcode
                 EQ = 0x0,
 
-                /// Not equal.
+                /// Not equal to.
                 /// \code Z == 0 \endcode
                 NE = 0x1,
 
-                /// Signed greater or equal.
+                /// Signed greater or equal to.
                 /// \code N == V \endcode
                 GE = 0xA,
 
@@ -119,11 +119,11 @@ typedef struct {
                 /// \code Z == 0 && N == V \endcode
                 GT = 0xC,
 
-                /// Signed less than or equal
+                /// Signed less than or equal to.
                 /// \code !(Z == 0 && N == V) \endcode
                 LE = 0xD,
 
-                /// Always.
+                /// Always branches (no condition).
                 /// Any PSTATE flags.
                 AL = 0xE
 

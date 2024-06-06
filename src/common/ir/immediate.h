@@ -95,12 +95,13 @@ typedef struct {
     /// [1b] The bit-width of all the registers in the instruction: 0 for 32-bit, 1 for 64-bit.
     bool sf;
 
-    /// [2b] The operation code, determining the operation to be performed. To access union, check [opi].
+    /// [2b] The operation code, determining the operation to be performed.
     union ImmediateOpCode {
 
+        /// The operation code for arithmetic operations.
         enum ArithmeticType arithmeticType;
 
-        /// The opcode for wide move operations.
+        /// The operation code for wide move operations.
         enum WideMoveType {
 
             /// The operation code for move wide with NOT.
@@ -120,12 +121,22 @@ typedef struct {
     } opc;
 
     /// [3b] The type of data processing operation, determining the interpretation of opc and operand.
-    enum ImmediateType { IMMEDIATE_ARITHMETIC = 0x2, IMMEDIATE_WIDE_MOVE = 0x5 } opi;
+    enum ImmediateType {
+
+        /// The encoding for an arithmetic operation.
+        IMMEDIATE_ARITHMETIC = 0x2,
+
+        /// The encoding for a wide move operation.
+        IMMEDIATE_WIDE_MOVE  = 0x5
+
+    } opi;
 
     /// [18b] The value to be saved into the register.
     union ImmediateOperand {
 
+        /// The operand for arithmetic operations.
         struct Arithmetic {
+
             /// [1b] Determines whether to left shift imm12 by 12-bits.
             bool sh;
 
@@ -137,6 +148,7 @@ typedef struct {
 
         } arithmetic;
 
+        /// The operand for wide move operations.
         struct WideMove {
 
             /// [2b] Encodes a logical left shift by hw * 16 bits.
