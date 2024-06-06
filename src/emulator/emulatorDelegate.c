@@ -5,7 +5,7 @@
 /// Created by Billy Highley and Alexander Biraben-Renard on 29/05/2024.
 ///
 
-#include "process.h"
+#include "emulatorDelegate.h"
 
 /// Get the corresponding [IRExecutor] for this [irObject].
 /// @param ir The intermediate representation of the instruction

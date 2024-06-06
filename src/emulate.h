@@ -11,7 +11,7 @@
 #include <stdlib.h>
 
 #include "common/ir/ir.h"
-#include "emulator/process.h"
+#include "emulator/emulatorDelegate.h"
 #include "emulator/system/memory.h"
 #include "emulator/system/output.h"
 #include "emulator/system/registers.h"

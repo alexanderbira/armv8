@@ -8,10 +8,10 @@
 #ifndef EMULATOR_BRANCH_EXECUTOR_H
 #define EMULATOR_BRANCH_EXECUTOR_H
 
-#include "../../common/error.h"
-#include "../../common/ir/ir.h"
-#include "../system/registers.h"
-#include "../system/memory.h"
+#include "../../../common/error.h"
+#include "../../../common/ir/ir.h"
+#include "../../system/registers.h"
+#include "../../system/memory.h"
 
 void executeBranch(IR *irObject, Registers regs, unused Memory mem);
 
