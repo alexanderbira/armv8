@@ -77,13 +77,7 @@ Instruction translateBranch(IR *irObject, AssemblerState *state) {
             result = BRANCH_UNCONDITIONAL_C;
             Literal *simm26 = &branch->data.simm26;
             if (simm26->isLabel) {
-                // Calculate offset, then divide by 4 to encode.
-                BitData *immediate = getMapping(state, simm26->data.label);
-                assertFatal(immediate != NULL, "[translateBranch] No mapping for label!");
-
-                simm26->data.immediate = *immediate;
-                simm26->data.immediate -= state->address;
-                simm26->data.immediate /= 4;
+                parseOffset(&simm26->data, state);
             }
 
             return result | truncater(simm26->data.immediate, BRANCH_UNCONDITIONAL_SIMM26_N);
@@ -96,13 +90,7 @@ Instruction translateBranch(IR *irObject, AssemblerState *state) {
             result = BRANCH_CONDITIONAL_C;
             Literal *simm19 = &branch->data.conditional.simm19;
             if (simm19->isLabel) {
-                // Calculate offset, then divide by 4 to encode.
-                BitData *immediate = getMapping(state, simm19->data.label);
-                assertFatal(immediate != NULL, "[translateBranch] No mapping for label!");
-
-                simm19->data.immediate = *immediate;
-                simm19->data.immediate -= state->address;
-                simm19->data.immediate /= 4;
+                parseOffset(&simm19->data, state);
             }
 
             result |= truncater(simm19->data.immediate, BRANCH_CONDITIONAL_SIMM19_N)

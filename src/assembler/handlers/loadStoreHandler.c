@@ -134,13 +134,7 @@ Instruction translateLoadStore(IR *irObject, AssemblerState *state) {
 
             Literal *simm19 = &loadStore->data.simm19;
             if (simm19->isLabel) {
-                // Calculate offset, then divide by 4 to encode.
-                BitData *immediate = getMapping(state, simm19->data.label);
-                assertFatal(immediate != NULL, "[translateLoadStore] No mapping for label!");
-
-                simm19->data.immediate = *immediate;
-                simm19->data.immediate -= state->address;
-                simm19->data.immediate /= 4;
+                parseOffset(&simm19->data, state);
             }
 
             result |= truncater(simm19->data.immediate, LOAD_STORE_LITERAL_SIMM19_N)

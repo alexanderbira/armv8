@@ -1,67 +1,20 @@
 # Arm-v8
 
-<<<<<<< Updated upstream
-> "No one's gonna look at this project and be like, oh, what is this doing? Cuz no one's gonna see this project. (Except the group leader, but he knows what we're doing.)"
->
-> "Don't commit this."
->
-> - *Alexander Biraben-Renard*, *May 2024*.
+This is `Group 5`'s repository for the Arm-v8 Emulator/Assembler/Extended project.
 
-This is `Group 5`'s repository for the Arm-v8 Emulator/Assembler/Extended project. 
-=======
-This is **Group 5**'s repository for the Arm-v8 Emulator/Assembler/Extended project.
+## Guide to blinking the RPi
+1. `cd` into `src`:
+```bash
+cd src
+```
+2. Compile the assembler:
+```bash
+make assemble
+```
+3. Assemble `led_blink.s`:
+```bash
+./assemble rpi/led_blink.s kernel8.img
+```
+4. Transfer `kernel8.img` onto the RPi's SD card and power it!
 
-## Quick-Start
 
-These guides assume you're working in the `src` directory:
-```shell
-$ cd src
-```
-
-### 1 - Emulator
-1. Build the emulator:
-```shell
-$ make emulate
-```
-2. Run the emulator:
-```shell
-$ ./emulate <file_in> <file_out>
-```
-where
-- `<file_in>` is the binary file to emulate
-- `<file_out>` (optional) is the output file. If not specified, output will be printed to`stdout`
-
-Example:
-```shell
-$ ./emulate add01.bin add01.out
-```
-
-### 2 - Assembler
-1. Build the assembler:
-```shell
-$ make assemble
-```
-2. Run the emulator:
-```shell
-$ ./assemble <file_in> <file_out>
-```
-where
-- `<file_in>` is the AArch64 source file to assemble
-- `<file_out>` is the output AArch64 binary code file
-
-Example:
-```shell
-$ ./assemble add01.s add01.bin
-```
-
-### 3 - Blinking the RPi
-1. Compile the assembler:
-```shell
-$ make assemble
-```
-2. Assemble `led_blink.s`:
-```shell
-$ ./assemble rpi/led_blink.s kernel8.img
-```
-3. Transfer `kernel8.img` to the RPi
->>>>>>> Stashed changes

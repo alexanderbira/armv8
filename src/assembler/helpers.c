@@ -184,6 +184,19 @@ uint64_t parseImmediateStr(const char *operand) {
     return value;
 }
 
+/// Calculates the offset of a label and stores it in [Literal.data]
+/// @param data The [literalData] of the [Literal] to alter
+/// @param state The current state of the assembler.
+void parseOffset(union LiteralData *data, AssemblerState *state) {
+    // Calculate offset, then divide by 4 to encode.
+    BitData *immediate = getMapping(state, data->label);
+    assertFatal(immediate != NULL, "[translateBranch] No mapping for label!");
+
+    data->immediate = *immediate;
+    data->immediate -= state->address;
+    data->immediate /= 4;
+}
+
 /// The same as [strcmp], but takes in [void *]s.
 /// @param v1 The first item.
 /// @param v2 The second item.
