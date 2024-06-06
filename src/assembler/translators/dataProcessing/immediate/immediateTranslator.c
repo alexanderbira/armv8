@@ -7,12 +7,12 @@
 
 #include "immediateTranslator.h"
 
-/// Converts the IR form of an Data Processing (Immediate) instruction to a binary word.
+/// Converts the IR form of a data processing (immediate) instruction to a binary word.
 /// @param irObject The [IR] struct representing the instruction.
 /// @param state The current state of the assembler.
-/// @return 32-bit binary word of the instruction.
+/// @returns 32-bit binary word of the instruction.
 Instruction translateImmediate(IR *irObject, unused AssemblerState *state) {
-    assertFatal(irObject->type == IMMEDIATE, "[translateImmediate] Received non-branch IR!");
+    assertFatal(irObject->type == IMMEDIATE, "Received non-immediate IR!");
     Immediate_IR *immediate = &irObject->ir.immediateIR;
     Instruction result = IMMEDIATE_C;
 
@@ -25,6 +25,7 @@ Instruction translateImmediate(IR *irObject, unused AssemblerState *state) {
         case IMMEDIATE_ARITHMETIC:
             result |= (Instruction) opc->arithmeticType << IMMEDIATE_OPC_S;
             break;
+
         case IMMEDIATE_WIDE_MOVE:
             result |= (Instruction) opc->wideMoveType << IMMEDIATE_OPC_S;
             break;
@@ -43,6 +44,7 @@ Instruction translateImmediate(IR *irObject, unused AssemblerState *state) {
             result |= (Instruction) truncater(arithmetic->rn, IMMEDIATE_ARITHMETIC_RN_N) << IMMEDIATE_ARITHMETIC_RN_S;
             break;
         }
+
         case IMMEDIATE_WIDE_MOVE : {
             struct WideMove *wideMove = &immediate->operand.wideMove;
             result |= (Instruction) truncater(wideMove->hw, IMMEDIATE_WIDE_MOVE_HW_N) << IMMEDIATE_WIDE_MOVE_HW_S;

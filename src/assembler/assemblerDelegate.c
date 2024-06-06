@@ -26,7 +26,7 @@ static const ParserEntry parsers[] = {
         { "mneg", parseDataProcessing },
         { "mov",  parseDataProcessing },
         { "movk", parseImmediate },
-        { "movn", parseImmediate},
+        { "movn", parseImmediate },
         { "movz", parseImmediate },
         { "msub", parseRegister },
         { "mul",  parseDataProcessing },
@@ -63,7 +63,7 @@ static int parserCmp(const void *v1, const void *v2) {
 /// @param mnemonic The mnemonic to search for.
 /// @returns The corresponding [Parser]
 Parser getParser(const char *mnemonic) {
-    ParserEntry target = (ParserEntry) {mnemonic, NULL};
+    ParserEntry target = (ParserEntry) { mnemonic, NULL };
     ParserEntry *entry = bsearch(&target, parsers, sizeof(parsers) / sizeof(ParserEntry),
                                  sizeof(ParserEntry), parserCmp);
     assertFatal(entry != NULL, "No Parser found for mnemonic!");
@@ -84,7 +84,7 @@ static int translatorCmp(const void *v1, const void *v2) {
 /// @param mnemonic The mnemonic to search for.
 /// @returns The corresponding [Parser]
 Translator getTranslator(const IRType *type) {
-    TranslatorEntry target = (TranslatorEntry) {*type, NULL};
+    TranslatorEntry target = (TranslatorEntry) { *type, NULL };
     TranslatorEntry *entry = bsearch(&target, translators, sizeof(translators) / sizeof(TranslatorEntry),
                                      sizeof(TranslatorEntry), translatorCmp);
     assertFatal(entry != NULL, "No Translator found for mnemonic!");

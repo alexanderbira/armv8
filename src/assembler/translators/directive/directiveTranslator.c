@@ -7,11 +7,11 @@
 
 #include "directiveTranslator.h"
 
-/// Returns the immediate value from the IR form of a constant.
-/// @param irObject The [IR] struct representing the immediate value.
+/// Converts the IR form of a directive to a binary word.
+/// @param irObject The [IR] struct representing the directive.
 /// @param state The current state of the assembler.
-/// @return 32-bit binary word of the constant.
+/// @returns 32-bit binary word of the directive.
 Instruction translateDirective(IR *irObject, unused AssemblerState *state) {
-    assertFatal(irObject->type == DIRECTIVE, "[translateConstant] Received non-constant IR!");
+    assertFatal(irObject->type == DIRECTIVE, "Received non-directive IR!");
     return irObject->ir.memoryData;
 }

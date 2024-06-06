@@ -18,16 +18,19 @@
 
 /// Struct representing the current state of the assembler.
 typedef struct {
+
     /// The address of the current instruction being handled.
     BitData address;
 
     /// The symbol table (label to address pairings).
     struct SymbolPair {
+
         /// The address the label points to.
         BitData address;
 
         /// The string title of the label.
         char *label;
+
     } *symbolTable;
 
     /// The number of [SymbolPair]s in [symbolTable].
@@ -44,6 +47,7 @@ typedef struct {
 
     /// The maximum number of [IR]s that [irList] is currently allocated for.
     size_t irMaxCount;
+
 } AssemblerState;
 
 AssemblerState createState(void);

@@ -7,15 +7,14 @@
 
 #include "immediateParser.h"
 
-/// Converts the assembly form of an Data Processing (Immediate) instruction to IR form.
+/// Transform a [TokenisedLine] to an [IR] of a data processing (immediate) instruction.
 /// @param line The [TokenisedLine] of the instruction.
 /// @param state The current state of the assembler.
-/// @return The [Imm_IR] struct representing the instruction.
-/// @pre The incoming [line] is a Data Processing (Immediate) assembly instruction.
+/// @returns The [IR] form of the data processing (immediate) instruction.
+/// @pre The [line]'s mnemonic is that of a data processing (immediate) instruction.
 IR parseImmediate(TokenisedLine *line, unused AssemblerState *state) {
     assertFatal(line->operandCount >= 2 && line->operandCount <= 4,
-                "[parseImmediate] Incorrect number of operands!");
-
+                "Incorrect number of operands!");
     Immediate_IR immediateIR;
 
     bool sf;
@@ -24,17 +23,13 @@ IR parseImmediate(TokenisedLine *line, unused AssemblerState *state) {
     if (*(line->mnemonic) == 'm') {
         enum WideMoveType type;
         switch (line->mnemonic[3]) {
-            case 'n':
-                type = MOVN;
-                break;
-            case 'z':
-                type = MOVZ;
-                break;
-            case 'k':
-                type = MOVK;
-                break;
-            default:
-                throwFatal("[parseImmediate] Wide move suffix does not exist!");
+            case 'n': type = MOVN; break;
+
+            case 'z': type = MOVZ; break;
+
+            case 'k': type = MOVK; break;
+
+            default: throwFatal("Wide move suffix does not exist!");
         }
 
         struct WideMove wideMove;
@@ -71,11 +66,9 @@ IR parseImmediate(TokenisedLine *line, unused AssemblerState *state) {
     } else {
         // Must be arithmetic instruction: see precondition.
         enum ArithmeticType type;
-        if (*(line->mnemonic) == 'a') {
-            type = (strlen(line->mnemonic) == 4) ? ADDS : ADD;
-        } else {
-            type = (strlen(line->mnemonic) == 4) ? SUBS : SUB;
-        }
+        *(line->mnemonic) == 'a'
+            ? (type = (strlen(line->mnemonic) == 4) ? ADDS : ADD)
+            : (type = (strlen(line->mnemonic) == 4) ? SUBS : SUB);
 
         struct Arithmetic arithmetic;
 

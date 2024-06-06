@@ -8,6 +8,11 @@
 #ifndef ASSEMBLER_LOAD_STORE_PARSER_H
 #define ASSEMBLER_LOAD_STORE_PARSER_H
 
+#include <stdio.h>
+#include <string.h>
+
+#include "../../../common/error.h"
+#include "../../../common/ir/ir.h"
 #include "../../helpers.h"
 #include "../../state.h"
 

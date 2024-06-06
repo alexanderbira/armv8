@@ -7,10 +7,11 @@
 
 #include "registerParser.h"
 
-/// Converts the assembly form of an Data Processing (Register) instruction to IR form.
+/// Transform a [TokenisedLine] to an [IR] of a data processing (register) instruction.
 /// @param line The [TokenisedLine] of the instruction.
-/// @return The [Reg_IR] struct representing the instruction.
-/// @pre The incoming [line] is a Data Processing (Register) assembly instruction.
+/// @param state The current state of the assembler.
+/// @returns The [IR] form of the data processing (register) instruction.
+/// @pre The [line]'s mnemonic is that of a data processing (register) instruction.
 IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
     Register_IR registerIR;
 
@@ -43,6 +44,7 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
                 registerIR.opr = REGISTER_BITLOGIC_C;
             }
             break;
+
         case 'b':
             // bic, bics
             registerIR.group = BIT_LOGIC;
@@ -50,6 +52,7 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
             registerIR.opr = REGISTER_BITLOGIC_C;
             registerIR.negated = true;
             break;
+
         case 'e':
             // eor, eon
             registerIR.group = BIT_LOGIC;
@@ -61,6 +64,7 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
                 registerIR.negated = true;
             }
             break;
+
         case 'm':
             // madd, msub
             registerIR.group = MULTIPLY;
@@ -70,8 +74,9 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
 
             uint8_t ra = parseRegisterStr(line->operands[3], NULL);
             bool x = (registerIR.opc.multiply == MSUB);
-            registerIR.operand = (union RegisterOperand) {.multiply = (struct Multiply) {x, ra}};
+            registerIR.operand = (union RegisterOperand) { .multiply = (struct Multiply) { x, ra } };
             break;
+
         case 'o':
             // orr, orn
             registerIR.group = BIT_LOGIC;
@@ -83,14 +88,15 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
                 registerIR.negated = true;
             }
             break;
+
         case 's':
             // sub, subs
             registerIR.group = ARITHMETIC;
             registerIR.opr = REGISTER_ARITHMETIC_C;
             registerIR.opc.arithmetic = (strlen(line->mnemonic) == 3) ? SUB : SUBS;
             break;
-        default:
-            throwFatal("Invalid mnemonic!");
+
+        default: throwFatal("Invalid mnemonic!");
     }
 
     // Deal with shift, if present.
@@ -105,14 +111,12 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
             case 'l':
                 shift = (shiftAndValue[0][2] == 'l') ? LSL : LSR;
                 break;
-            case 'a':
-                shift = ASR;
-                break;
-            case 'r':
-                shift = ROR;
-                break;
-            default:
-                throwFatal("Shift supplied was not a shift.");
+
+            case 'a': shift = ASR; break;
+
+            case 'r': shift = ROR; break;
+
+            default: throwFatal("Shift supplied was not a shift.");
         }
 
         uint8_t imm6 = parseImmediateStr(shiftAndValue[1]);
@@ -123,5 +127,5 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
     registerIR.opr |= registerIR.shift << 1;
     registerIR.opr |= registerIR.negated;
 
-    return (IR) {.type = REGISTER, .ir.registerIR = registerIR};
+    return (IR) { .type = REGISTER, .ir.registerIR = registerIR };
 }

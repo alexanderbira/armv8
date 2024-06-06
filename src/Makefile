@@ -2,7 +2,7 @@ CC       ?= gcc
 # No -D_POSIX_SOURCE as that interferes with MAP_ANONYMOUS in <sys/mman.h>!
 CFLAGS   ?= -std=c17 -g\
 	-D_DEFAULT_SOURCE\
-	-Wall -Werror -Wextra -Wpedantic
+	-Wall -Werror -Wextra --pedantic-errors
 
 SRC_DIR = .
 OBJ_DIR = obj
