@@ -11,10 +11,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../../../common/error.h"
-#include "../../../common/ir/ir.h"
-#include "../../helpers.h"
-#include "../../state.h"
+#include "../../../../common/error.h"
+#include "../../../../common/ir/ir.h"
+#include "../../../helpers.h"
+#include "../../../state.h"
 
 IR parseImmediate(TokenisedLine *line, unused AssemblerState *state);
 

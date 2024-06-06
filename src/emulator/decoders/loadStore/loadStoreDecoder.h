@@ -11,9 +11,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../../common/const.h"
-#include "../../common/error.h"
-#include "../../common/ir/ir.h"
+#include "../../../common/const.h"
+#include "../../../common/error.h"
+#include "../../../common/ir/ir.h"
 
 IR decodeLoadStore(Instruction word);
 

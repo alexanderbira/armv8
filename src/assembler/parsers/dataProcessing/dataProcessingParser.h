@@ -15,8 +15,8 @@
 #include "../../../common/error.h"
 #include "../../../common/ir/ir.h"
 #include "../../state.h"
-#include "immediateParser.h"
-#include "registerParser.h"
+#include "immediate/immediateParser.h"
+#include "register/registerParser.h"
 
 IR parseDataProcessing(TokenisedLine *line, unused AssemblerState *state);
 
