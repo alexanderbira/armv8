@@ -17,6 +17,6 @@
 #include "bitLogicExecutor.h"
 #include "multiplyExecutor.h"
 
-void executeRegister(IR *irObject, Registers regs, unused Memory mem);
+void executeRegister(IR *irObject, Registers registers, unused Memory memory);
 
 #endif // EMULATOR_REGISTER_EXECUTOR_H

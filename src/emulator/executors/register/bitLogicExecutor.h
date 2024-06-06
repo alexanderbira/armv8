@@ -12,6 +12,6 @@
 #include "../../system/registers.h"
 #include "bitwiseShifts.h"
 
-void bitLogicExecute(Register_IR *registerIR, Registers regs);
+void bitLogicExecute(Register_IR *registerIR, Registers registers);
 
 #endif // EMULATOR_BIT_LOGIC_EXECUTOR_H

@@ -49,12 +49,12 @@
 /// The code for op0 of a Branch binary instruction.
 #define OP0_BRANCH_C     b(1010)
 
-typedef void (*IRExecutor)(IR *irObject, Registers regs, Memory mem);
+typedef void (*Executor)(IR *irObject, Registers regs, Memory mem);
 
-typedef IR (*BinaryParser)(Instruction instruction);
+typedef IR (*Decoder)(Instruction instruction);
 
-IRExecutor getExecuteFunction(IR *irObject);
+Executor getExecuteFunction(IR *irObject);
 
-BinaryParser getDecodeFunction(Instruction instruction);
+Decoder getDecodeFunction(Instruction instruction);
 
 #endif // EMULATOR_PROCESS_H

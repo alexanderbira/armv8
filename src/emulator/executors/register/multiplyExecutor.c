@@ -11,7 +11,6 @@
 /// @param regIR IR for a register (multiply) instruction
 /// @param regs Pointer to registers
 void multiplyExecute(Register_IR *registerIR, Registers regs) {
-
     // Set ra value to the 64-bit or 32-bit value of the ra-encoded register, determined by sf
     uint64_t ra = getReg(regs, registerIR->operand.multiply.ra);
     ra = registerIR->sf ? ra : (uint32_t) ra;
