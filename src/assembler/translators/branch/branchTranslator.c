@@ -19,7 +19,7 @@ Instruction translateBranch(IR *irObject, AssemblerState *state) {
     switch (branch->type) {
 
         case BRANCH_UNCONDITIONAL:
-            result = BRANCH_UNCONDITIONAL_C;
+            result = BRANCH_UNCONDITIONAL_B;
             Literal *simm26 = &branch->data.simm26;
             if (simm26->isLabel) {
                 parseOffset(&simm26->data, state);
@@ -28,11 +28,11 @@ Instruction translateBranch(IR *irObject, AssemblerState *state) {
             return result | truncater(simm26->data.immediate, BRANCH_UNCONDITIONAL_SIMM26_N);
 
         case BRANCH_REGISTER:
-            result = BRANCH_REGISTER_C;
+            result = BRANCH_REGISTER_B;
             return result | (truncater(branch->data.xn, BRANCH_REGISTER_XN_N) << BRANCH_REGISTER_XN_S);
 
         case BRANCH_CONDITIONAL:
-            result = BRANCH_CONDITIONAL_C;
+            result = BRANCH_CONDITIONAL_B;
             Literal *simm19 = &branch->data.conditional.simm19;
             if (simm19->isLabel) {
                 parseOffset(&simm19->data, state);
