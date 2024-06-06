@@ -52,6 +52,6 @@ $ make assemble
 ```
 2. Assemble `led_blink.s`:
 ```shell
-$ ./assemble rpi/led_blink.s kernel8.img
+$ ./assemble ../programs/led_blink.s kernel8.img
 ```
 3. Transfer `kernel8.img` to the RPi
