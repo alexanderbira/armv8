@@ -17,7 +17,7 @@ IR decodeLoadStore(Instruction word) {
     };
 
     // Decode the rest of the instruction as an SDT or an LL
-    if ((word & LOAD_STORE_DATA_M) == LOAD_STORE_DATA) {
+    if ((word & LOAD_STORE_DATA_M) == LOAD_STORE_DATA_B) {
         struct SingleDataTransfer data = (struct SingleDataTransfer) {
                 .u = decompose(word, LOAD_STORE_DATA_U_M),
                 .l = decompose(word, LOAD_STORE_DATA_L_M),
@@ -51,7 +51,7 @@ IR decodeLoadStore(Instruction word) {
 
         data.offset = offset;
         loadStoreIR.data.sdt = data;
-    } else if ((word & LOAD_STORE_LITERAL_M) == LOAD_STORE_LITERAL) {
+    } else if ((word & LOAD_STORE_LITERAL_M) == LOAD_STORE_LITERAL_B) {
         // Get the 19-bit offset as a 32-bit unsigned integer
         int32_t offset = decompose(word, LOAD_STORE_LITERAL_SIMM19_M);
         offset = signExtend(offset, LOAD_STORE_LITERAL_SIMM19_N);

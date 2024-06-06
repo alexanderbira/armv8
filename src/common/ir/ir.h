@@ -19,7 +19,7 @@ typedef enum {
     REGISTER,   ///< Data Processing (Register)
     LOAD_STORE, ///< Load-Store
     BRANCH,     ///< Branch
-    CONSTANT    ///< (Not Instruction) Direct to Memory Constant
+    DIRECTIVE   ///< (Not Instruction) Direct to Memory Constant
 } IRType;
 
 /// The general IR wrapper for all types of assembly instructions.

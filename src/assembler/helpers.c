@@ -7,10 +7,10 @@
 
 #include "helpers.h"
 
-/// Trims the specified ([except]) characters from the beginning and end of the given string ([str]).
+/// Trims the specified [except] characters from the beginning and end of the given string [str].
 /// @param[in, out] str Pointer to the string to be trimmed.
-/// @param[in] except List of character(s) to trim.
-/// @return Pointer to the trimmed string.
+/// @param except List of character(s) to trim.
+/// @returns Pointer to the trimmed string.
 /// @attention Mutates input pointer [str].
 char *trim(char *str, const char *except) {
     // Trim leading space.
@@ -33,9 +33,7 @@ char *trim(char *str, const char *except) {
 /// @param[in] str Pointer to the string to be split.
 /// @param[in] delim List of delimiter(s).
 /// @param[out] count Number of pieces the incoming string was split into.
-/// @return Pointer to the array of split strings.
-// /// @attention Will ignore delimeters inside of brackets (incl. square, curly, round)! Cannot handle nested brackets.
-// /// @example \code split("hello [world haha]", " ", &count) = ["hello", "[world haha]"] \endcode
+/// @returns Pointer to the array of split strings.
 char **split(const char *str, const char *delim, int *count) {
     *count = 0;
     char *trimmedLine = strdup(str);
@@ -45,15 +43,11 @@ char **split(const char *str, const char *delim, int *count) {
     char *start = trimmedLine;
     char *end = trimmedLine;
     size_t length = strlen(trimmedLine);
-    bool inBrackets = false;
 
     char **result = NULL;
 
     for (size_t i = 0; i < length + 1; i++) {
-        // Cannot handle nested brackets!
-        // if (strchr("[{()}]", trimmedLine[i]) != NULL) inBrackets = !inBrackets;
-
-        if ((!trimmedLine[i] || strchr(delim, trimmedLine[i]) != NULL) && !inBrackets) {
+        if (!trimmedLine[i] || strchr(delim, trimmedLine[i]) != NULL) {
             size_t operandLength = end - start;
             result = (char **) realloc(result, (*count + 1) * sizeof(char *));
             result[*count] = strndup(start, operandLength);
@@ -65,25 +59,23 @@ char **split(const char *str, const char *delim, int *count) {
         }
     }
 
-    assertFatal(!inBrackets, "[split] Malformed brackets!");
     free(trimmedLine);
     return result;
 }
 
 /// Tokenises the given assembly line into its [TokenisedLine] form.
 /// @param line Pointer to the string to be tokenised.
-/// @return The [TokenisedLine] representing the instruction.
+/// @returns The [TokenisedLine] representing the instruction.
 /// @throw InvalidInstruction Will fatal error if the instruction is not valid. This is not a post-condition!
 TokenisedLine tokenise(const char *line) {
     char *lineCopy = strdup(line);
     TokenisedLine result;
-    result.mnemonic = NULL;
     result.subMnemonic = NULL;
 
     char *trimmedLine = trim(lineCopy, ", \n");
     // Find the first space in the line, separating the mnemonic from the operands.
     char *separator = strchr(lineCopy, ' ');
-    assertFatal(separator, "[tokenise] Invalid assembly instruction!");
+    assertFatal(separator, "Invalid assembly instruction!");
 
     // Extract the mnemonic.
     size_t mnemonicLength = separator - trimmedLine;
@@ -99,13 +91,13 @@ TokenisedLine tokenise(const char *line) {
         result.subMnemonic = strndup(mnemonicSeparator + 1, subMnemonicLength);
 
         assertFatal(strcmp(result.subMnemonic, ""),
-                    "[tokenise] Sub-mnemonic was present but is empty!");
+                    "Sub-mnemonic was present but is empty!");
         // Note, we do not [assertFatal] on the mnemonic, since that signifies
         // we have found a directive!
     }
 
     // Copy in mnemonic. Null terminate supplied previously.
-    if (mnemonicLength) result.mnemonic = strndup(trimmedLine, mnemonicLength);
+    result.mnemonic = strndup(trimmedLine, mnemonicLength);
 
     // Extract all the operands together.
     char *operands = separator + 1; // New variable for clarity.
@@ -122,27 +114,26 @@ TokenisedLine tokenise(const char *line) {
 
 /// Frees all memory associated with a [TokenisedLine].
 /// @param line [TokenisedLine] to be freed.
-void destroyTokenisedLine(TokenisedLine line) {
-    free(line.mnemonic);
-    free(line.subMnemonic);
-    for (int i = 0; i < line.operandCount; i++) {
-        free(line.operands[i]);
+void destroyTokenisedLine(TokenisedLine *line) {
+    free(line->mnemonic);
+    free(line->subMnemonic);
+    for (int i = 0; i < line->operandCount; i++) {
+        free(line->operands[i]);
     }
-    free(line.operands);
+    free(line->operands);
 }
 
 /// Parses a literal as either a signed immediate constant or a label.
 /// @param literal <literal> to be parsed.
-/// @return A union representing the literal.
+/// @returns A union representing the literal.
 Literal parseLiteral(const char *literal) {
-    // TODO: Supply range and fatal error if outside.
     if (strchr(literal, '#')) {
         uint32_t result;
         assertFatal(sscanf(literal, "#0x%" SCNx32, &result) == 1,
-                    "[parseLiteral] Unable to parse immediate!");
-        return (Literal) {false, .data.immediate = result};
+                    "Unable to parse immediate!");
+        return (Literal) { .isLabel = false, .data.immediate = result };
     } else {
-        return (Literal) {true, .data.label = strdup(literal) };
+        return (Literal) { .isLabel = true, .data.label = strdup(literal) };
     }
 }
 
@@ -156,7 +147,9 @@ uint8_t parseRegisterStr(const char *name, bool *sf) {
     char prefix = 0;
 
     int success = sscanf(name, "%c%" SCNu8, &prefix, &result);
-    if (success > 0 && sf != NULL) {
+    assertFatal(success > 0, "Unable to parse register!");
+
+    if (sf != NULL) {
         *sf = (prefix == 'x');
     }
 
@@ -164,14 +157,14 @@ uint8_t parseRegisterStr(const char *name, bool *sf) {
         return result;
     } else {
         assertFatal(!strcmp(name + 1, "sp") || !strcmp(name + 1, "zr"),
-                    "[parseRegisterStr] Invalid register name!");
+                    "Invalid register name!");
         return 0x1F;
     }
 }
 
 /// Parses an immediate value from a string (0X... for hex, #... for dec) to a uint64_t
 /// @param operand The string to parse the immediate value from
-/// @return The literal extracted from the string
+/// @returns The literal extracted from the string
 uint64_t parseImmediateStr(const char *operand) {
     uint64_t value;
 
@@ -179,7 +172,7 @@ uint64_t parseImmediateStr(const char *operand) {
     bool matched = sscanf(operand, "#0x%" SCNx64, &value) == 1;
     if (!matched) matched = sscanf(operand, "#%" SCNu64, &value) == 1;
 
-    assertFatal(matched, "[parseImmediateStr] Invalid immediate value!");
+    assertFatal(matched, "Invalid immediate value!");
 
     return value;
 }
@@ -190,7 +183,7 @@ uint64_t parseImmediateStr(const char *operand) {
 void parseOffset(union LiteralData *data, AssemblerState *state) {
     // Calculate offset, then divide by 4 to encode.
     BitData *immediate = getMapping(state, data->label);
-    assertFatal(immediate != NULL, "[translateBranch] No mapping for label!");
+    assertFatal(immediate != NULL, "No mapping for label!");
 
     data->immediate = *immediate;
     data->immediate -= state->address;

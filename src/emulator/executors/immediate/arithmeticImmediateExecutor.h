@@ -13,6 +13,7 @@
 #include "../../../common/ir/ir.h"
 #include "../../system/registers.h"
 #include "../../system/memory.h"
+#include "../conditions.h"
 
 void arithmeticExecute(Immediate_IR *immediateIR, Registers registers);
 
