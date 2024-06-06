@@ -50,7 +50,7 @@ AssemblerState createState(void);
 
 void destroyState(AssemblerState state);
 
-void addMapping(AssemblerState *state, const char *label, BitData address);
+void addMapping(AssemblerState *state, char *label, BitData address);
 
 BitData *getMapping(AssemblerState *state, const char *label);
 
