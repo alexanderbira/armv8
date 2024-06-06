@@ -39,8 +39,20 @@ typedef uint32_t Component;
 /// @example \code b(1010_0101) = 0xA5 \endcode
 /// @warning May not be optimised at compile - do not abuse!
 #define b(__LITERAL__) toBinary(#__LITERAL__)
+static inline uint64_t toBinary(const char *str) {
+    uint64_t result = 0;
+    while (*str) {
+        if (*str == '_') {
+            str++;
+            continue;
+        }
+        result <<= 1;
+        result += *str++ - '0';
+    }
+    return result;
+}
 
-// Shorthand for simple bitmasks on the "right hand" / least significant side. One-indexed.
+/// Shorthand for simple bitmasks on the "right hand" / least significant side. One-indexed.
 /// Significant inspiration taken from @see https://stackoverflow.com/a/28703383/
 /// @param __ONE_COUNT__ The number of bits to set.
 /// @returns The mask.
@@ -76,19 +88,6 @@ typedef uint32_t Component;
 /// @example \code truncater(0xF, 3) = 0x7 \endcode
 #define truncater(__VALUE__, __BIT_COUNT__) ((__VALUE__) & maskr(__BIT_COUNT__))
 
-static inline uint64_t toBinary(const char *str) {
-    uint64_t result = 0;
-    while (*str) {
-        if (*str == '_') {
-            str++;
-            continue;
-        }
-        result <<= 1;
-        result += *str++ - '0';
-    }
-    return result;
-}
-
 /// Applies the given mask to an instruction and returns the bits
 /// shifted so that the LSB is right-aligned to yield the component.
 /// @param __WORD__ The instruction to mask.
@@ -97,7 +96,6 @@ static inline uint64_t toBinary(const char *str) {
 /// @example \code decompose(10111, 11100) == 00101 \endcode
 /// @authors Billy Highley and Alexander Biraben-Renard
 #define decompose(__WORD__, __MASK__) decompose(__WORD__, __MASK__)
-
 static inline Component decompose(Instruction word, Mask mask) {
     uint32_t bits = word & mask;
     while (!(mask & 1) && (mask >>= 1)) bits >>= 1;
