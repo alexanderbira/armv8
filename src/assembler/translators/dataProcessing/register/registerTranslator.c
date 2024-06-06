@@ -14,7 +14,7 @@
 Instruction translateRegister(IR *irObject, unused AssemblerState *state) {
     assertFatal(irObject->type == REGISTER, "Received non-register IR!");
     Register_IR *registerIR = &irObject->ir.registerIR;
-    Instruction instruction = REGISTER_;
+    Instruction instruction = REGISTER_B;
 
     // Load [sf]
     instruction |= (Instruction) registerIR->sf << IMMEDIATE_SF_S;

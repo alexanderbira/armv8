@@ -14,7 +14,7 @@
 Instruction translateImmediate(IR *irObject, unused AssemblerState *state) {
     assertFatal(irObject->type == IMMEDIATE, "Received non-immediate IR!");
     Immediate_IR *immediate = &irObject->ir.immediateIR;
-    Instruction result = IMMEDIATE_C;
+    Instruction result = IMMEDIATE_B;
 
     // Load [sf], trust since boolean.
     result |= (Instruction) immediate->sf << IMMEDIATE_SF_S;
