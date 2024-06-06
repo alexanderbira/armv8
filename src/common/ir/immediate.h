@@ -17,35 +17,11 @@
 /// Baseline code for a data processing (immediate) instruction.
 #define IMMEDIATE_B                  b(0001_0000_0000_0000_0000_0000_0000_0000)
 
-/// Number of bits to shift for [sh] in a data processing (immediate, arithmetic) instruction.
-#define IMMEDIATE_ARITHMETIC_SH_S    22
-
-/// Number of bits to shift for [imm12] in a data processing (immediate, arithmetic) instruction.
-#define IMMEDIATE_ARITHMETIC_IMM12_S 10
-
-/// Number of bits in [imm12] in a data processing (immediate, arithmetic) instruction.
-#define IMMEDIATE_ARITHMETIC_IMM12_N 12
-
-/// Number of bits to shift for [rn] in a data processing (immediate, arithmetic) instruction.
-#define IMMEDIATE_ARITHMETIC_RN_S    5
-
-/// Number of bits in [rn] in a data processing (immediate, arithmetic) instruction.
-#define IMMEDIATE_ARITHMETIC_RN_N    5
-
-/// Number of bits to shift for [hw] in a data processing (immediate, wide move) instruction.
-#define IMMEDIATE_WIDE_MOVE_HW_S     21
-
-/// Number of bits in [hw] in a data processing (immediate, wide move) instruction.
-#define IMMEDIATE_WIDE_MOVE_HW_N     2
-
-/// Number of bits to shift for [imm16] in a data processing (immediate, wide move) instruction.
-#define IMMEDIATE_WIDE_MOVE_IMM16_S  5
-
-/// Number of bits in [imm16] in a data processing (immediate, wide move) instruction.
-#define IMMEDIATE_WIDE_MOVE_IMM16_N  16
-
 /// Number of bits to shift for [sf] in a data processing (immediate) instruction.
 #define IMMEDIATE_SF_S               31
+
+/// Mask for [sf] (the bit-width specifier) in a data processing (immediate) instruction.
+#define IMMEDIATE_SF_M               maskl(1)
 
 /// Number of bits to shift for [opc] in a data processing (immediate) instruction.
 #define IMMEDIATE_OPC_S              29
@@ -53,38 +29,62 @@
 /// Number of bits in [opc] in a data processing (immediate) instruction.
 #define IMMEDIATE_OPC_N              2
 
+/// Mask for [opc] (operation code) in a data processing (immediate) instruction.
+#define IMMEDIATE_OPC_M              mask(30, 29)
+
 /// Number of bits to shift for [opi] in a data processing (immediate) instruction.
 #define IMMEDIATE_OPI_S              23
 
 /// Number of bits in [opi] in a data processing (immediate) instruction.
 #define IMMEDIATE_OPI_N              3
 
-/// Number of bits in [rd] in a data processing (immediate) instruction.
-#define IMMEDIATE_RD_N               5
-
-/// Mask for [sf] (the bit-width specifier) in a data processing (immediate) instruction.
-#define IMMEDIATE_SF_M               maskl(1)
-
-/// Mask for [opc] (operation code) in a data processing (immediate) instruction.
-#define IMMEDIATE_OPC_M              mask(30, 29)
-
 /// Mask for [opi] (data process type) in a data processing (immediate) instruction.
 #define IMMEDIATE_OPI_M              mask(25, 23)
+
+/// Number of bits in [rd] in a data processing (immediate) instruction.
+#define IMMEDIATE_RD_N               5
 
 /// Mask for [rd] (destination register) in a data processing (immediate) instruction.
 #define IMMEDIATE_RD_M               mask(4, 0)
 
+/// Number of bits to shift for [sh] in a data processing (immediate, arithmetic) instruction.
+#define IMMEDIATE_ARITHMETIC_SH_S    22
+
 /// Mask for [sh] in a data processing (immediate, arithmetic) instruction.
 #define IMMEDIATE_ARITHMETIC_SH_M    mask(22,22)
+
+/// Number of bits to shift for [imm12] in a data processing (immediate, arithmetic) instruction.
+#define IMMEDIATE_ARITHMETIC_IMM12_S 10
+
+/// Number of bits in [imm12] in a data processing (immediate, arithmetic) instruction.
+#define IMMEDIATE_ARITHMETIC_IMM12_N 12
 
 /// Mask for [imm12] in a data processing (immediate, arithmetic) instruction.
 #define IMMEDIATE_ARITHMETIC_IMM12_M mask(21, 10)
 
+/// Number of bits to shift for [rn] in a data processing (immediate, arithmetic) instruction.
+#define IMMEDIATE_ARITHMETIC_RN_S    5
+
+/// Number of bits in [rn] in a data processing (immediate, arithmetic) instruction.
+#define IMMEDIATE_ARITHMETIC_RN_N    5
+
 /// Mask for [rn] in a data processing (immediate, arithmetic) instruction.
 #define IMMEDIATE_ARITHMETIC_RN_M    mask(9, 5)
 
+/// Number of bits to shift for [hw] in a data processing (immediate, wide move) instruction.
+#define IMMEDIATE_WIDE_MOVE_HW_S     21
+
+/// Number of bits in [hw] in a data processing (immediate, wide move) instruction.
+#define IMMEDIATE_WIDE_MOVE_HW_N     2
+
 /// Mask for [hw] in a data processing (immediate, wide move) instruction.
 #define IMMEDIATE_WIDE_MOVE_HW_M     mask(22, 21)
+
+/// Number of bits to shift for [imm16] in a data processing (immediate, wide move) instruction.
+#define IMMEDIATE_WIDE_MOVE_IMM16_S  5
+
+/// Number of bits in [imm16] in a data processing (immediate, wide move) instruction.
+#define IMMEDIATE_WIDE_MOVE_IMM16_N  16
 
 /// Mask for [imm16] in a data processing (immediate, wide move) instruction.
 #define IMMEDIATE_WIDE_MOVE_IMM16_M  mask(20, 5)
