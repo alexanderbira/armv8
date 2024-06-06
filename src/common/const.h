@@ -15,7 +15,10 @@
 #define MEMORY_SIZE (2 << 20) // 2MB
 
 /// The number of general purpose registers in the virtual machine.
-#define NUM_GPRS 31
+#define NO_GPRS 31
+
+/// The encoding of the zero register.
+#define ZERO_REGISTER 31
 
 /// Alias for a chunk of data passed to and from the virtual registers or memory.
 typedef uint64_t BitData;
