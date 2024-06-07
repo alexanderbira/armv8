@@ -18,6 +18,7 @@ IR parseDirective(TokenisedLine *tokenisedLine, unused AssemblerState *state) {
     if (!strcmp(tokenisedLine->subMnemonic, "int")) {
         // Reserve space for line, null terminator, and prepended '#'.
         char *immediateStr = (char *) malloc(strlen(tokenisedLine->operands[0]) + 2);
+        assertFatalNotNull(immediateStr, "<Memory> Unable to allocate [char *]!");
         *immediateStr = '#';
         strcpy(immediateStr + 1, tokenisedLine->operands[0]);
 

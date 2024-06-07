@@ -66,7 +66,7 @@ Parser getParser(const char *mnemonic) {
     ParserEntry target = (ParserEntry) { mnemonic, NULL };
     ParserEntry *entry = bsearch(&target, parsers, sizeof(parsers) / sizeof(ParserEntry),
                                  sizeof(ParserEntry), parserCmp);
-    assertFatal(entry != NULL, "No Parser found for mnemonic!");
+    assertFatalNotNull(entry, "No Parser found for mnemonic!");
     return entry->handler;
 }
 
@@ -87,6 +87,6 @@ Translator getTranslator(const IRType *type) {
     TranslatorEntry target = (TranslatorEntry) { *type, NULL };
     TranslatorEntry *entry = bsearch(&target, translators, sizeof(translators) / sizeof(TranslatorEntry),
                                      sizeof(TranslatorEntry), translatorCmp);
-    assertFatal(entry != NULL, "No Translator found for mnemonic!");
+    assertFatalNotNull(entry, "No Translator found for mnemonic!");
     return entry->handler;
 }

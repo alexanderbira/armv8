@@ -37,6 +37,7 @@ char *trim(char *str, const char *except) {
 char **split(const char *str, const char *delim, int *count) {
     *count = 0;
     char *trimmedLine = strdup(str);
+    assertFatalNotNull(trimmedLine, "<Memory> Unable to duplicate [char *]!");
     trimmedLine = trim(trimmedLine, WHITESPACE);
 
     // These present the start and end of the current segment.
@@ -50,7 +51,9 @@ char **split(const char *str, const char *delim, int *count) {
         if (!trimmedLine[i] || strchr(delim, trimmedLine[i]) != NULL) {
             size_t operandLength = end - start;
             result = (char **) realloc(result, (*count + 1) * sizeof(char *));
+            assertFatalNotNull(result, "<Memory> Unable to expand by re-allocate [result]!");
             result[*count] = strndup(start, operandLength);
+            assertFatalNotNull(result[*count], "<Memory> Unable to duplicate [char *]!");
             *(result[*count] + operandLength) = '\0';
             start = ++end;
             (*count)++;
@@ -69,6 +72,7 @@ char **split(const char *str, const char *delim, int *count) {
 /// @throw InvalidInstruction Will fatal error if the instruction is not valid. This is not a post-condition!
 TokenisedLine tokenise(const char *line) {
     char *lineCopy = strdup(line);
+    assertFatalNotNull(lineCopy, "<Memory> Unable to duplicate [char *]!");
     TokenisedLine result;
     result.subMnemonic = NULL;
 
@@ -89,6 +93,7 @@ TokenisedLine tokenise(const char *line) {
         // Throw away leading '.' when copying.
         size_t subMnemonicLength = separator - mnemonicSeparator - 1;
         result.subMnemonic = strndup(mnemonicSeparator + 1, subMnemonicLength);
+        assertFatalNotNull(result.subMnemonic, "<Memory> Unable to duplicate [char *]!");
 
         assertFatal(strcmp(result.subMnemonic, ""),
                     "Sub-mnemonic was present but is empty!");
@@ -98,6 +103,7 @@ TokenisedLine tokenise(const char *line) {
 
     // Copy in mnemonic. Null terminate supplied previously.
     result.mnemonic = strndup(trimmedLine, mnemonicLength);
+    assertFatalNotNull(result.mnemonic, "<Memory> Unable to duplicate [char *]!");
 
     // Extract all the operands together.
     char *operands = separator + 1; // New variable for clarity.
@@ -133,7 +139,9 @@ Literal parseLiteral(const char *literal) {
                     "Unable to parse immediate!");
         return (Literal) { .isLabel = false, .data.immediate = result };
     } else {
-        return (Literal) { .isLabel = true, .data.label = strdup(literal) };
+        char *label = strdup(literal);
+        assertFatalNotNull(label, "<Memory> Unable to duplicate [char *]!");
+        return (Literal) { .isLabel = true, .data.label = label };
     }
 }
 
@@ -183,7 +191,7 @@ uint64_t parseImmediateStr(const char *operand) {
 void parseOffset(union LiteralData *data, AssemblerState *state) {
     // Calculate offset, then divide by 4 to encode.
     BitData *immediate = getMapping(state, data->label);
-    assertFatal(immediate != NULL, "No mapping for label!");
+    assertFatalNotNull(immediate, "No mapping for label!");
 
     data->immediate = *immediate;
     data->immediate -= state->address;

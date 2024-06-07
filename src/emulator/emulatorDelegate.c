@@ -25,7 +25,7 @@ Executor getExecuteFunction(IR *irObject) {
             return executeBranch;
 
         default:
-            throwFatal("[getExecuteFunction] Invalid IR!");
+            throwFatal("Invalid IR!");
     }
 }
 

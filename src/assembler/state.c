@@ -15,28 +15,53 @@ AssemblerState createState(void) {
     state.symbolTable = NULL;
 
     state.irList = calloc(INITIAL_LIST_SIZE, sizeof(IR));
+    assertFatalNotNull(state.irList, "<Memory> Unable to contiguously allocate [irList]!");
     state.irCount = 0;
     state.irMaxCount = INITIAL_LIST_SIZE;
 
     state.symbolTable = calloc(INITIAL_LIST_SIZE, sizeof(struct SymbolPair));
+    assertFatalNotNull(state.symbolTable, "<Memory> Unable to contiguously allocate [symbolTable]!");
     state.symbolCount = 0;
     state.symbolMaxCount = INITIAL_LIST_SIZE;
     return state;
 }
 
+/// If applicable, frees the string label in a [Literal].
+/// @param literal The literal to be freed.
+static void freeLiteral(Literal *literal) {
+    // By our convention, this simply means that the [Literal]
+    // was initialised as a label.
+    if (literal->isLabel) free(literal->data.label);
+}
+
 /// Frees pointers held in an IR
 /// @param ir IR within which to free pointers
-static void freeIR(IR ir) {
-    if (ir.type == BRANCH) {
-        if (ir.ir.branchIR.type == BRANCH_UNCONDITIONAL) {
-            if (ir.ir.branchIR.data.simm26.isLabel) {
-                free(ir.ir.branchIR.data.simm26.data.label);
+static void freeIR(IR *irObject) {
+    switch (irObject->type) {
+        case BRANCH: {
+            Branch_IR *branch = &irObject->ir.branchIR;
+            switch (branch->type) {
+                case BRANCH_UNCONDITIONAL:
+                    freeLiteral(&branch->data.simm26);
+                    break;
+
+                case BRANCH_CONDITIONAL:
+                    freeLiteral(&branch->data.conditional.simm19);
+                    break;
+
+                default:
+                    break;
             }
-        } else if (ir.ir.branchIR.type == BRANCH_CONDITIONAL) {
-            if (ir.ir.branchIR.data.conditional.simm19.isLabel) {
-                free(ir.ir.branchIR.data.conditional.simm19.data.label);
-            }
+            break;
         }
+
+        case LOAD_STORE:
+            if (irObject->ir.loadStoreIR.type == LOAD_LITERAL) {
+                free(irObject->ir.loadStoreIR.data.simm19.data.label);
+            }
+
+        default:
+            break;
     }
 }
 
@@ -50,7 +75,7 @@ void destroyState(AssemblerState state) {
     free(state.symbolTable);
 
     for (size_t i = 0; i < state.irCount; i++) {
-        freeIR(state.irList[i]);
+        freeIR(&state.irList[i]);
     }
 
     free(state.irList);
@@ -68,6 +93,7 @@ void addMapping(AssemblerState *state, char *label, BitData address) {
     if (state->symbolCount >= state->symbolMaxCount) {
         // Exponential (doubling) scaling policy.
         state->symbolTable = realloc(state->symbolTable, state->symbolMaxCount * 2);
+        assertFatalNotNull(state->symbolTable, "<Memory> Unable to expand by re-allocate [symbolTable]!");
     }
 
     state->symbolTable[state->symbolCount++] = symbolPair;
@@ -97,6 +123,7 @@ void addIR(AssemblerState *state, IR ir) {
     if (state->irCount >= state->irMaxCount) {
         // Exponential (doubling) scaling policy.
         state->irList = realloc(state->irList, state->irMaxCount * 2);
+        assertFatalNotNull(state->irList, "<Memory> Unable to expand by re-allocate [irList]!");
     }
 
     state->irList[state->irCount++] = ir;

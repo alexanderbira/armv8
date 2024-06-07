@@ -130,7 +130,7 @@ typedef struct {
         IMMEDIATE_ARITHMETIC = 0x2,
 
         /// Wide move operation.
-        IMMEDIATE_WIDE_MOVE  = 0x5
+        IMMEDIATE_WIDE_MOVE = 0x5
 
     } opi;
 

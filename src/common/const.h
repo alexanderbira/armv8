@@ -45,7 +45,6 @@ typedef uint32_t Component;
 /// @example \code b(1010_0101) = 0xA5 \endcode
 /// @warning May not be optimised at compile - do not abuse!
 #define b(__LITERAL__) toBinary(#__LITERAL__)
-
 static inline uint64_t toBinary(const char *str) {
     uint64_t result = 0;
     while (*str) {
