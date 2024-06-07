@@ -34,7 +34,8 @@ uint64_t bitShift(enum ShiftType shiftType, uint8_t operand, uint64_t rm, bool s
             shifted += (rm << (sf ? (64 - operand) : (32 - operand)));
             break;
 
-        default: throwFatal("[bitShift] Unrecognised shift type!");
+        default:
+            throwFatal("[bitShift] Unrecognised shift type!");
     }
 
     return sf ? shifted : (uint32_t) shifted;

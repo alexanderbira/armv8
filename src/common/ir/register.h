@@ -110,51 +110,54 @@ typedef struct {
     /// [1b] The bit-width of all the registers in the instruction: 0 for 32-bit, 1 for 64-bit.
     bool sf;
 
-    /// [2b] The operation code, determining the operation to be performed. To access union, check [opi].
+    /// [2b] The operation code, determining the operation to be performed.
     union RegisterOpCode {
 
+        /// Arithmetic operation.
         enum ArithmeticType arithmetic;
 
-        /// Arithmetic and logical instructions, separated into standard and negated types.
+        /// Logical operation.
         union Logic {
 
-            /// Standard operation codes
+            /// Standard operation codes.
+            /// @attention Ordinal values represent binary encodings.
             enum StandardType {
 
-                /// The operation code for AND.
+                /// AND.
                 /// \code Rd := Rn & Op2 \endcode
                 AND,
 
-                /// The operation code for (inclusive) OR.
+                /// OR (inclusive).
                 /// \code Rd := Rn | Op2 \endcode
                 ORR,
 
-                /// The operation code for (exclusive) OR.
+                /// OR (exclusive).
                 /// \code Rd := Rn ^ Op2 \endcode
                 EOR,
 
-                /// The operation code for AND, setting flags.
+                /// AND (set flags).
                 /// \code Rd := Rn & Op2 \endcode
                 ANDS
 
             } standard;
 
-            /// Negated operation codes
+            /// Negated operation codes.
+            /// @attention Ordinal values represent binary encodings.
             enum NegatedType {
 
-                /// The operation code for bit clear.
+                /// Bit clear.
                 /// \code Rd := Rn & ~Op2 \endcode
                 BIC,
 
-                /// The operation code for (inclusive) OR NOT.
+                /// OR (inclusive) NOT.
                 /// \code Rd := Rn | ~Op2 \endcode
                 ORN,
 
-                /// The operation code for (exclusive) OR NOT.
+                /// OR (exclusive) NOT.
                 /// \code Rd := Rn ^ ~Op2 \endcode
                 EON,
 
-                /// The operation code for bit clear, setting flags.
+                /// Bit clear (set flags).
                 /// \code Rd := Rn & ~Op2 \endcode
                 BICS
 
@@ -162,7 +165,7 @@ typedef struct {
 
         } logic;
 
-        /// Multiply operation codes.
+        /// Multiply operation.
         enum MultiplyType {
 
             /// Multiply-add (non-negated product).
@@ -177,52 +180,73 @@ typedef struct {
 
     } opc;
 
-    /// [1b] Type of instruction to perform (when combined with opr).
+    /// [1b] The type of instruction to perform: 0 for non-multiply, 1 for multiply.
     bool M;
 
-    /// [4b] Type of instruction to perform (when combined with M).
+    /// [4b] The type of instruction to perform (when combined with [M]).
     uint8_t opr;
 
-    /// Type of data processing operation. (Derived from [opr] and [M].)
-    enum RegisterType { ARITHMETIC, BIT_LOGIC, MULTIPLY } group;
+    /// The type of register operation (derived from [opr] and [M]).
+    enum RegisterType {
 
-    /// The type of shift to perform on Rm. (Derived from [opr].)
+        /// Arithmetic operation.
+        ARITHMETIC,
+
+        /// Bit-logic operation.
+        BIT_LOGIC,
+
+        /// Multiply operation.
+        MULTIPLY
+
+    } group;
+
+    /// The type of shift to perform (determined by [opr]).
+    /// @attention Ordinal values represent binary encodings.
     enum ShiftType {
-        LSL, ///< Logical shift left.
-        LSR, ///< Logical shift right.
-        ASR, ///< Arithmetic shift right.
-        ROR  ///< Rotate right.
+
+        /// Logical shift left.
+        LSL,
+
+        /// Logical shift right.
+        LSR,
+
+        /// Arithmetic shift right.
+        ASR,
+
+        /// Rotate right.
+        ROR
+
     } shift;
 
-    /// (Logical only) whether the shifted register is bitwise negated. (Derived from [opr].)
+    /// Whether the shifted register is to be bitwise negated (derived from [opr]).
     bool negated;
 
-    /// [5b] The encoding of the second operand register.
+    /// [5b] The encoding of the Rm register.
     uint8_t rm;
 
-    /// [6b] The last operand of the instruction.
+    /// [6b] The operand of the instruction.
     union RegisterOperand {
 
-        /// [6b] Arithmetic and logical interpretation: 6-bit unsigned immediate value.
+        /// [6b] Arithmetic/logical interpretation: 6-bit unsigned immediate value.
         uint8_t imm6;
 
-        /// [6b] Multiply interpretation: operand consists of [1b] x and [5b] ra components.
+        /// [6b] Multiply interpretation: operand consists of [x] and [ra] components.
         struct Multiply {
 
-            /// [1b] Determines whether to negate the product (1 = negate).
+            /// [1b] Determines whether to negate the product: 0 for false, 1 for true.
             bool x;
 
-            /// [5b] The encoding of the second operand register.
+            /// [5b] The encoding of the Ra register.
             uint8_t ra;
 
         } multiply;
 
     } operand;
 
-    /// [5b] The encoding of the first operand register.
+    /// [5b] The encoding of the Rn register.
     uint8_t rn;
 
-    /// [5b] The encoding of the destination register.
+    /// [5b] The encoding of the Rd register.
     uint8_t rd;
 
 } Register_IR;

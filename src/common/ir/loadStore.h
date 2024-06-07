@@ -119,60 +119,69 @@ typedef struct {
     /// [1b] The bit-width of all the registers in the instruction: 0 for 32-bit, 1 for 64-bit.
     bool sf;
 
-    /// The type of the load/store instruction.
+    /// The type of load/store instruction.
     enum LoadStoreType {
-        SINGLE_DATA_TRANSFER, ///< The single data transfer instruction type.
-        LOAD_LITERAL,         ///< The load literal instruction type.
+
+        /// Single data transfer.
+        SINGLE_DATA_TRANSFER,
+
+        /// Load literal.
+        LOAD_LITERAL,
+
     } type;
 
     /// [19b] The constants for the load/store instruction group.
     union LoadStoreConstants {
 
-        /// [19b] Single data transfer interpretation: constants struct.
+        /// [19b] Single data transfer interpretation.
         struct SingleDataTransfer {
 
-            /// [1b] Determines whether addressing mode is unsigned offset (1 = unsigned offset).
+            /// [1b] Determines whether the addressing mode is unsigned offset: 0 for false, 1 for true.
             bool u;
 
-            /// [1b] Determines the type of data transfer (0 = store, 1 = load).
+            /// [1b] Determines the type of data transfer: 0 for store, 1 for load.
             bool l;
 
             /// The addressing mode.
             enum AddressingMode {
 
-                /// In the form of \code [xn, #<imm>] \endcode
+                /// Unsigned immediate offset.
+                /// Form: \code [xn, #<imm>] \endcode
                 /// Transfer address: \code Xn + imm \endcode
                 UNSIGNED_OFFSET,
 
-                /// In the form of \code [xn, #<simm>]! \endcode
+                /// Pre-indexed.
+                /// Form: \code [xn, #<simm>]! \endcode
                 /// Transfer address: \code Xn + simm \endcode
                 /// Write-back: \code Xn := Xn + simm \endcode
                 PRE_INDEXED,
 
-                /// In the form of \code [xn], #<simm> \encode
+                /// Post-indexed.
+                /// Form: \code [xn], #<simm> \encode
                 /// Transfer address: \code Xn \endcode
                 /// Write-back: \code Xn + simm \endcode
                 POST_INDEXED,
 
+                /// Register offset.
                 /// In the form of \code [xn, xm] \endcode
                 /// Transfer address: \code Xn + Xm \endcode
                 REGISTER_OFFSET,
 
             } addressingMode;
 
-            /// [12b] Interpretation of offset (depending on addressing mode).
+            /// [12b] Offset interpretation (determined by addressing mode).
             union Offset {
 
-                /// [5b] The code for register Xm, used for the register offset addressing mode.
+                /// [5b] The encoding of the Xm register, used for the register offset addressing mode.
                 uint8_t xm;
 
-                /// [10b] The parameters for the pre/post indexed addressing mode.
+                /// [10b] The parameters for the pre/post-indexed addressing mode.
                 struct PrePostIndex {
 
                     /// [9b] The signed value used for the pre/post-indexed addressing mode.
                     int16_t simm9;
 
-                    /// [1b] Determines whether to use pre/post-indexing (0 = post-indexed, 1 = pre-indexed).
+                    /// [1b] Determines whether to use pre/post-indexing: 0 for post-indexed, 1 for pre-indexed.
                     bool i;
 
                 } prePostIndex;
@@ -182,17 +191,17 @@ typedef struct {
 
             } offset;
 
-            /// [5b] The encoding of the base register.
+            /// [5b] The encoding of the Xn register.
             uint8_t xn;
 
         } sdt;
 
-        /// [19b] Load literal interpretation: signed immediate value.
+        /// [19b] Load literal interpretation (signed immediate value).
         Literal simm19;
 
     } data;
 
-    /// [5b] The encoding of the target register.
+    /// [5b] The encoding of the Rt register.
     uint8_t rt;
 
 } LoadStore_IR;

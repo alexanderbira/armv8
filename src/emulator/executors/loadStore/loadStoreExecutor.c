@@ -62,7 +62,8 @@ void executeLoadStore(IR *irObject, Registers registers, Memory memory) {
                                        loadStoreIR->data.sdt.offset.uoffset * 4;
                     break;
 
-                default: throwFatal("Not implemented!");
+                default:
+                    throwFatal("Not implemented!");
             }
             break;
 

@@ -77,7 +77,7 @@ void executeBranch(IR *irObject, Registers registers, unused Memory memory) {
 
                 case LE:
                     if (!(!getRegState(registers, Z)
-                        && getRegState(registers, N) == getRegState(registers, V))) {
+                          && getRegState(registers, N) == getRegState(registers, V))) {
                         setRegPC(registers, pcVal + 4 * offset);
                     }
                     break;

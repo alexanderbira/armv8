@@ -23,13 +23,20 @@ IR parseImmediate(TokenisedLine *line, unused AssemblerState *state) {
     if (*(line->mnemonic) == 'm') {
         enum WideMoveType type;
         switch (line->mnemonic[3]) {
-            case 'n': type = MOVN; break;
+            case 'n':
+                type = MOVN;
+                break;
 
-            case 'z': type = MOVZ; break;
+            case 'z':
+                type = MOVZ;
+                break;
 
-            case 'k': type = MOVK; break;
+            case 'k':
+                type = MOVK;
+                break;
 
-            default: throwFatal("Wide move suffix does not exist!");
+            default:
+                throwFatal("Wide move suffix does not exist!");
         }
 
         struct WideMove wideMove;
@@ -67,8 +74,8 @@ IR parseImmediate(TokenisedLine *line, unused AssemblerState *state) {
         // Must be arithmetic instruction: see precondition.
         enum ArithmeticType type;
         *(line->mnemonic) == 'a'
-            ? (type = (strlen(line->mnemonic) == 4) ? ADDS : ADD)
-            : (type = (strlen(line->mnemonic) == 4) ? SUBS : SUB);
+        ? (type = (strlen(line->mnemonic) == 4) ? ADDS : ADD)
+        : (type = (strlen(line->mnemonic) == 4) ? SUBS : SUB);
 
         struct Arithmetic arithmetic;
 
@@ -102,5 +109,5 @@ IR parseImmediate(TokenisedLine *line, unused AssemblerState *state) {
         };
     }
 
-    return (IR) {IMMEDIATE, .ir.immediateIR = immediateIR};
+    return (IR) { IMMEDIATE, .ir.immediateIR = immediateIR };
 }
