@@ -87,8 +87,8 @@ After experimenting with the project's structure, we settled on three tasks:
 
 \begin{enumerate}
     \item \textbf{Decode and Execute}, handled by \textit{Billy Highley} and \textit{Alexander Biraben-Renard}. These are grouped into one since we did not use the intermediate representations at first.
-    \item \textbf{System}, for functions that initialise, destroy, and otherwise deal with the virtual registers and memory. Handled by \textit{Lancelot Liu}.
-    \item \textbf{IO}, for the main fetch-execute cycle, reading and writing to files, and making sure everything ties together appropriately. Handled by \textit{Jack Wong}.
+    \item \textbf{System}, for functions that initialise, destroy, and otherwise deal with the virtual registers and memory, handled by \textit{Lancelot Liu}.
+    \item \textbf{IO}, for the main fetch-decode-execute cycle, reading and writing to files, and making sure everything ties together appropriately, handled by \textit{Jack Wong}.
 \end{enumerate}
 
 \vspace{1em} \begin{formal}
@@ -107,7 +107,7 @@ We feel the group is working well; all members are clear on their assigned tasks
     Merge requests are always merged by members who did not work on the branch, so that everyone is familiar with the code.
 \end{formal}
 
-As a result, we frequently ask each other for help, and have especially found pair programming useful, especially when debugging or reviewing merge requests.
+As a result, we frequently ask each other for help, and have found pair programming useful, especially when debugging or reviewing merge requests.
 
 One thing we feel could have been improved is clarity on our contributing guidelines. We started writing code before agreeing on this, and hence had to spend extra time at the end refactoring, restructuring, and otherwise unifying the code and comments in the project.
 
