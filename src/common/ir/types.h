@@ -30,6 +30,7 @@ typedef struct {
 } Literal;
 
 /// The operation code for arithmetic operations.
+/// @attention Ordinal values represent binary encodings.
 enum ArithmeticType {
 
     /// Add.

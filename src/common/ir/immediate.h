@@ -99,9 +99,11 @@ typedef struct {
     union ImmediateOpCode {
 
         /// Arithmetic operation.
+        /// @attention Ordinal values represent binary encodings.
         enum ArithmeticType arithmeticType;
 
         /// Wide move operation.
+        /// @attention Ordinal values represent binary encodings.
         enum WideMoveType {
 
             /// Move wide with NOT.
@@ -121,6 +123,7 @@ typedef struct {
     } opc;
 
     /// [3b] The type of data processing operation.
+    /// @attention Ordinal values represent binary encodings.
     enum ImmediateType {
 
         /// Arithmetic operation.

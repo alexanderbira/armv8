@@ -119,6 +119,7 @@ typedef struct {
         union Logic {
 
             /// Standard operation codes.
+            /// @attention Ordinal values represent binary encodings.
             enum StandardType {
 
                 /// AND.
@@ -139,7 +140,8 @@ typedef struct {
 
             } standard;
 
-            /// Negated operation codes
+            /// Negated operation codes.
+            /// @attention Ordinal values represent binary encodings.
             enum NegatedType {
 
                 /// Bit clear.
@@ -198,6 +200,7 @@ typedef struct {
     } group;
 
     /// The type of shift to perform (determined by [opr]).
+    /// @attention Ordinal values represent binary encodings.
     enum ShiftType {
 
         /// Logical shift left.

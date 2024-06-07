@@ -97,6 +97,7 @@ typedef struct {
             Literal simm19;
 
             /// [4b] The condition for the conditional branch instruction.
+            /// @attention Ordinal values represent binary encodings.
             enum BranchCondition {
 
                 /// Equal to.
