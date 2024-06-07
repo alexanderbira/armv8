@@ -12,6 +12,7 @@
 #include <string.h>
 
 #include "../common/const.h"
+#include "../common/error.h"
 #include "../common/ir/ir.h"
 
 #define INITIAL_LIST_SIZE 64

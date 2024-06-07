@@ -15,10 +15,12 @@ AssemblerState createState(void) {
     state.symbolTable = NULL;
 
     state.irList = calloc(INITIAL_LIST_SIZE, sizeof(IR));
+    assertFatalNotNull(state.irList, "<Memory> Unable to contiguously allocate [irList]!");
     state.irCount = 0;
     state.irMaxCount = INITIAL_LIST_SIZE;
 
     state.symbolTable = calloc(INITIAL_LIST_SIZE, sizeof(struct SymbolPair));
+    assertFatalNotNull(state.symbolTable, "<Memory> Unable to contiguously allocate [symbolTable]!");
     state.symbolCount = 0;
     state.symbolMaxCount = INITIAL_LIST_SIZE;
     return state;
@@ -68,6 +70,7 @@ void addMapping(AssemblerState *state, char *label, BitData address) {
     if (state->symbolCount >= state->symbolMaxCount) {
         // Exponential (doubling) scaling policy.
         state->symbolTable = realloc(state->symbolTable, state->symbolMaxCount * 2);
+        assertFatalNotNull(state->symbolTable, "<Memory> Unable to expand by re-allocate [symbolTable]!");
     }
 
     state->symbolTable[state->symbolCount++] = symbolPair;
@@ -97,6 +100,7 @@ void addIR(AssemblerState *state, IR ir) {
     if (state->irCount >= state->irMaxCount) {
         // Exponential (doubling) scaling policy.
         state->irList = realloc(state->irList, state->irMaxCount * 2);
+        assertFatalNotNull(state->irList, "<Memory> Unable to expand by re-allocate [irList]!");
     }
 
     state->irList[state->irCount++] = ir;

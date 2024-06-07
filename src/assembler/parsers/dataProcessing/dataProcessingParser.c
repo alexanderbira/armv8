@@ -50,6 +50,7 @@ IR parseDataProcessing(TokenisedLine *line, AssemblerState *state) {
     if (isAlias) {
         // Aliased instructions always have zero register as destination.
         char *zeroRegister = strdup((line->operands[0][0] == 'x') ? "x31" : "w31");
+        assertFatalNotNull(zeroRegister, "<Memory> Unable to duplicate [char *]!");
         char *oldMnemonic = line->mnemonic;
         int oldOperandCount = line->operandCount;
 
@@ -149,12 +150,15 @@ static void setLine(TokenisedLine *line, const char *newMnemonic, int newOperand
 
     free(line->mnemonic);
     line->mnemonic = strdup(newMnemonic);
+    assertFatalNotNull(line->mnemonic, "<Memory> Unable to duplicate [char *]!");
 
     // Duplicate [...] to get new operands.
     char **newOperands = malloc(newOperandCount * sizeof(char *));
+    assertFatalNotNull(newOperands, "<Memory> Unable to allocate [char **]!");
     for (int i = 0; i < newOperandCount; i++) {
         char *newOperand = va_arg(args, char *);
         newOperands[i] = strdup(newOperand);
+        assertFatalNotNull(newOperands[i], "<Memory> Unable to duplicate [char *]!");
     }
 
     // Dispose of old operands, and replace with new.

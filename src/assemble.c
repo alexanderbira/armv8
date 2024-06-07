@@ -36,6 +36,7 @@ int main(int argc, char **argv) {
             // Process as label if first character is valid.
             if (isalpha(line[0]) || line[0] == '_' || line[0] == '.') {
                 char *label = strdup(line);
+                assertFatalNotNull(label, "<Memory> Unable to duplicate [char *]!");
                 *strchr(label, ':') = '\0';
 
                 addMapping(&state, label, state.address);
