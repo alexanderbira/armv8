@@ -1,8 +1,8 @@
 ///
 /// emulate.c
-/// Emulate ARM64 code
+/// Emulates execution of an AArch64 binary file.
 ///
-/// Created by Jack Wong on 27/05/2024.
+/// Created by Konstantinos Gkoutzis on 23/05/24.
 ///
 
 #include "emulate.h"

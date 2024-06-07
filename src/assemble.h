@@ -1,6 +1,6 @@
 ///
 /// assemble.h
-/// The entrypoint to the assembler program.
+/// Assembles an AArch64 assembly source file.
 ///
 /// Created by Lancelot Liu on 28/05/2024.
 ///

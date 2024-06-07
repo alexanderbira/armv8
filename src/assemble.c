@@ -1,8 +1,8 @@
 ///
 /// assemble.c
-/// The entrypoint to the assembler program.
+/// Assembles an AArch64 assembly source file.
 ///
-/// Created by ??? on ???.
+/// Created by Konstantinos Gkoutzis on 23/05/24.
 ///
 
 #include "assemble.h"
