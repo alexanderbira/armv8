@@ -1,0 +1,120 @@
+\documentclass{ictex}
+\ictexConf{Group 5 (ab1223, bh1123, jw4723, ll4923)}{COMP40009}{CProject Checkpoint}
+
+\begin{document}
+
+\section{Overview} \vspace{-1em}
+
+We discuss here the architectural design, division of labour, reflections on our progress, as well as predictions for challenges to come in the development of the \inline{emulate} program.
+
+Passing mentions may be made to the components shared with the \inline{assemble} program; this is due to our architecture, and the fact that we have chosen to write both at the same time.
+
+\vspace{-1em} \section{Emulator Architecture} \vspace{-1em}
+
+Taking the specification's suggestion in \textbf{1.10.1 Assembler} to heart, we have chosen to model both \inline{emulate} and \inline{assemble} on a shared framework of internal/intermediate representations. These are surmised in code as \inline{IR}, and are roughly structured as:
+
+\begin{code}
+    /// common/ir/ir.h
+    typedef struct {
+        IRType type;
+        union { ... } ir;
+    } IR;
+\end{code}
+
+The emulator is therefore divided into \inline{decoders} and \inline{executors} for each instruction type, with respective signatures:
+
+\begin{code}
+    /// emulator/process.h
+    typedef IR (*Decoder)(Instruction instruction);
+    typedef void (*Executor)(IR *irObject, Registers regs, Memory mem);
+\end{code}
+
+From here on, emulating a program is simply done by repeatedly fetching, decoding, then executing instructions, terminating when the halt instruction is received. The main loop in \inline{emulate} is therefore (without providing all type signatures here):
+
+\begin{code}
+    /// emulate.c
+    BitData pcVal = getRegPC(registers);
+    Instruction instruction = readMem(memory, false, pcVal);
+
+    while (instruction != HALT) {
+        // Decode and execute.
+        IR ir = getDecodeFunction(instruction)(instruction);
+        getExecuteFunction(&ir)(&ir, registers, memory);
+
+        // Increment PC only when no branch or jump instructions applied.
+        if (pcVal == getRegPC(registers)) incRegPC(registers);
+
+        // Fetch next instruction
+        pcVal = getRegPC(registers);
+        instruction = readMem(memory, false, pcVal);
+    }
+\end{code}
+
+Lastly, the registers and memory each have functions which abstract their operations away from the executors, such as the above \inline{BitData readMem(Memory mem, bool as64, size\_t addr)} and \inline{void incRegPC(Registers regs)}. The registers are kept as a struct, roughly:
+
+\begin{code}
+/// A struct representing, virtually, a machine's register contents.
+typedef struct {
+    /// General purpose registers.
+    BitData gprs[NUM_GPRS];
+
+    /// Zero register. Always returns zero, ignores writes.
+    /// -- Not required since we will hardcode the value. --
+    /// uint64_t zr;
+
+    /// Program counter. Contains address of *current* instruction.
+    BitData pc;
+
+    /// Stack pointer.
+    BitData sp;
+
+    /// Program state register. Contains boolean flags.
+    PState pstate;
+} Registers_s;
+\end{code}
+
+along with the aforementioned functions which read and modify it, and where we hard-code the zero register. The memory is simply a \inline{(void *)} which we allocate using \inline{mmap}, allowing easy mapping from the target binary file to be emulated, and potential future extensions such as write-throughs. It, too, has functions which deal with reads and writes.
+
+It's worth mentioning that we have written common code to pretty-print and trace error messages, deal with generating and decomposing bit masks, and so on.
+
+\section{Assembler Reuse} \vspace{-1em}
+
+With the above intermediate representations (IRs), the assembler therefore requires a set of functions to parse assembly lines into their IR forms, then another set to translate the IRs into binary words. Apart from specific parsing logic, all structural aspects and constants are directly shared with the emulator, such as all the IR structs, bit masks, codes, and so on.
+
+\vspace{-1em} \section{Division of Labour} \vspace{-1em}
+
+After experimenting with the project's structure, we settled on three tasks:
+
+\begin{enumerate}
+    \item \textbf{Decode and Execute}, handled by \textit{Billy Highley} and \textit{Alexander Biraben-Renard}. These are grouped into one since we did not use the intermediate representations at first.
+    \item \textbf{System}, for functions that initialise, destroy, and otherwise deal with the virtual registers and memory, handled by \textit{Lancelot Liu}.
+    \item \textbf{IO}, for the main fetch-decode-execute cycle, reading and writing to files, and making sure everything ties together appropriately, handled by \textit{Jack Wong}.
+\end{enumerate}
+
+\vspace{1em} \begin{formal}
+    It is important to note that even though we had a clear set of tasks, everyone actively participated and contributed to everyone else's work; this dynamic was most important just before we passed all tests provided.
+\end{formal}
+
+Towards the end of the week, \textit{Lancelot Liu} and \textit{Jack Wong} began implementing parts of the assembler, while \textit{Alexander Biraben-Renard} and \textit{Billy Highley} continued to complete, debug, and optimise the emulator.
+
+All our work was coordinated either verbally or over Discord, and we regularly updated each other on our progress.
+
+\section{Reflections (incl. Challenges)}
+
+We feel the group is working well; all members are clear on their assigned tasks, and adhere to our Git guidelines.
+
+\vspace{1em} \begin{formal}
+    Merge requests are always merged by members who did not work on the branch, so that everyone is familiar with the code.
+\end{formal}
+
+As a result, we frequently ask each other for help, and have found pair programming useful, especially when debugging or reviewing merge requests.
+
+One thing we feel could have been improved is clarity on our contributing guidelines. We started writing code before agreeing on this, and hence had to spend extra time at the end refactoring, restructuring, and otherwise unifying the code and comments in the project.
+
+We also agree that the size of tasks initially assigned to group members were too broad. The emulator state and IO tasks were completed much faster than the decoding and execution for the different functions. We intend to work on smaller tasks from now on and merge more often to avoid issues such as large merge conflicts.
+
+We feel that parsing the assembly instructions will be challenging, and hence created an intermediate representation (IR) between assembly code and binary. This solution turned out to also be suitable as a bridge in between binary code and its execution, so was then fitted into our emulator to improve the overall architecture of our project.
+
+We've also created binary codes and masks along with helper functions to generate and use them. We plan on reusing these in the IR to binary translators for the assembler.
+
+\end{document}

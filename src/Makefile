@@ -23,10 +23,6 @@ ASSEMBLER_SRC_FILES = $(shell find $(SRC_DIR)/assembler/ -name '*.c') \
 EMULATOR_OBJ_FILES = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(EMULATOR_SRC_FILES))
 ASSEMBLER_OBJ_FILES = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(ASSEMBLER_SRC_FILES))
 
-# Targets
-EMULATOR_TARGET = emulate
-ASSEMBLER_TARGET = assemble
-
 all: assemble emulate
 
 # Link emulator target

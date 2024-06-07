@@ -33,21 +33,19 @@ assemble
 *.nav
 *.toc
 
-# === Compilation Remnants ===
+# Compilation Remnants
 *
 !/**/
 !*.*
 *.dsYM/
 src/obj
 
-# === Testing Binary Object Files ===
-# If you need these, get them yourself!
+# === Generated Files ===
 *.bin
+*.s
 
-# === CBuild ===
+# === Personal Configs ===
 .cbuild
-
-# === IntelliJ IDEs ===
 .idea
 
 # === macOS Files ===
