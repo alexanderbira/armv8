@@ -30,7 +30,7 @@ uint64_t bitShift(enum ShiftType shiftType, uint8_t operand, uint64_t rm, bool s
             break;
 
         case ROR:
-            shifted =  rm >> operand;
+            shifted = rm >> operand;
             shifted += (rm << (sf ? (64 - operand) : (32 - operand)));
             break;
 

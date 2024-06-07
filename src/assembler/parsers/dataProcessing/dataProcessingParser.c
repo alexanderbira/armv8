@@ -61,7 +61,7 @@ IR parseDataProcessing(TokenisedLine *line, AssemblerState *state) {
                 ? setLine(line, (*(line->mnemonic + 2) == 'p') ? "subs" : "adds", 3,
                           zeroRegister, line->operands[0], line->operands[1])
                 : setLine(line, (*(line->mnemonic + 2) == 'p') ? "subs" : "adds", 4,
-                            zeroRegister, line->operands[0], line->operands[1], line->operands[2]);
+                          zeroRegister, line->operands[0], line->operands[1], line->operands[2]);
                 break;
 
             case 'n':
@@ -70,7 +70,7 @@ IR parseDataProcessing(TokenisedLine *line, AssemblerState *state) {
                 ? setLine(line, (strlen(line->mnemonic) == 3) ? "sub" : "subs", 3,
                           line->operands[0], zeroRegister, line->operands[1])
                 : setLine(line, (strlen(line->mnemonic) == 3) ? "sub" : "subs", 4,
-                            line->operands[0], zeroRegister, line->operands[1], line->operands[2]);
+                          line->operands[0], zeroRegister, line->operands[1], line->operands[2]);
                 break;
 
             case 't':
@@ -79,7 +79,7 @@ IR parseDataProcessing(TokenisedLine *line, AssemblerState *state) {
                 ? setLine(line, "ands", 3,
                           zeroRegister, line->operands[0], line->operands[1])
                 : setLine(line, "ands", 4,
-                            zeroRegister, line->operands[0], line->operands[1], line->operands[2]);
+                          zeroRegister, line->operands[0], line->operands[1], line->operands[2]);
                 break;
 
             case 'm':
@@ -90,7 +90,7 @@ IR parseDataProcessing(TokenisedLine *line, AssemblerState *state) {
                         ? setLine(line, "orn", 3,
                                   line->operands[0], zeroRegister, line->operands[1])
                         : setLine(line, "orn", 4,
-                                    line->operands[0], zeroRegister, line->operands[1], line->operands[2]);
+                                  line->operands[0], zeroRegister, line->operands[1], line->operands[2]);
                         break;
 
                     case 'o':

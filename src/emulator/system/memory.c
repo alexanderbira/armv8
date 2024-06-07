@@ -84,6 +84,6 @@ void writeMem(Memory memory, bool as64, size_t addr, BitData value) {
 
     uint8_t *ptr = (uint8_t *) memory + addr;
     for (size_t i = 0; i < writeSize; i++) {
-        ptr[i] = (uint8_t)(value >> 8 * i);
+        ptr[i] = (uint8_t) (value >> 8 * i);
     }
 }

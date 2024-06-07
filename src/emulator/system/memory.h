@@ -22,7 +22,7 @@
 #include "../../common/error.h"
 
 /// Type definition representing virtual memory.
-typedef void* Memory;
+typedef void *Memory;
 
 Memory allocMemFromFile(char *path);
 
