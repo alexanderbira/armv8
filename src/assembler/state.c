@@ -8,7 +8,7 @@
 #include "state.h"
 
 /// Creates a fresh [AssemblerState].
-/// @return A fresh [AssemblerState].
+/// @returns A fresh [AssemblerState].
 AssemblerState createState(void) {
     AssemblerState state;
     state.address = 0x0;
@@ -60,13 +60,10 @@ void destroyState(AssemblerState state) {
 /// @param state The [AssemblerState] to be modified.
 /// @param label The name of the label.
 /// @param address The address of the label.
-void addMapping(AssemblerState *state, const char *label, BitData address) {
-    // Magic Number: 16 == sizeof(BitData) + sizeof(LabelAddressPair *)
-    // I.e., the two fixed sized components of a [LabelAddressPair].
+void addMapping(AssemblerState *state, char *label, BitData address) {
     struct SymbolPair symbolPair;
-    char *copiedLabel = strdup(label);
     symbolPair.address = address;
-    symbolPair.label = copiedLabel;
+    symbolPair.label = label;
 
     if (state->symbolCount >= state->symbolMaxCount) {
         // Exponential (doubling) scaling policy.
@@ -93,6 +90,9 @@ BitData *getMapping(AssemblerState *state, const char *label) {
     return NULL;
 }
 
+/// Adds an [IR] to the given [AssemblerState]
+/// @param state The [AssemblerState] to modify.
+/// @param ir The [IR] to add.
 void addIR(AssemblerState *state, IR ir) {
     if (state->irCount >= state->irMaxCount) {
         // Exponential (doubling) scaling policy.

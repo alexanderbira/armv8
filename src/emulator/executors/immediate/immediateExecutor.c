@@ -7,26 +7,17 @@
 
 #include "immediateExecutor.h"
 
-/// Execute an immediate group instruction
-/// @param immIR IR for an immediate instruction
-/// @param regs Pointer to registers
-void executeImmediate(IR *irObject, Registers regs, unused Memory mem) {
-
+/// Executes an [IR] of a data processing (immediate) instruction.
+/// @param immediateIR The instruction to execute.
+/// @param registers The current virtual registers.
+/// @param memory The current virtual memory.
+void executeImmediate(IR *irObject, Registers registers, unused Memory memory) {
     assertFatal(irObject->type == IMMEDIATE,
-                "[executeImmediate] Received non-immediate instruction!");
+                "Received non-immediate instruction!");
 
     Immediate_IR *immediateIR = &irObject->ir.immediateIR;
 
-    switch (immediateIR->opi) {
-
-        case IMMEDIATE_ARITHMETIC:
-            arithmeticExecute(immediateIR, regs);
-            break;
-
-        case IMMEDIATE_WIDE_MOVE:
-            wideMoveExecute(immediateIR, regs);
-            break;
-
-    }
-
+    immediateIR->opi == IMMEDIATE_ARITHMETIC
+    ? arithmeticExecute(immediateIR, registers)
+    : wideMoveExecute(immediateIR, registers);
 }

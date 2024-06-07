@@ -10,16 +10,20 @@
 /// Get the corresponding [IRExecutor] for this [irObject].
 /// @param ir The intermediate representation of the instruction
 /// @returns The corresponding [IRExecutor].
-IRExecutor getExecuteFunction(IR *irObject) {
+Executor getExecuteFunction(IR *irObject) {
     switch (irObject->type) {
         case IMMEDIATE:
             return executeImmediate;
+
         case REGISTER:
             return executeRegister;
+
         case LOAD_STORE:
             return executeLoadStore;
+
         case BRANCH:
             return executeBranch;
+
         default:
             throwFatal("[getExecuteFunction] Invalid IR!");
     }
@@ -28,7 +32,7 @@ IRExecutor getExecuteFunction(IR *irObject) {
 /// Get the corresponding [BinaryParser] for this [instruction].
 /// @param ir The intermediate representation of the instruction
 /// @returns The corresponding [BinaryParser].
-BinaryParser getDecodeFunction(const Instruction instruction) {
+Decoder getDecodeFunction(const Instruction instruction) {
     Component op0 = decompose(instruction, OP0_M);
     if ((op0 & OP0_IMMEDIATE_M) == OP0_IMMEDIATE_C) {
         return decodeImmediate;
@@ -40,5 +44,5 @@ BinaryParser getDecodeFunction(const Instruction instruction) {
         return decodeBranch;
     }
 
-    throwFatal("[getDecodeFunction] Invalid binary instruction!");
+    throwFatal("Invalid binary instruction!");
 }

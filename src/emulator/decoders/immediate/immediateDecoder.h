@@ -1,6 +1,6 @@
 ///
 /// immediateDecoder.h
-/// Decodes an immediate instruction into its IR.
+/// ecodes a binary word of a data processing (immediate) instruction to its [IR].
 ///
 /// Created by Billy Highley on 27/05/2024.
 ///

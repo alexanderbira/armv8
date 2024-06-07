@@ -1,6 +1,6 @@
 ///
 /// registerDecoder.h
-/// Decodes a register instruction into its IR
+/// Decodes a binary word of a data processing (register) instruction to its [IR].
 ///
 /// Created by Billy Highley on 30/05/2024.
 ///

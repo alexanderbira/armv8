@@ -1,6 +1,6 @@
 ///
 /// branch.h
-/// The intermediate representation of a Branch instruction.
+/// The intermediate representation of a branch instruction.
 ///
 /// Created by Alexander Biraben-Renard on 29/05/2024.
 ///
@@ -13,52 +13,52 @@
 #include "../const.h"
 #include "types.h"
 
-/// Baseline mask for a Branch (Unconditional) instruction.
-#define BRANCH_UNCONDITIONAL_C        b(0001_0100_0000_0000_0000_0000_0000_0000)
+/// Baseline code for a branch (unconditional) instruction.
+#define BRANCH_UNCONDITIONAL_B        b(0001_0100_0000_0000_0000_0000_0000_0000)
 
-/// Number of bits in [simm26] in a Branch (Unconditional) instruction.
-#define BRANCH_UNCONDITIONAL_SIMM26_N 26
-
-/// Baseline mask for a Branch (Register) instruction.
-#define BRANCH_REGISTER_C             b(1101_0110_0001_1111_0000_0000_0000_0000)
-
-/// Number of bits to shift for [xn] in a Branch (Register) instruction.
-#define BRANCH_REGISTER_XN_S          5
-
-/// Number of bits in [xn] in a Branch (Register) instruction.
-#define BRANCH_REGISTER_XN_N          5
-
-/// Baseline mask for a Branch (Conditional) instruction.
-#define BRANCH_CONDITIONAL_C          b(0101_0100_0000_0000_0000_0000_0000_0000)
-
-/// Number of bits to shift for [simm19] in a Branch (Conditional) instruction.
-#define BRANCH_CONDITIONAL_SIMM19_S   5
-
-/// Number of bits in [simm19] in a Branch (Conditional) instruction.
-#define BRANCH_CONDITIONAL_SIMM19_N   19
-
-/// Number of bits in [cond] in a Branch (Conditional) instruction.
-#define BRANCH_CONDITIONAL_COND_N     4
-
-/// Mask for a Branch (Unconditional) instruction.
+/// Mask for a branch (unconditional) instruction.
 #define BRANCH_UNCONDITIONAL_M        maskl(6)
 
-/// Mask for a Branch (Register) instruction.
-#define BRANCH_REGISTER_M             ((maskl(22)) | (maskr(5)))
+/// Number of bits in [simm26] in a branch (unconditional) instruction.
+#define BRANCH_UNCONDITIONAL_SIMM26_N 26
 
-/// Mask for a Branch (Unconditional) instruction.
-#define BRANCH_CONDITIONAL_M          ((maskl(8)) | (mask(4, 4)))
-
-/// Mask for [simm26] in a Branch (Unconditional) instruction.
+/// Mask for [simm26] in a branch (unconditional) instruction.
 #define BRANCH_UNCONDITIONAL_SIMM26_M maskr(26)
 
-/// Mask for [xn] in a Branch (Register) instruction.
+/// Baseline code for a branch (register) instruction.
+#define BRANCH_REGISTER_B             b(1101_0110_0001_1111_0000_0000_0000_0000)
+
+/// Mask for a branch (register) instruction.
+#define BRANCH_REGISTER_M             ((maskl(22)) | (maskr(5)))
+
+/// Number of bits to shift for [xn] in a branch (register) instruction.
+#define BRANCH_REGISTER_XN_S          5
+
+/// Number of bits in [xn] in a branch (register) instruction.
+#define BRANCH_REGISTER_XN_N          5
+
+/// Mask for [xn] in a branch (register) instruction.
 #define BRANCH_REGISTER_XN_M          mask(9, 5)
 
-/// Mask for [simm26] in a Branch (Conditional) instruction.
+/// Baseline code for a branch (conditional) instruction.
+#define BRANCH_CONDITIONAL_B          b(0101_0100_0000_0000_0000_0000_0000_0000)
+
+/// Mask for a branch (conditional) instruction.
+#define BRANCH_CONDITIONAL_M          ((maskl(8)) | (mask(4, 4)))
+
+/// Number of bits to shift for [simm19] in a branch (conditional) instruction.
+#define BRANCH_CONDITIONAL_SIMM19_S   5
+
+/// Number of bits in [simm19] in a branch (conditional) instruction.
+#define BRANCH_CONDITIONAL_SIMM19_N   19
+
+/// Mask for [simm26] in a branch (conditional) instruction.
 #define BRANCH_CONDITIONAL_SIMM19_M   mask(23, 5)
 
-/// Mask for [cond] in a Branch (Conditional) instruction.
+/// Number of bits in [cond] in a branch (conditional) instruction.
+#define BRANCH_CONDITIONAL_COND_N     4
+
+/// Mask for [cond] in a branch (conditional) instruction.
 #define BRANCH_CONDITIONAL_COND_M     maskr(4)
 
 /// The intermediate representation of a branch instruction.
@@ -76,7 +76,7 @@ typedef struct {
         BRANCH_REGISTER,
 
         /// Conditional: branch to [Literal] when [PState] satisfies the given condition.
-        /// \code (if condition) PC := PC + offset \endcode
+        /// If condition, \code PC := PC + offset \endcode
         BRANCH_CONDITIONAL,
 
     } type;
