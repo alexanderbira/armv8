@@ -20,7 +20,7 @@ Instruction translateLoadStore(IR *irObject, AssemblerState *state) {
     switch (loadStore->type) {
 
         case SINGLE_DATA_TRANSFER:
-            result  = LOAD_STORE_DATA_B;
+            result = LOAD_STORE_DATA_B;
             result |= loadStore->sf << LOAD_STORE_SF_S;
             result |= loadStore->data.sdt.u << LOAD_STORE_DATA_U_S;
             result |= loadStore->data.sdt.l << LOAD_STORE_DATA_L_S;
@@ -50,7 +50,7 @@ Instruction translateLoadStore(IR *irObject, AssemblerState *state) {
             break;
 
         case LOAD_LITERAL:
-            result  = LOAD_STORE_LITERAL_B;
+            result = LOAD_STORE_LITERAL_B;
             result |= loadStore->sf << LOAD_STORE_SF_S;
 
             Literal *simm19 = &loadStore->data.simm19;

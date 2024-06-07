@@ -18,6 +18,6 @@ void executeImmediate(IR *irObject, Registers registers, unused Memory memory) {
     Immediate_IR *immediateIR = &irObject->ir.immediateIR;
 
     immediateIR->opi == IMMEDIATE_ARITHMETIC
-        ? arithmeticExecute(immediateIR, registers)
-        : wideMoveExecute(immediateIR, registers);
+    ? arithmeticExecute(immediateIR, registers)
+    : wideMoveExecute(immediateIR, registers);
 }

@@ -57,27 +57,27 @@ IR parseDataProcessing(TokenisedLine *line, AssemblerState *state) {
             case 'c':
                 // cmp -> subs, cmn -> adds
                 oldOperandCount == 2
-                    ? setLine(line, (*(line->mnemonic + 2) == 'p') ? "subs" : "adds", 3,
-                            zeroRegister, line->operands[0], line->operands[1])
-                    : setLine(line, (*(line->mnemonic + 2) == 'p') ? "subs" : "adds", 4,
+                ? setLine(line, (*(line->mnemonic + 2) == 'p') ? "subs" : "adds", 3,
+                          zeroRegister, line->operands[0], line->operands[1])
+                : setLine(line, (*(line->mnemonic + 2) == 'p') ? "subs" : "adds", 4,
                             zeroRegister, line->operands[0], line->operands[1], line->operands[2]);
                 break;
 
             case 'n':
                 // neg -> sub, negs -> subs
                 oldOperandCount == 2
-                    ? setLine(line, (strlen(line->mnemonic) == 3) ? "sub" : "subs", 3,
-                            line->operands[0], zeroRegister, line->operands[1])
-                    : setLine(line, (strlen(line->mnemonic) == 3) ? "sub" : "subs", 4,
+                ? setLine(line, (strlen(line->mnemonic) == 3) ? "sub" : "subs", 3,
+                          line->operands[0], zeroRegister, line->operands[1])
+                : setLine(line, (strlen(line->mnemonic) == 3) ? "sub" : "subs", 4,
                             line->operands[0], zeroRegister, line->operands[1], line->operands[2]);
                 break;
 
             case 't':
                 // tst -> ands
                 oldOperandCount == 2
-                    ? setLine(line, "ands", 3,
-                            zeroRegister, line->operands[0], line->operands[1])
-                    : setLine(line, "ands", 4,
+                ? setLine(line, "ands", 3,
+                          zeroRegister, line->operands[0], line->operands[1])
+                : setLine(line, "ands", 4,
                             zeroRegister, line->operands[0], line->operands[1], line->operands[2]);
                 break;
 
@@ -86,9 +86,9 @@ IR parseDataProcessing(TokenisedLine *line, AssemblerState *state) {
                     case 'v':
                         // mvn -> orn
                         oldOperandCount == 2
-                            ? setLine(line, "orn", 3,
-                                    line->operands[0], zeroRegister, line->operands[1])
-                            : setLine(line, "orn", 4,
+                        ? setLine(line, "orn", 3,
+                                  line->operands[0], zeroRegister, line->operands[1])
+                        : setLine(line, "orn", 4,
                                     line->operands[0], zeroRegister, line->operands[1], line->operands[2]);
                         break;
 
@@ -112,7 +112,8 @@ IR parseDataProcessing(TokenisedLine *line, AssemblerState *state) {
                 }
                 break;
 
-            default: throwFatal("Instruction mnemonic is invalid!");
+            default:
+                throwFatal("Instruction mnemonic is invalid!");
         }
 
         // Zero register was not freed by [setLine].

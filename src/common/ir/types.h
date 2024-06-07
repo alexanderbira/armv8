@@ -10,38 +10,42 @@
 
 #include <stdint.h>
 
-/// An intermediate representation of a <literal>, which is either a signed immediate
-/// or a label reference. This is needed since not all label references are backwards.
+/// Literal IR.
 typedef struct {
-    /// Whether this literal is a label or not.
+
+    /// Whether this [Literal] is a label: 0 for false, 1 for true.
     bool isLabel;
 
-    /// The contents of the literal.
+    /// The contents.
     union LiteralData {
-        /// The string label of the literal.
+
+        /// The string label.
         char *label;
 
-        /// The signed immediate of the literal.
+        /// The signed immediate value.
         int32_t immediate;
+
     } data;
+
 } Literal;
 
-/// The opcode for arithmetic operations.
+/// The operation code for arithmetic operations.
+/// @attention Ordinal values represent binary encodings.
 enum ArithmeticType {
 
-    /// The operation code for add.
+    /// Add.
     /// \code Rd := Rn + Op2 \endcode
     ADD,
 
-    /// The operation code for add, setting flags.
+    /// Add (set flags).
     /// \code Rd := Rn + Op2 \endcode
     ADDS,
 
-    /// The operation code for subtract.
+    /// Subtract.
     /// \code Rd := Rn - Op2 \endcode
     SUB,
 
-    /// The operation code for subtract, setting flags.
+    /// Subtract (set flags).
     /// \code Rd := Rn - Op2 \endcode
     SUBS
 

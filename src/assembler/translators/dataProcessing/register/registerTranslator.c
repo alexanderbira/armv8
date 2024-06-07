@@ -33,7 +33,8 @@ Instruction translateRegister(IR *irObject, unused AssemblerState *state) {
                     << REGISTER_OPC_S;
             break;
 
-        case MULTIPLY: break;
+        case MULTIPLY:
+            break;
     }
 
     // Load [M], trust since Boolean.

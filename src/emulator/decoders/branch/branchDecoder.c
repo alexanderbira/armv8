@@ -42,7 +42,8 @@ IR decodeBranch(Instruction word) {
                 conditional.condition = condition;
                 break;
 
-            default:throwFatal("Invalid condition code!");
+            default:
+                throwFatal("Invalid condition code!");
         }
 
         branchIR = (Branch_IR) { .type = BRANCH_CONDITIONAL, .data.conditional = conditional };

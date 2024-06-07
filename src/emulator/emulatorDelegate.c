@@ -12,15 +12,20 @@
 /// @returns The corresponding [IRExecutor].
 Executor getExecuteFunction(IR *irObject) {
     switch (irObject->type) {
-        case IMMEDIATE: return executeImmediate;
+        case IMMEDIATE:
+            return executeImmediate;
 
-        case REGISTER: return executeRegister;
+        case REGISTER:
+            return executeRegister;
 
-        case LOAD_STORE: return executeLoadStore;
+        case LOAD_STORE:
+            return executeLoadStore;
 
-        case BRANCH: return executeBranch;
+        case BRANCH:
+            return executeBranch;
 
-        default: throwFatal("[getExecuteFunction] Invalid IR!");
+        default:
+            throwFatal("[getExecuteFunction] Invalid IR!");
     }
 }
 

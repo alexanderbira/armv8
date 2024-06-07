@@ -74,7 +74,7 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
 
             uint8_t ra = parseRegisterStr(line->operands[3], NULL);
             bool x = (registerIR.opc.multiply == MSUB);
-            registerIR.operand = (union RegisterOperand) { .multiply = (struct Multiply) { x, ra } };
+            registerIR.operand = (union RegisterOperand) { .multiply = (struct Multiply) { x, ra }};
             break;
 
         case 'o':
@@ -96,7 +96,8 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
             registerIR.opc.arithmetic = (strlen(line->mnemonic) == 3) ? SUB : SUBS;
             break;
 
-        default: throwFatal("Invalid mnemonic!");
+        default:
+            throwFatal("Invalid mnemonic!");
     }
 
     // Deal with shift, if present.
@@ -112,11 +113,16 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
                 shift = (shiftAndValue[0][2] == 'l') ? LSL : LSR;
                 break;
 
-            case 'a': shift = ASR; break;
+            case 'a':
+                shift = ASR;
+                break;
 
-            case 'r': shift = ROR; break;
+            case 'r':
+                shift = ROR;
+                break;
 
-            default: throwFatal("Shift supplied was not a shift.");
+            default:
+                throwFatal("Shift supplied was not a shift.");
         }
 
         uint8_t imm6 = parseImmediateStr(shiftAndValue[1]);
