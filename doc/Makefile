@@ -1,48 +1,23 @@
-########################################
+CHECKPOINT = checkpoint
 
-CHECKPONT=Checkpoint
-REPORT=Report
-LATEXMK=latexmk
-OUTDIR=out
+REPORT = report
 
-LATEXMKRC=.latexmkrc
+TO_CLEAN = $(wildcard ./*.aux) \
+	$(wildcard ./*.fdb_latexmk) \
+	$(wildcard ./*.fls) \
+	$(wildcard ./*.listing) \
+	$(wildcard ./*.log) \
+	$(wildcard ./*.xdv) \
 
-LATEXMKFLAGS=\
-	--pdf\
-	--shell-escape\
-	-synctex=1\
-	-interaction=nonstopmode\
-	-file-line-error\
-	-outdir=$(OUTDIR)
-
-LATEXMKCLEANFLAGS=\
-	-outdir=$(OUTDIR)\
-	-c
-
-.PHONY: all clean pvc cleanall report checkpoint cleanpdf
+.PHONY: all checkpoint cleanpdf clean
 
 all: report checkpoint
 
-report: $(REPORT).pdf
-checkpoint: $(CHECKPONT).pdf
+checkpoint:
+	latexmk --xelatex --shell-escape $(CHECKPOINT).tex
 
-# Starts a server that watches for changes in the tex files and recompiles
-pvc:
-	$(LATEXMK) $(LATEXMKFLAGS) -pvc $(ROOT_FILE).tex
+report:
+	latexmk --xelatex --shell-escape $(REPORT).tex
 
-%.pdf: %.tex
-	$(LATEXMK) $(LATEXMKFLAGS) $<
-	mv $(OUTDIR)/$@ .
-
-# filters out pdf from the clean (in case you want them there ☺ )
-TO_CLEAN = $(filter-out %.pdf, $(wildcard $(OUTDIR)/*))
 clean:
-	$(RM) -rf $(TO_CLEAN)
-
-cleanpdf:
-	$(RM) *.pdf
-
-cleanall: cleanpdf
-	$(RM) -rf $(OUTDIR)
-
-
+	$(RM) -r $(TO_CLEAN) _minted-checkpoint
