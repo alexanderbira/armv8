@@ -8,17 +8,14 @@
 #include "error.h"
 
 void assertFatal_(bool condition, char message[], char *file, int line, const char *func) {
-    if (!condition) {
-        fprintf(stderr, "[%s] %s\n", func, message);
-        fprintf(stderr, "   In file %s, line %d \n\n", file, line);
-        perror("    Fatal Error");
-        exit(-1);
-    }
+    if (!condition) throwFatal_(message, file, line, func);
 }
 
 noreturn void throwFatal_(char message[], char *file, int line, const char *func) {
     fprintf(stderr, "[%s] %s\n", func, message);
-    fprintf(stderr, "   In file %s, line %d", file, line);
-    perror("    Fatal Error");
+    fprintf(stderr, "    In file %s, line %d\n", file, line);
+    if (errno) {
+        fprintf(stderr, "    With description: %s\n", strerror(errno));
+    }
     exit(-1);
 }

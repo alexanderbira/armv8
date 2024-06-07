@@ -8,10 +8,12 @@
 #ifndef COMMON_ERROR_H
 #define COMMON_ERROR_H
 
+#include <errno.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdnoreturn.h>
+#include <string.h>
 
 /// Assert [__CONDITION__], pretty-printing an error and exiting if it is not met.
 /// @param __CONDITION__ The condition to assert over.
