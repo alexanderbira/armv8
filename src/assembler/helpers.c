@@ -191,7 +191,7 @@ uint64_t parseImmediateStr(const char *operand) {
 void parseOffset(union LiteralData *data, AssemblerState *state) {
     // Calculate offset, then divide by 4 to encode.
     BitData *immediate = getMapping(state, data->label);
-    assertFatal(immediate != NULL, "No mapping for label!");
+    assertFatalNotNull(immediate, "No mapping for label!");
 
     data->immediate = *immediate;
     data->immediate -= state->address;

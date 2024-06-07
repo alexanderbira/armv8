@@ -49,7 +49,7 @@ IR parseBranch(TokenisedLine *line, unused AssemblerState *state) {
             BranchEntry target = (BranchEntry) { line->subMnemonic, .code = -1 }; // Throwaway target.
             BranchEntry *condition = bsearch(&target, mappings,
                                              sizeof(mappings) / sizeof(BranchEntry), sizeof(BranchEntry), branchCmp);
-            assertFatal(condition != NULL, "Invalid condition code!");
+            assertFatalNotNull(condition, "Invalid condition code!");
 
             branchIR = (Branch_IR) {
                     .type = BRANCH_CONDITIONAL,

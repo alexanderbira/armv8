@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
                 continue;
             };
 
-            throwFatal("[main] Found invalid label!");
+            throwFatal("Found invalid label!");
         }
 
         // By default, handle either directive or instructions.
