@@ -13,7 +13,7 @@
 #include "loadStore.h"
 #include "branch.h"
 
-/// The type of instruction represented.
+/// The type of [IR] represented.
 typedef enum {
 
     /// Data processing (immediate).
@@ -28,8 +28,8 @@ typedef enum {
     /// Branch.
     BRANCH,
 
-    /// (Not Instruction) Direct to Memory Constant
-    CONSTANT
+    /// Direct to memory constant.
+    DIRECTIVE
 
 } IRType;
 

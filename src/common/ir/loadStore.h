@@ -113,19 +113,19 @@
 /// Mask for [rt] (target register) in a Load-Store instruction.
 #define LOAD_STORE_RT_M                   mask(4, 0)
 
-/// The intermediate representation of a load and store instruction.
+/// The intermediate representation of a load/store instruction.
 typedef struct {
 
     /// [1b] The bit-width of all the registers in the instruction: 0 for 32-bit, 1 for 64-bit.
     bool sf;
 
-    /// The type of the load and store instruction.
+    /// The type of load/store instruction.
     enum LoadStoreType {
 
-        /// The single data transfer instruction type.
+        /// Single data transfer.
         SINGLE_DATA_TRANSFER,
 
-        /// The load literal instruction type.
+        /// Load literal.
         LOAD_LITERAL,
 
     } type;
@@ -145,20 +145,24 @@ typedef struct {
             /// The addressing mode.
             enum AddressingMode {
 
+                /// Unsigned immediate offset.
                 /// Form: \code [xn, #<imm>] \endcode
                 /// Transfer address: \code Xn + imm \endcode
                 UNSIGNED_OFFSET,
 
+                /// Pre-indexed.
                 /// Form: \code [xn, #<simm>]! \endcode
                 /// Transfer address: \code Xn + simm \endcode
                 /// Write-back: \code Xn := Xn + simm \endcode
                 PRE_INDEXED,
 
+                /// Post-indexed.
                 /// Form: \code [xn], #<simm> \encode
                 /// Transfer address: \code Xn \endcode
                 /// Write-back: \code Xn + simm \endcode
                 POST_INDEXED,
 
+                /// Register offset.
                 /// In the form of \code [xn, xm] \endcode
                 /// Transfer address: \code Xn + Xm \endcode
                 REGISTER_OFFSET,

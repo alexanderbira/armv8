@@ -13,16 +13,16 @@
 /// Literal IR.
 typedef struct {
 
-    /// Whether this literal is a label: 0 for false, 1 for true.
+    /// Whether this [Literal] is a label: 0 for false, 1 for true.
     bool isLabel;
 
-    /// The contents of the literal.
+    /// The contents.
     union LiteralData {
 
-        /// The string label of the literal.
+        /// The string label.
         char *label;
 
-        /// The signed immediate value of the literal.
+        /// The signed immediate value.
         int32_t immediate;
 
     } data;
@@ -32,19 +32,19 @@ typedef struct {
 /// The operation code for arithmetic operations.
 enum ArithmeticType {
 
-    /// The operation code for add.
+    /// Add.
     /// \code Rd := Rn + Op2 \endcode
     ADD,
 
-    /// The operation code for add, setting flags.
+    /// Add (set flags).
     /// \code Rd := Rn + Op2 \endcode
     ADDS,
 
-    /// The operation code for subtract.
+    /// Subtract.
     /// \code Rd := Rn - Op2 \endcode
     SUB,
 
-    /// The operation code for subtract, setting flags.
+    /// Subtract (set flags).
     /// \code Rd := Rn - Op2 \endcode
     SUBS
 

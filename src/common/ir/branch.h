@@ -67,16 +67,16 @@ typedef struct {
     /// The type of branch instruction.
     enum BranchType {
 
-        /// Unconditional: branch to the address encoded by Literal.
+        /// Unconditional: branch to the address encoded by [Literal].
         /// \code PC := PC + offset \endcode
         BRANCH_UNCONDITIONAL,
 
-        /// Register: branch to the address in Xn.
+        /// Register: branch to the address in [xn].
         /// \code PC := Xn \endcode
         BRANCH_REGISTER,
 
-        /// Conditional: branch to Literal when PSTATE satisfies cond.
-        /// \code (if cond) PC := PC + offset \endcode
+        /// Conditional: branch to [Literal] when [PState] satisfies the given condition.
+        /// \code (if condition) PC := PC + offset \endcode
         BRANCH_CONDITIONAL,
 
     } type;
@@ -84,16 +84,16 @@ typedef struct {
     /// The constants for the branch instruction.
     union Branch {
 
-        /// [26b] Used to encode the signed offset (simm26 * 4) to apply to the PC for the unconditional branch.
+        /// [26b] Used to encode the signed offset ([simm26] * 4) to apply to [pc] for the unconditional branch.
         Literal simm26;
 
-        /// [5b] The encoding of Xn, the register containing the address to jump to for the register branch.
+        /// [5b] The encoding of the Xn register containing the address to jump to for the register branch.
         uint8_t xn;
 
         /// [23b] The constants for the conditional branch instruction.
         struct Conditional {
 
-            /// [19b] Used to encode the signed offset (simm19 * 4) to apply to the PC for the conditional branch.
+            /// [19b] Used to encode the signed offset ([simm19] * 4) to apply to [pc] for the conditional branch.
             Literal simm19;
 
             /// [4b] The condition for the conditional branch instruction.
@@ -124,7 +124,7 @@ typedef struct {
                 LE = 0xD,
 
                 /// Always branches (no condition).
-                /// Any PSTATE flags.
+                /// Any [PState] flags.
                 AL = 0xE
 
             } condition;

@@ -92,27 +92,27 @@
 /// The intermediate representation of a data processing (immediate) instruction.
 typedef struct {
 
-    /// [1b] The bit-width of all the registers in the instruction: 0 for 32-bit, 1 for 64-bit.
+    /// [1b] Encodes the bit-width of all the registers in the instruction: 0 for 32-bit, 1 for 64-bit.
     bool sf;
 
     /// [2b] The operation code, determining the operation to be performed.
     union ImmediateOpCode {
 
-        /// The operation code for arithmetic operations.
+        /// Arithmetic operation.
         enum ArithmeticType arithmeticType;
 
-        /// The operation code for wide move operations.
+        /// Wide move operation.
         enum WideMoveType {
 
-            /// The operation code for move wide with NOT.
+            /// Move wide with NOT.
             /// \code Rd := ~Op \endcode
             MOVN,
 
-            /// The operation code for move wide with zero.
+            /// Move wide with zero.
             /// \code Rd := Op \endcode
             MOVZ = 0x2,
 
-            /// The operation code for move wide with keep.
+            /// Move wide with keep.
             /// \code Rd[shift + 15:shift] := imm16 \endcode
             MOVK
 
@@ -120,13 +120,13 @@ typedef struct {
 
     } opc;
 
-    /// [3b] The type of data processing operation, determining the interpretation of opc and operand.
+    /// [3b] The type of data processing operation.
     enum ImmediateType {
 
-        /// The encoding for an arithmetic operation.
+        /// Arithmetic operation.
         IMMEDIATE_ARITHMETIC = 0x2,
 
-        /// The encoding for a wide move operation.
+        /// Wide move operation.
         IMMEDIATE_WIDE_MOVE  = 0x5
 
     } opi;
@@ -134,24 +134,24 @@ typedef struct {
     /// [18b] The value to be saved into the register.
     union ImmediateOperand {
 
-        /// The operand for arithmetic operations.
+        /// Arithmetic operation.
         struct Arithmetic {
 
-            /// [1b] Determines whether to left shift imm12 by 12-bits.
+            /// [1b] Determines whether to left shift [imm12] by 12-bits.
             bool sh;
 
             /// [12b] 12-bit unsigned immediate value.
             uint16_t imm12;
 
-            /// [5b] The first operand register.
+            /// [5b] The encoding of the Rn register.
             uint8_t rn;
 
         } arithmetic;
 
-        /// The operand for wide move operations.
+        /// Wide move operation.
         struct WideMove {
 
-            /// [2b] Encodes a logical left shift by hw * 16 bits.
+            /// [2b] Encodes a logical left shift by [hw] * 16 bits.
             uint8_t hw;
 
             /// [16b] 16-bit unsigned immediate value to move.
@@ -161,7 +161,7 @@ typedef struct {
 
     } operand;
 
-    /// [5b] The encoding of the destination register.
+    /// [5b] The encoding of the Rd register.
     uint8_t rd;
 
 } Immediate_IR;
