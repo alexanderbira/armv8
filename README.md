@@ -55,3 +55,18 @@ $ make assemble
 $ ./assemble ../programs/led_blink.s kernel8.img
 ```
 3. Transfer `kernel8.img` to the RPi
+
+### 5 - Generating the Reports
+
+In `/doc`:
+
+```shell
+make [checkpoint|report|all]
+make clean
+```
+
+You may need to install `pygmentize`:
+
+```shell
+pip install Pygments
+```
