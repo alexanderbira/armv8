@@ -4,7 +4,7 @@ This is **Group 5**'s repository for the Arm-v8 Emulator/Assembler/Extended proj
 
 ## Quick-Start
 
-These guides assume you're working in the `src` directory:
+Guides 1-3 assume you're working in the `src` directory:
 ```shell
 $ cd src
 ```
@@ -32,7 +32,7 @@ $ ./emulate add01.bin add01.out
 ```shell
 $ make assemble
 ```
-2. Run the emulator:
+2. Run the assembler:
 ```shell
 $ ./assemble <file_in> <file_out>
 ```
@@ -56,17 +56,21 @@ $ ./assemble ../programs/led_blink.s kernel8.img
 ```
 3. Transfer `kernel8.img` to the RPi
 
-### 5 - Generating the Reports
-
-In `/doc`:
-
-```shell
-make [checkpoint|report|all]
-make clean
-```
+### 4 - Generating the Reports
 
 You may need to install `pygmentize`:
 
 ```shell
-pip install Pygments
+$ pip install Pygments
+```
+
+1. `cd` to `doc`
+```shell
+$ cd doc
+```
+
+2. Make the documents
+```shell
+$ make [checkpoint|report|all]
+$ make clean
 ```
