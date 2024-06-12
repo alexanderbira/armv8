@@ -30,6 +30,9 @@ int main(int argc, char **argv) {
         // Check if line is blank.
         if (strlen(trimmedLine) == 0) continue;
 
+        // Check if line is a comment.
+        if (strncmp(trimmedLine, "//", 2) == 0) continue;
+
         // Check if line is a label.
         char *colon = strchr(line, ':');
         if (colon != NULL) {
