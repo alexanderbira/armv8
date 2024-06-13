@@ -34,10 +34,6 @@ assemble
 *.toc
 
 # Compilation Remnants
-*
-!/**/
-!*.*
-*.dsYM/
 src/obj
 
 # === Generated Files ===
