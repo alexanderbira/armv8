@@ -12,11 +12,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../../../common/error.h"
-#include "../../../common/ir/ir.h"
-#include "../../state.h"
-#include "immediate/immediateParser.h"
-#include "register/registerParser.h"
+#include "error.h"
+#include "helpers.h"
+#include "immediateParser.h"
+#include "ir.h"
+#include "registerParser.h"
+#include "state.h"
 
 IR parseDataProcessing(TokenisedLine *line, unused AssemblerState *state);
 

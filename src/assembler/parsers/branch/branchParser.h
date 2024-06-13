@@ -11,9 +11,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../../../common/error.h"
-#include "../../helpers.h"
-#include "../../state.h"
+#include "error.h"
+#include "helpers.h"
+#include "ir.h"
+#include "state.h"
 
 /// An entry in an [enum BranchCondition] table.
 typedef struct {

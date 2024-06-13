@@ -8,8 +8,8 @@
 #ifndef EMULATOR_MULTIPLY_EXECUTOR_H
 #define EMULATOR_MULTIPLY_EXECUTOR_H
 
-#include "../../../common/ir/register.h"
-#include "../../system/registers.h"
+#include "register.h"
+#include "registers.h"
 
 void multiplyExecute(Register_IR *registerIR, Registers regs);
 

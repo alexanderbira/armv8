@@ -10,7 +10,7 @@ CFLAGS        ?= -std=c17 -g \
 	-Wall -Werror -Wextra --pedantic-errors \
 	-D_DEFAULT_SOURCE $(INCLUDE_FLAGS) \
 
-.PHONY: all cleanObject clean setup test testEmulate testAssemble help
+.PHONY: all cleanObject cleanReport clean setup test testEmulate testAssemble help
 
 # Find all source files
 EMULATOR_SOURCES = $(shell find $(SOURCE_DIR)/emulator/ -name '*.c') \
@@ -72,15 +72,17 @@ $(OBJECT_DIR)/%.o: $(SOURCE_DIR)/%.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) $(CXXFLAGS) -c $< -o $@
 
-report:
+report:                                     ## Generates checkpoint and final reports.
 	cd $(REPORT_DIR) && latexmk --xelatex --shell-escape $(REPORT).tex
 	cd $(REPORT_DIR) && latexmk --xelatex --shell-escape $(CHECKPOINT).tex
 
 cleanReport:                                ## Clean report generation files.
-	$(RM) -r $(TO_CLEAN) _minted-checkpoint
+	$(RM) -r $(TO_CLEAN) $(REPORT_DIR)/_minted-checkpoint
+	$(RM) $(REPORT_DIR)/$(REPORT).pdf
+	$(RM) $(REPORT_DIR)/$(CHECKPOINT).pdf
 
 cleanObject:                                ## Clean all object files.
 	$(RM) -r $(OBJECT_DIR)
 
-clean: cleanObject cleanReport              ## Clean executables, object files, and LaTeX files.
+clean: cleanObject                          ## Clean executables and object files.
 	$(RM) emulate assemble

@@ -11,6 +11,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "types.h"
+
 /// Mask for [sf] in a load/store instruction.
 #define LOAD_STORE_SF_M                   mask(30, 30)
 

@@ -11,7 +11,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "../const.h"
+#include "const.h"
 #include "types.h"
 
 /// Baseline code for a data processing (register) instruction.

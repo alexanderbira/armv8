@@ -8,11 +8,11 @@
 #ifndef ASSEMBLER_REGISTER_TRANSLATOR_H
 #define ASSEMBLER_REGISTER_TRANSLATOR_H
 
-#include "../../../../common/const.h"
-#include "../../../../common/error.h"
-#include "../../../../common/ir/ir.h"
-#include "../../../helpers.h"
-#include "../../../state.h"
+#include "const.h"
+#include "error.h"
+#include "helpers.h"
+#include "ir.h"
+#include "state.h"
 
 Instruction translateRegister(IR *irObject, unused AssemblerState *state);
 

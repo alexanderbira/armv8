@@ -10,11 +10,11 @@
 
 #include <string.h>
 
-#include "../../../common/const.h"
-#include "../../../common/error.h"
-#include "../../../common/ir/ir.h"
-#include "../../helpers.h"
-#include "../../state.h"
+#include "const.h"
+#include "error.h"
+#include "helpers.h"
+#include "ir.h"
+#include "state.h"
 
 Instruction translateBranch(IR *irObject, AssemblerState *state);
 

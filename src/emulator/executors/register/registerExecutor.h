@@ -8,14 +8,14 @@
 #ifndef EMULATOR_REGISTER_EXECUTOR_H
 #define EMULATOR_REGISTER_EXECUTOR_H
 
-#include "../../../common/const.h"
-#include "../../../common/error.h"
-#include "../../../common/ir/ir.h"
-#include "../../system/registers.h"
-#include "../../system/memory.h"
 #include "arithmeticRegisterExecutor.h"
 #include "bitLogicExecutor.h"
+#include "const.h"
+#include "error.h"
+#include "ir.h"
+#include "memory.h"
 #include "multiplyExecutor.h"
+#include "registers.h"
 
 void executeRegister(IR *irObject, Registers registers, unused Memory memory);
 

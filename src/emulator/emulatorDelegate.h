@@ -8,19 +8,19 @@
 #ifndef EMULATOR_PROCESS_H
 #define EMULATOR_PROCESS_H
 
-#include "../common/const.h"
-#include "../common/error.h"
-#include "../common/ir/ir.h"
-#include "decoders/immediate/immediateDecoder.h"
-#include "decoders/register/registerDecoder.h"
-#include "decoders/loadStore/loadStoreDecoder.h"
-#include "decoders/branch/branchDecoder.h"
-#include "executors/immediate/immediateExecutor.h"
-#include "executors/register/registerExecutor.h"
-#include "executors/loadStore/loadStoreExecutor.h"
-#include "executors/branch/branchExecutor.h"
-#include "system/memory.h"
-#include "system/registers.h"
+#include "branchDecoder.h"
+#include "branchExecutor.h"
+#include "const.h"
+#include "error.h"
+#include "immediateDecoder.h"
+#include "immediateExecutor.h"
+#include "ir.h"
+#include "loadStoreDecoder.h"
+#include "loadStoreExecutor.h"
+#include "memory.h"
+#include "registerDecoder.h"
+#include "registerExecutor.h"
+#include "registers.h"
 
 /// OP0 Mask
 #define OP0_M            mask(28, 25)

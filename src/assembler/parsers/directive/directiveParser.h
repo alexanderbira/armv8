@@ -11,10 +11,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../../../common/error.h"
-#include "../../../common/ir/ir.h"
-#include "../../helpers.h"
-#include "../../state.h"
+#include "error.h"
+#include "helpers.h"
+#include "ir.h"
+#include "state.h"
 
 IR parseDirective(TokenisedLine *tokenisedLine, unused AssemblerState *state);
 
