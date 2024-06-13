@@ -8,11 +8,11 @@
 #ifndef EMULATOR_WIDE_MOVE_EXECUTOR_H
 #define EMULATOR_WIDE_MOVE_EXECUTOR_H
 
-#include "../../../common/const.h"
-#include "../../../common/error.h"
-#include "../../../common/ir/ir.h"
-#include "../../system/memory.h"
-#include "../../system/registers.h"
+#include "const.h"
+#include "error.h"
+#include "ir.h"
+#include "memory.h"
+#include "registers.h"
 
 void wideMoveExecute(Immediate_IR *immediateIR, Registers regs);
 

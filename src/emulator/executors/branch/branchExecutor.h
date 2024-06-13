@@ -10,11 +10,11 @@
 
 #include <stdint.h>
 
-#include "../../../common/const.h"
-#include "../../../common/error.h"
-#include "../../../common/ir/ir.h"
-#include "../../system/registers.h"
-#include "../../system/memory.h"
+#include "const.h"
+#include "error.h"
+#include "ir.h"
+#include "memory.h"
+#include "registers.h"
 
 void executeBranch(IR *irObject, Registers registers, unused Memory memory);
 

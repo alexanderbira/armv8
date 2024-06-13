@@ -8,6 +8,7 @@
 #ifndef IR_TYPES_H
 #define IR_TYPES_H
 
+#include <stdbool.h>
 #include <stdint.h>
 
 /// Literal IR.

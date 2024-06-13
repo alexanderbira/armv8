@@ -13,8 +13,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "assembler/assemblerDelegate.h"
-#include "assembler/helpers.h"
+#include "assemblerDelegate.h"
+#include "helpers.h"
 
 int main(int argc, char **argv);
 

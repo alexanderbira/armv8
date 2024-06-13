@@ -8,9 +8,9 @@
 #ifndef EMULATOR_IMMEDIATE_DECODER_H
 #define EMULATOR_IMMEDIATE_DECODER_H
 
-#include "../../../common/const.h"
-#include "../../../common/error.h"
-#include "../../../common/ir/ir.h"
+#include "const.h"
+#include "error.h"
+#include "ir.h"
 
 IR decodeImmediate(Instruction word);
 

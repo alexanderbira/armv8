@@ -9,7 +9,6 @@ INCLUDE_FLAGS := $(addprefix -I,$(INCLUDE_DIRS))
 CFLAGS        ?= -std=c17 -g \
 	-Wall -Werror -Wextra --pedantic-errors \
 	-D_DEFAULT_SOURCE $(INCLUDE_FLAGS) \
-	-I
 
 .PHONY: all cleanObject cleanReport clean setup test testEmulate testAssemble help
 
