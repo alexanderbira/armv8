@@ -12,8 +12,8 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "../../common/const.h"
-#include "../../common/error.h"
+#include "const.h"
+#include "error.h"
 
 /// A struct representing the PSTATE fields of the processor.
 typedef struct {

@@ -8,6 +8,7 @@
 #ifndef IR_H
 #define IR_H
 
+#include "const.h"
 #include "immediate.h"
 #include "register.h"
 #include "loadStore.h"

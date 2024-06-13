@@ -18,8 +18,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "../../common/const.h"
-#include "../../common/error.h"
+#include "const.h"
+#include "error.h"
 
 /// Type definition representing virtual memory.
 typedef void *Memory;
