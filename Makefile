@@ -9,8 +9,9 @@ INCLUDE_FLAGS := $(addprefix -I,$(INCLUDE_DIRS))
 CFLAGS        ?= -std=c17 -g \
 	-Wall -Werror -Wextra --pedantic-errors \
 	-D_DEFAULT_SOURCE $(INCLUDE_FLAGS) \
+	-I
 
-.PHONY: all cleanObject clean
+.PHONY: all cleanObject cleanReport clean setup test testEmulate testAssemble help
 
 # Find all source files
 EMULATOR_SOURCES = $(shell find $(SOURCE_DIR)/emulator/ -name '*.c') \
@@ -25,6 +26,18 @@ ASSEMBLER_SOURCES = $(shell find $(SOURCE_DIR)/assembler/ -name '*.c') \
 EMULATOR_OBJECTS = $(patsubst $(SOURCE_DIR)/%.c, $(OBJECT_DIR)/%.o, $(EMULATOR_SOURCES))
 ASSEMBLER_OBJECTS = $(patsubst $(SOURCE_DIR)/%.c, $(OBJECT_DIR)/%.o, $(ASSEMBLER_SOURCES))
 
+# Report stuff
+REPORT_DIR = doc
+CHECKPOINT = checkpoint
+REPORT = report
+
+TO_CLEAN = $(wildcard $(REPORT_DIR)/*.aux) \
+	$(wildcard $(REPORT_DIR)/*.fdb_latexmk) \
+	$(wildcard $(REPORT_DIR)/*.fls) \
+	$(wildcard $(REPORT_DIR)/*.listing) \
+	$(wildcard $(REPORT_DIR)/*.log) \
+	$(wildcard $(REPORT_DIR)/*.xdv) \
+
 # Self documentation command modified from
 # https://stackoverflow.com/a/64996042/16731239
 help:                                       ## Show this help.
@@ -32,13 +45,13 @@ help:                                       ## Show this help.
 
 all: assemble emulate cleanObject           ## Compile all programs and clean object files.
 
-setupTest:                                  ## Setup test environment.
+setup:                                      ## Setup test and report compilation environment.
 	git submodule update --recursive
 	cd testsuite && ./install
 	mkdir -p testsuite/solution
 	pwd
-	cd testsuite/solution && ln -s ../../assemble ./assemble
-	cd testsuite/solution && ln -s ../../emulate ./emulate
+	cd testsuite/solution && ln -sf ../../assemble ./assemble
+	cd testsuite/solution && ln -sf ../../emulate ./emulate
 
 test: all                                   ## Run all tests.
 	cd testsuite && ./run -p
@@ -60,8 +73,17 @@ $(OBJECT_DIR)/%.o: $(SOURCE_DIR)/%.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) $(CXXFLAGS) -c $< -o $@
 
+report:                                     ## Generates checkpoint and final reports.
+	cd $(REPORT_DIR) && latexmk --xelatex --shell-escape $(REPORT).tex
+	cd $(REPORT_DIR) && latexmk --xelatex --shell-escape $(CHECKPOINT).tex
+
+cleanReport:                                ## Clean report generation files.
+	$(RM) -r $(TO_CLEAN) $(REPORT_DIR)/_minted-checkpoint
+	$(RM) $(REPORT_DIR)/$(REPORT).pdf
+	$(RM) $(REPORT_DIR)/$(CHECKPOINT).pdf
+
 cleanObject:                                ## Clean all object files.
 	$(RM) -r $(OBJECT_DIR)
 
-clean: cleanObject                          ## Clean executables and object files.
+clean: cleanObject cleanReport              ## Clean executables, object files, and LaTeX files.
 	$(RM) emulate assemble
