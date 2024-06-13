@@ -11,19 +11,19 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../common/ir/ir.h"
+#include "branchParser.h"
+#include "branchTranslator.h"
+#include "dataProcessingParser.h"
+#include "directiveParser.h"
+#include "directiveTranslator.h"
+#include "immediateParser.h"
+#include "immediateTranslator.h"
+#include "ir.h"
+#include "loadStoreParser.h"
+#include "loadStoreTranslator.h"
+#include "registerParser.h"
+#include "registerTranslator.h"
 #include "state.h"
-#include "parsers/branch/branchParser.h"
-#include "parsers/dataProcessing/dataProcessingParser.h"
-#include "parsers/dataProcessing/immediate/immediateParser.h"
-#include "parsers/dataProcessing/register/registerParser.h"
-#include "parsers/directive/directiveParser.h"
-#include "parsers/loadStore/loadStoreParser.h"
-#include "translators/branch/branchTranslator.h"
-#include "translators/dataProcessing/immediate/immediateTranslator.h"
-#include "translators/dataProcessing/register/registerTranslator.h"
-#include "translators/directive/directiveTranslator.h"
-#include "translators/loadStore/loadStoreTranslator.h"
 
 /// A function which processes a tokenised assembly instruction into its intermediate representation.
 typedef IR (*Parser)(TokenisedLine *line, AssemblerState *state);

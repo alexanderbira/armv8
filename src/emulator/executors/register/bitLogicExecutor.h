@@ -8,9 +8,9 @@
 #ifndef EMULATOR_BIT_LOGIC_EXECUTOR_H
 #define EMULATOR_BIT_LOGIC_EXECUTOR_H
 
-#include "../../../common/ir/register.h"
-#include "../../system/registers.h"
 #include "bitwiseShifts.h"
+#include "register.h"
+#include "registers.h"
 
 void bitLogicExecute(Register_IR *registerIR, Registers registers);
 

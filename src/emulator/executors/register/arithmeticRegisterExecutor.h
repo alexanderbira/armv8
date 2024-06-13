@@ -8,10 +8,10 @@
 #ifndef EMULATOR_ARITHMETIC_REGISTER_EXECUTOR_H
 #define EMULATOR_ARITHMETIC_REGISTER_EXECUTOR_H
 
-#include "../../../common/ir/register.h"
-#include "../../system/registers.h"
-#include "../conditions.h"
 #include "bitwiseShifts.h"
+#include "conditions.h"
+#include "register.h"
+#include "registers.h"
 
 void arithmeticRegisterExecute(Register_IR *registerIR, Registers registers);
 

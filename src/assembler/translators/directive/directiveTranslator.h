@@ -8,9 +8,9 @@
 #ifndef ASSEMBLER_DIRECTIVE_TRANSLATOR_H
 #define ASSEMBLER_DIRECTIVE_TRANSLATOR_H
 
-#include "../../../common/error.h"
-#include "../../../common/ir/ir.h"
-#include "../../state.h"
+#include "error.h"
+#include "ir.h"
+#include "state.h"
 
 Instruction translateDirective(IR *irObject, unused AssemblerState *state);
 
