@@ -1,0 +1,6 @@
+[submodule "TestSuite"]
+	path = testsuite
+	url = https://gitlab.doc.ic.ac.uk/teaching-fellows/armv8_testsuite
+[submodule "testsuite"]
+	path = testsuite
+	url = https://gitlab.doc.ic.ac.uk/teaching-fellows/armv8_testsuite
