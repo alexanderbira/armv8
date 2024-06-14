@@ -6,8 +6,8 @@ INCLUDE_DIRS  := $(shell find $(SOURCE_DIR)/assembler -type d) \
 	$(shell find $(SOURCE_DIR)/emulator -type d) \
 	$(shell find $(SOURCE_DIR)/common -type d) \
 	$(shell find $(EXTENSION_DIR) -type d)
-INCLUDE_FLAGS := -I./ncurses/include $(addprefix -I,$(INCLUDE_DIRS))
-LDFLAGS       := -L./ncurses/lib 
+INCLUDE_FLAGS := -I~/ncurses/include $(addprefix -I,$(INCLUDE_DIRS))
+LDFLAGS       := -L~/ncurses/lib
 # No -D_POSIX_SOURCE as that interferes with MAP_ANONYMOUS in <sys/mman.h>!
 CFLAGS        ?= -std=c17 -g \
 	-Wall -Werror -Wextra --pedantic-errors \
