@@ -35,6 +35,8 @@ assemble
 
 # Compilation Remnants
 src/obj
+ncurses
+testsuite
 
 # === Generated Files ===
 *.bin

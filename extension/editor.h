@@ -8,4 +8,6 @@
 #ifndef EXTENSION_EDITOR_H
 #define EXTENSION_EDITOR_H
 
-#endif //EXTENSION_EDITOR_H
+#include "ncurses.h"
+
+#endif // EXTENSION_EDITOR_H

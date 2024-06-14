@@ -1,29 +1,35 @@
 CC            ?= gcc
 SOURCE_DIR    := src
+EXTENSION_DIR := extension
 OBJECT_DIR    := obj
 INCLUDE_DIRS  := $(shell find $(SOURCE_DIR)/assembler -type d) \
 	$(shell find $(SOURCE_DIR)/emulator -type d) \
-	$(shell find $(SOURCE_DIR)/common -type d)
+	$(shell find $(SOURCE_DIR)/common -type d) \
+	$(shell find $(EXTENSION_DIR) -type d)
 INCLUDE_FLAGS := $(addprefix -I,$(INCLUDE_DIRS))
 # No -D_POSIX_SOURCE as that interferes with MAP_ANONYMOUS in <sys/mman.h>!
 CFLAGS        ?= -std=c17 -g \
 	-Wall -Werror -Wextra --pedantic-errors \
-	-D_DEFAULT_SOURCE $(INCLUDE_FLAGS) \
+	-D_DEFAULT_SOURCE $(INCLUDE_FLAGS)
 
 .PHONY: all cleanObject cleanReport clean setup test testEmulate testAssemble help
 
 # Find all source files
-EMULATOR_SOURCES = $(shell find $(SOURCE_DIR)/emulator/ -name '*.c') \
-	$(wildcard $(SOURCE_DIR)/common/*.c) \
-	$(wildcard $(SOURCE_DIR)/emulate.c)
+COMMON_SOURCES    := $(wildcard $(SOURCE_DIR)/common/*.c)
 
-ASSEMBLER_SOURCES = $(shell find $(SOURCE_DIR)/assembler/ -name '*.c') \
-	$(wildcard $(SOURCE_DIR)/common/*.c) \
-	$(wildcard $(SOURCE_DIR)/assemble.c)
+EMULATOR_SOURCES  := $(shell find $(SOURCE_DIR)/emulator/ -name '*.c')
+EMULATOR_MAIN     := $(wildcard $(SOURCE_DIR)/emulate.c)
+
+ASSEMBLER_SOURCES := $(shell find $(SOURCE_DIR)/assembler/ -name '*.c')
+ASSEMBLER_MAIN    := $(wildcard $(SOURCE_DIR)/assemble.c)
+
+GRIM_SOURCES      := $(shell find $(EXTENSION_DIR)/ -name '*.c')
 
 # Object files list
-EMULATOR_OBJECTS = $(patsubst $(SOURCE_DIR)/%.c, $(OBJECT_DIR)/%.o, $(EMULATOR_SOURCES))
-ASSEMBLER_OBJECTS = $(patsubst $(SOURCE_DIR)/%.c, $(OBJECT_DIR)/%.o, $(ASSEMBLER_SOURCES))
+COMMON_OBJECTS    := $(patsubst $(SOURCE_DIR)/%.c, $(OBJECT_DIR)/%.o, $(COMMON_SOURCES))
+EMULATOR_OBJECTS  := $(patsubst $(SOURCE_DIR)/%.c, $(OBJECT_DIR)/%.o, $(EMULATOR_SOURCES))
+ASSEMBLER_OBJECTS := $(patsubst $(SOURCE_DIR)/%.c, $(OBJECT_DIR)/%.o, $(ASSEMBLER_SOURCES))
+GRIM_OBJECTS      := $(patsubst $(EXTENSION_DIR)/%.c, $(OBJECT_DIR)/%.o, $(GRIM_SOURCES))
 
 # Report stuff
 REPORT_DIR = doc
@@ -42,47 +48,64 @@ TO_CLEAN = $(wildcard $(REPORT_DIR)/*.aux) \
 help:                                       ## Show this help.
 	@egrep -h '\s##\s' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m  %-15s\033[0m %s\n", $$1, $$2}'
 
-all: assemble emulate cleanObject           ## Compile all programs and clean object files.
+all: assemble emulate grim cleanObject      ## Compile all programs and clean object files.
 
-setup:                                      ## Setup test and report compilation environment.
-	git submodule update --recursive
-	cd testsuite && ./install
-	mkdir -p testsuite/solution
-	pwd
-	cd testsuite/solution && ln -sf ../../assemble ./assemble
-	cd testsuite/solution && ln -sf ../../emulate ./emulate
+setup:                                      ## Setup build, test, and report compilation environment.
+	@echo "=== Setting Up Submodules ==="
+	@git submodule init
+	@git submodule update --recursive
+	@echo "=== Building ncurses Submodule ==="
+	# There are easier platform specific ways of doing this, but we
+	# opted for a full "manual" install to achieve maximum portability.
+	# ATTENTION: Modifies ~/local.
+	cd ncurses && ./configure --prefix $(shell pwd)/ncurses \
+    		&& make \
+    		&& make install
+	@echo "=== Setting Up Testsuite ==="
+	@cd testsuite && ./install
+	@echo "=== Sym-linking Binaries to Testsuite ==="
+	@mkdir -p testsuite/solution
+	@cd testsuite/solution && ln -sf ../../assemble ./assemble
+	@cd testsuite/solution && ln -sf ../../emulate ./emulate
 
-test: all                                   ## Run all tests.
-	cd testsuite && ./run -p
+test: all                                                                        ## Run all tests.
+	@cd testsuite && ./run -p
 
-testEmulate: emulate                        ## Run emulator tests.
-	cd testsuite && ./run -Ep
+testEmulate: emulate                                                             ## Run emulator tests.
+	@cd testsuite && ./run -Ep
 
-testAssemble: assemble                      ## Run assembler tests.
-	cd testsuite && ./run -Ap
+testAssemble: assemble                                                           ## Run assembler tests.
+	@cd testsuite && ./run -Ap
 
-emulate: $(EMULATOR_OBJECTS)                ## Compile the emulator.
+emulate: $(COMMON_OBJECTS) $(EMULATOR_OBJECTS) $(EMULATOR_MAIN)                  ## Compile the emulator.
 	$(CC) $(CFLAGS) -o $@ $^
 
-assemble: $(ASSEMBLER_OBJECTS)              ## Compile the assembler.
+assemble: $(COMMON_OBJECTS) $(ASSEMBLER_OBJECTS) $(ASSEMBLER_MAIN)               ## Compile the assembler.
 	$(CC) $(CFLAGS) -o $@ $^
+
+grim: $(COMMON_OBJECTS) $(EMULATOR_OBJECTS) $(ASSEMBLER_OBJECTS) $(GRIM_OBJECTS) ## Compile GRim. (The extension)
+	$(CC) -lncurses $(CFLAGS) -o $@ $^
 
 # Compile rules for all .c files
 $(OBJECT_DIR)/%.o: $(SOURCE_DIR)/%.c
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) $(CXXFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
-report:                                     ## Generates checkpoint and final reports.
+$(OBJECT_DIR)/%.o: $(EXTENSION_DIR)/%.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+report:                                                                         ## Generates checkpoint and final reports.
 	cd $(REPORT_DIR) && latexmk --xelatex --shell-escape $(REPORT).tex
 	cd $(REPORT_DIR) && latexmk --xelatex --shell-escape $(CHECKPOINT).tex
 
-cleanReport:                                ## Clean report generation files.
+cleanReport:                                                                    ## Clean report generation files.
 	$(RM) -r $(TO_CLEAN) $(REPORT_DIR)/_minted-checkpoint
 	$(RM) $(REPORT_DIR)/$(REPORT).pdf
 	$(RM) $(REPORT_DIR)/$(CHECKPOINT).pdf
 
-cleanObject:                                ## Clean all object files.
+cleanObject:                                                                    ## Clean all object files.
 	$(RM) -r $(OBJECT_DIR)
 
-clean: cleanObject                          ## Clean executables and object files.
-	$(RM) emulate assemble
+clean: cleanObject                                                              ## Clean executables and object files.
+	$(RM) emulate assemble grim

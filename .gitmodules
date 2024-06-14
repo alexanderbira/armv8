@@ -1,6 +1,6 @@
-[submodule "TestSuite"]
-	path = testsuite
-	url = https://gitlab.doc.ic.ac.uk/teaching-fellows/armv8_testsuite
 [submodule "testsuite"]
 	path = testsuite
-	url = https://gitlab.doc.ic.ac.uk/teaching-fellows/armv8_testsuite
+	url = git@gitlab.doc.ic.ac.uk:teaching-fellows/armv8_testsuite.git
+[submodule "ncurses"]
+	path = ncurses
+	url = git@github.com:mirror/ncurses.git
