@@ -3,4 +3,4 @@
 	url = git@gitlab.doc.ic.ac.uk:teaching-fellows/armv8_testsuite.git
 [submodule "ncurses"]
 	path = ncurses
-	url = git@github.com:mirror/ncurses.git
+	url = https://github.com/mirror/ncurses.git

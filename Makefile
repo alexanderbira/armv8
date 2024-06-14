@@ -6,7 +6,8 @@ INCLUDE_DIRS  := $(shell find $(SOURCE_DIR)/assembler -type d) \
 	$(shell find $(SOURCE_DIR)/emulator -type d) \
 	$(shell find $(SOURCE_DIR)/common -type d) \
 	$(shell find $(EXTENSION_DIR) -type d)
-INCLUDE_FLAGS := $(addprefix -I,$(INCLUDE_DIRS))
+INCLUDE_FLAGS := -I./ncurses/include $(addprefix -I,$(INCLUDE_DIRS))
+LDFLAGS       := -L./ncurses/lib 
 # No -D_POSIX_SOURCE as that interferes with MAP_ANONYMOUS in <sys/mman.h>!
 CFLAGS        ?= -std=c17 -g \
 	-Wall -Werror -Wextra --pedantic-errors \
@@ -58,7 +59,10 @@ setup:                                      ## Setup build, test, and report com
 	# There are easier platform specific ways of doing this, but we
 	# opted for a full "manual" install to achieve maximum portability.
 	# ATTENTION: Modifies ~/local.
-	cd ncurses && ./configure --prefix $(shell pwd)/ncurses \
+	cd ncurses \
+		&& ./configure --prefix $(shell eval echo ~$(USER))/ncurses \
+			--disable-root-access --without-cxx-binding --without-manpages --without-progs \
+			--without-tests --without-cxx --without-ada \
     		&& make \
     		&& make install
 	@echo "=== Setting Up Testsuite ==="
@@ -84,7 +88,7 @@ assemble: $(COMMON_OBJECTS) $(ASSEMBLER_OBJECTS) $(ASSEMBLER_MAIN)              
 	$(CC) $(CFLAGS) -o $@ $^
 
 grim: $(COMMON_OBJECTS) $(EMULATOR_OBJECTS) $(ASSEMBLER_OBJECTS) $(GRIM_OBJECTS) ## Compile GRim. (The extension)
-	$(CC) -lncurses $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ -lncurses
 
 # Compile rules for all .c files
 $(OBJECT_DIR)/%.o: $(SOURCE_DIR)/%.c
@@ -109,3 +113,7 @@ cleanObject:                                                                    
 
 clean: cleanObject                                                              ## Clean executables and object files.
 	$(RM) emulate assemble grim
+
+deepclean: clean
+	$(RM) -r ncurses
+	$(RM) -r testsuite
