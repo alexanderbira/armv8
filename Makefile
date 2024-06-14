@@ -6,8 +6,7 @@ INCLUDE_DIRS  := $(shell find $(SOURCE_DIR)/assembler -type d) \
 	$(shell find $(SOURCE_DIR)/emulator -type d) \
 	$(shell find $(SOURCE_DIR)/common -type d) \
 	$(shell find $(EXTENSION_DIR) -type d)
-INCLUDE_FLAGS := -I~/ncurses/include $(addprefix -I,$(INCLUDE_DIRS))
-LDFLAGS       := -L~/ncurses/lib
+INCLUDE_FLAGS := $(addprefix -I,$(INCLUDE_DIRS))
 # No -D_POSIX_SOURCE as that interferes with MAP_ANONYMOUS in <sys/mman.h>!
 CFLAGS        ?= -std=c17 -g \
 	-Wall -Werror -Wextra --pedantic-errors \
@@ -55,16 +54,6 @@ setup:                                                                          
 	@echo "=== Setting Up Submodules ==="
 	@git submodule init
 	@git submodule update --recursive
-	@echo "=== Building ncurses Submodule ==="
-	# There are easier platform specific ways of doing this, but we
-	# opted for a full "manual" install to achieve maximum portability.
-	# ATTENTION: Modifies ~/local.
-	cd ncurses \
-		&& ./configure --prefix $(shell eval echo ~$(USER))/ncurses \
-			--disable-root-access --without-cxx-binding --without-manpages --without-progs \
-			--without-tests --without-cxx --without-ada \
-    		&& make \
-    		&& make install
 	@echo "=== Setting Up Testsuite ==="
 	@cd testsuite && ./install
 	@echo "=== Sym-linking Binaries to Testsuite ==="

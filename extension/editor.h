@@ -10,4 +10,6 @@
 
 #include "ncurses.h"
 
+int main(void);
+
 #endif // EXTENSION_EDITOR_H

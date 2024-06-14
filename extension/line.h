@@ -15,17 +15,24 @@
 
 typedef struct {
     char *content;
-    int   length;
-    int   capacity;
+    int length;
+    int capacity;
 } Line;
 
-void  removeCharAt(Line *line, int index);
-void  removeChar(Line *line);
-void  insertCharAt(Line *line, char toInsert, int index);
-void  insertChar(Line *line, char toInsert);
-void  insertStrAt(Line *line, char *toInsert, int index);
-void  insertStr(Line *line, char *toInsert);
-void  freeLine(Line *line);
-Line *initialiseLine();
+void removeCharAt(Line *line, int index);
+
+void removeChar(Line *line);
+
+void insertCharAt(Line *line, char toInsert, int index);
+
+void insertChar(Line *line, char toInsert);
+
+void insertStrAt(Line *line, char *toInsert, int index);
+
+void insertStr(Line *line, char *toInsert);
+
+void freeLine(Line *line);
+
+Line *initialiseLine(void);
 
 #endif //EXTENSION_LINE_H

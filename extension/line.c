@@ -82,7 +82,7 @@ void insertChar(Line *line, char toInsert) {
 void insertStrAt(Line *line, char *toInsert, int index) {
     assert(index >= 0);
     assert(index < line->length);
-    size_t length = strlen(toInsert);
+    int length = strlen(toInsert);
     while (line->length + length >= line->capacity) {
         increaseCapacity(line);
     }
@@ -108,13 +108,13 @@ void freeLine(Line *line) {
 
 /// Initialise an empty [Line].
 /// @return A pointer to a new empty [Line].
-Line *initialiseLine() {
+Line *initialiseLine(void) {
     Line *line = malloc(sizeof(Line));
     assert(line != NULL);
     line->content = malloc(sizeof(char) * 1);
     assert(line->content != NULL);
     line->content[0] = '\0';
-    line->length     = 1;
-    line->capacity   = 1;
+    line->length = 1;
+    line->capacity = 1;
     return line;
 }
