@@ -13,26 +13,33 @@
 #include <string.h>
 #include <stdio.h>
 
+#define INITIAL_LINE_SIZE 8
+
+/// Implementation of a gap buffer. In GRim, this is used as a line buffer.
 typedef struct {
-    char *content;
-    int length;
-    int capacity;
+    /// The buffer contents.
+    char *buffer;
+
+    /// The total size of the buffer.
+    size_t size;
+
+    /// The start of the gap, zero-indexed.
+    size_t gapStart;
+
+    /// The end of the gap, zero-indexed.
+    size_t gapEnd;
 } Line;
 
-void removeCharAt(Line *line, int index);
-
-void removeChar(Line *line);
-
-void insertCharAt(Line *line, char toInsert, int index);
-
-void insertChar(Line *line, char toInsert);
-
-void insertStrAt(Line *line, char *toInsert, int index);
-
-void insertStr(Line *line, char *toInsert);
+Line *initialiseLine(const char *content);
 
 void freeLine(Line *line);
 
-Line *initialiseLine(void);
+void insertCharAt(Line *line, char toInsert, size_t index);
+
+void removeCharAt(Line *line, size_t index);
+
+void insertStrAt(Line *line, const char *toInsert, size_t index);
+
+void printLine(Line *line);
 
 #endif //EXTENSION_LINE_H
