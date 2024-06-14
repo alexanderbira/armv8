@@ -1,6 +1,6 @@
 ///
 /// file.h
-/// Utilities for the file data structure.
+/// Utilities for the [File] data structure.
 ///
 /// Created by Billy Highley and Alexander Biraben-Renard on 13/06/24.
 ///
@@ -8,19 +8,47 @@
 #ifndef EXTENSION_FILE_H
 #define EXTENSION_FILE_H
 
+#include "error.h"
 #include "line.h"
 
+#define INITIAL_FILE_SIZE 8
+
+/// Overall representation of a text file.
 typedef struct {
+    /// Path to the file.
+    char *path;
+
+    /// The individual lines of text.
     Line **lines;
-    int    length;
-    int    capacity;
+
+    /// The number of lines.
+    size_t size;
+
+    /// The total capacity of [lines].
+    size_t maxSize;
+
+    /// The current line of the cursor, zero-indexed.
+    size_t lineNumber;
+
+    /// The current cursor position within the line, zero-indexed.
+    size_t cursor;
 } File;
 
-void removeLineAt(File *file, int index);
-void removeLine(File *file);
-void insertLineAt(File *file, Line *toInsert, int index);
-void insertLine(File *file, Line *toInsert);
-void freeFile(File *file);
-File *initialiseFile();
+/// Special keys which control the editor.
+typedef enum {
+    ARROW_UP, ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT, RETURN, DELETE
+} ControlKey;
 
-#endif //EXTENSION_FILE_H
+typedef void (*LineCallback)(Line line);
+
+File *initialiseFile(const char *path);
+
+void freeFile(File *file);
+
+void addLine(File *file, const char *content, size_t afterLine);
+
+void deleteLine(File *file, size_t lineNumber);
+
+void handleAction(File *file, ControlKey key);
+
+#endif // EXTENSION_FILE_H

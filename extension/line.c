@@ -1,6 +1,6 @@
 ///
 /// line.c
-/// Utilities for the line data structure.
+/// Utilities for the [Line] data structure.
 ///
 /// Created by Billy Highley and Alexander Biraben-Renard on 13/06/24.
 ///
@@ -9,7 +9,7 @@
 
 /// Initialise an empty [Line].
 /// @param content If not [NULL], initialise this [Line] with [content].
-/// @return A pointer to a new empty [Line].
+/// @returns A pointer to a new empty [Line].
 Line *initialiseLine(const char *content) {
     Line *line = (Line *) malloc(sizeof(Line));
 
@@ -118,7 +118,6 @@ void removeCharAt(Line *line, size_t index) {
 /// @param line The [Line] in which to insert the string.
 /// @param toInsert The string to insert.
 /// @param index The index at which to insert the string.
-/// @pre The index must be a positive [int].
 /// @pre The index must be smaller than the [Line] length.
 void insertStrAt(Line *line, const char *toInsert, size_t index) {
     assert(index >= 0);
@@ -139,12 +138,35 @@ void insertStrAt(Line *line, const char *toInsert, size_t index) {
     line->gapStart += length;
 }
 
-void printLine(Line *line) {
-    for (size_t i = 0; i < line->gapStart; ++i) {
-        putchar(line->buffer[i]);
-    }
-    for (size_t i = line->gapEnd; i < line->size; ++i) {
-        putchar(line->buffer[i]);
-    }
-    putchar('\n');
+/// Remove a substring from a [Line]'s contents between [start] and [end].
+/// @param line The [Line] from which to remove the string.
+/// @param start The starting index of the substring to remove.
+/// @param end The ending index of the substring to remove.
+void removeStrAt(Line *line, size_t start, size_t end) {
+    assert(start <= end);
+    assert(end <= (line->size - (line->gapEnd - line->gapStart)));
+
+    // Move gap to the start position
+    moveGap(line, start);
+
+    // Increase the gap size by moving the gap end backward
+    line->gapEnd -= (end - start);
+}
+
+/// Calculates the length of the given [Line].
+/// @param line The [Line] to calculate over.
+/// @returns The length of the text represented by the [Line].
+size_t lineLength(Line *line) {
+    return line->size - (line->gapEnd - line->gapStart);
+}
+
+/// Converts a [Line] object to text. (I.e., remove the gap.)
+/// @param line The [Line] to prettify.
+/// @returns The text represented by the [Line].
+char *getLine(Line *line) {
+    char *result = malloc(line->size + 1);
+    strncpy(result, line->buffer, line->gapStart);
+    strncpy(result + line->gapStart, line->buffer + line->gapEnd, line->size - line->gapEnd);
+    result[line->size] = '\0';
+    return result;
 }

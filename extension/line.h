@@ -1,6 +1,6 @@
 ///
 /// line.h
-/// Utilities for the line data structure.
+/// Utilities for the [Line] data structure.
 ///
 /// Created by Billy Highley and Alexander Biraben-Renard on 13/06/24.
 ///
@@ -15,7 +15,7 @@
 
 #define INITIAL_LINE_SIZE 8
 
-/// Implementation of a gap buffer. In GRim, this is used as a line buffer.
+/// Implementation of a gap buffer, representing a line of text.
 typedef struct {
     /// The buffer contents.
     char *buffer;
@@ -40,6 +40,10 @@ void removeCharAt(Line *line, size_t index);
 
 void insertStrAt(Line *line, const char *toInsert, size_t index);
 
-void printLine(Line *line);
+void removeStrAt(Line *line, size_t start, size_t end);
+
+size_t lineLength(Line *line);
+
+char *getLine(Line *line);
 
 #endif //EXTENSION_LINE_H
