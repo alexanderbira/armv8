@@ -7,13 +7,42 @@
 
 #include "editor.h"
 
-int main(void) {
-    initscr();            // Start ncurses mode
-    printw("Hello, World!"); // Print Hello, World!
-    refresh();           // Print it on to the real screen
-    getch();             // Wait for user input
-    getch();
-    endwin();            // End ncurses mode
+// Function prototypes
+void displayFile(File *file);
+
+int main(int argc, char *argv[]) {
+    initscr();
+    raw();
+    noecho();
+    keypad(stdscr, TRUE);
+    curs_set(TRUE);
+
+    // Initialize the file
+    File *file = NULL;
+    if (argc > 1) {
+        file = initialiseFile(argv[1]);
+    } else {
+        file = initialiseFile(NULL);
+    }
+
+    int ch;
+    while ((ch = getch()) != 'q') {
+        handleKey(file, ch);
+
+        clear();
+        displayFile(file);
+        move(file->lineNumber, file->cursor);
+        refresh();
+    }
+
+    freeFile(file);
+    endwin();
 
     return 0;
+}
+
+void displayFile(File *file) {
+    for (size_t i = 0; i < file->size; i++) {
+        mvprintw(i, 0, getLine(file->lines[i]));
+    }
 }

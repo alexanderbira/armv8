@@ -8,7 +8,9 @@
 #ifndef EXTENSION_FILE_H
 #define EXTENSION_FILE_H
 
-#include "error.h"
+#include <ctype.h>
+#include <ncurses.h>
+
 #include "line.h"
 
 #define INITIAL_FILE_SIZE 8
@@ -49,6 +51,6 @@ void addLine(File *file, const char *content, size_t afterLine);
 
 void deleteLine(File *file, size_t lineNumber);
 
-void handleAction(File *file, ControlKey key);
+void handleKey(File *file, int key);
 
 #endif // EXTENSION_FILE_H

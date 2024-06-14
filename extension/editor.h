@@ -8,8 +8,11 @@
 #ifndef EXTENSION_EDITOR_H
 #define EXTENSION_EDITOR_H
 
-#include "ncurses.h"
+#include <ncurses.h>
 
-int main(void);
+#include "file.h"
+#include "line.h"
+
+int main(int argc, char *argv[]);
 
 #endif // EXTENSION_EDITOR_H

@@ -76,7 +76,7 @@ emulate: $(COMMON_OBJECTS) $(EMULATOR_OBJECTS) $(EMULATOR_MAIN)                 
 assemble: $(COMMON_OBJECTS) $(ASSEMBLER_OBJECTS) $(ASSEMBLER_MAIN)               ## Compile the assembler.
 	$(CC) $(CFLAGS) -o $@ $^
 
-grim: $(COMMON_OBJECTS) $(EMULATOR_OBJECTS) $(ASSEMBLER_OBJECTS) $(GRIM_OBJECTS) ## Compile GRim. (The extension)
+editor: $(COMMON_OBJECTS) $(EMULATOR_OBJECTS) $(ASSEMBLER_OBJECTS) $(GRIM_OBJECTS) ## Compile GRim. (The extension)
 	$(CC) $(CFLAGS) -o $@ $^ -lncurses
 
 # Compile rules for all .c files
@@ -101,4 +101,4 @@ cleanObject:                                                                    
 	$(RM) -r $(OBJECT_DIR)
 
 clean: cleanObject                                                              ## Clean executables and object files.
-	$(RM) emulate assemble grim
+	$(RM) emulate assemble editor

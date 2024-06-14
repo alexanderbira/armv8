@@ -28,11 +28,14 @@ File *initialiseFile(const char *path) {
 
         while ((read = getline(&text, &textLength, handler)) != -1) {
             if (text[read - 1] == '\n') text[--read] = '\0';
-            addLine(file, text, file->size - 1);
+            addLine(file, text, file->size++ - 1);
         }
 
         free(text);
         fclose(handler);
+    } else {
+        // Add a blank line to start.
+        addLine(file, NULL, 0);
     }
 
     return file;
@@ -42,7 +45,7 @@ File *initialiseFile(const char *path) {
 /// @param file A pointer to the [File] to free.
 void freeFile(File *file) {
     free(file->path);
-    for (int i = 0; i < file->size; i++) {
+    for (size_t i = 0; i < file->size; i++) {
         freeLine(file->lines[i]);
     }
     free(file->lines);
@@ -52,9 +55,9 @@ void freeFile(File *file) {
 /// Adds a new [Line] containing [content] after line number [afterLine].
 /// @param file The [File] to modify.
 /// @param content The text to add.
-/// @param afterLine The line after which to add the new line.
-void addLine(File *file, const char *content, size_t afterLine) {
-    assert(afterLine < file->size); // Ensure afterLine is within valid range
+/// @param atLine The line at which to add the new line.
+void addLine(File *file, const char *content, size_t atLine) {
+    assert(atLine <= file->size);
 
     Line *line = initialiseLine(content);
 
@@ -63,11 +66,15 @@ void addLine(File *file, const char *content, size_t afterLine) {
         file->lines = (Line **) realloc(file->lines, file->maxSize * sizeof(Line *));
     }
 
-    // Move all lines after `afterLine` one position down
-    memmove(file->lines + afterLine + 2, file->lines + afterLine + 1, (file->size - afterLine - 1) * sizeof(Line *));
+    // Move subsequent lines one along.
+    memmove(
+        file->lines + (int) atLine + 1,
+        file->lines + (int) atLine,
+        (file->size - (int) atLine) * sizeof(Line *)
+    );
 
     // Insert the new line
-    file->lines[afterLine + 1] = line;
+    file->lines[atLine] = line;
     file->size++;
 }
 
@@ -86,12 +93,12 @@ void deleteLine(File *file, size_t lineNumber) {
 /// Performs some action of [file] given a special [ControlKey].
 /// @param file The [File] to modify.
 /// @param key The [ControlKey] that was pressed.
-void handleAction(File *file, ControlKey key) {
+void handleKey(File *file, int key) {
     switch (key) {
-        case ARROW_UP:
+        case KEY_UP:
             if (file->lineNumber == 0) return;
 
-        case ARROW_DOWN:
+        case KEY_DOWN:
             if (file->lineNumber + 1 == file->size) return;
 
             file->lineNumber += (key == ARROW_UP) ? -1 : 1;
@@ -100,16 +107,16 @@ void handleAction(File *file, ControlKey key) {
             }
             break;
 
-        case ARROW_LEFT:
+        case KEY_LEFT:
             if (file->cursor == 0) return;
 
-        case ARROW_RIGHT:
+        case KEY_RIGHT:
             if (file->cursor >= file->lines[file->lineNumber]->size) return;
 
             file->cursor += (key == ARROW_LEFT) ? -1 : 1;
             break;
 
-        case RETURN: {
+        case '\n': {
             // Save the contents of the current one, and remove after cursor.
             Line *currentLine = file->lines[file->lineNumber];
             char *currentText = getLine(currentLine);
@@ -121,7 +128,8 @@ void handleAction(File *file, ControlKey key) {
             free(currentText);
         }
 
-        case DELETE:
+        case KEY_BACKSPACE:
+        case 127: // [DEL] key.
             if (file->cursor > 0) {
                 // Remove the character at the cursor position
                 removeStrAt(file->lines[file->lineNumber], file->cursor - 1, file->cursor);
@@ -143,6 +151,12 @@ void handleAction(File *file, ControlKey key) {
                 file->lineNumber--;
                 file->cursor = previousLineLength;
             }
+            break;
+
+        default:
+            if (!isprint(key)) return;
+            insertCharAt(file->lines[file->lineNumber], key, file->cursor);
+            file->cursor++;
             break;
     }
 }
