@@ -13,7 +13,7 @@ CFLAGS        ?= -std=c17 -g \
 	-Wall -Werror -Wextra --pedantic-errors \
 	-D_DEFAULT_SOURCE $(INCLUDE_FLAGS)
 
-.PHONY: all cleanObject cleanReport clean setup test testEmulate testAssemble help
+.PHONY: help all setup test testEmulate testAssemble report cleanReport cleanObject clean
 
 # Find all source files
 COMMON_SOURCES    := $(wildcard $(SOURCE_DIR)/common/*.c)
@@ -46,12 +46,12 @@ TO_CLEAN = $(wildcard $(REPORT_DIR)/*.aux) \
 
 # Self documentation command modified from
 # https://stackoverflow.com/a/64996042/16731239
-help:                                       ## Show this help.
+help:                                                                             ## Show this help.
 	@egrep -h '\s##\s' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m  %-15s\033[0m %s\n", $$1, $$2}'
 
-all: assemble emulate grim cleanObject      ## Compile all programs and clean object files.
+all: assemble emulate grim cleanObject                                            ## Compile all programs and clean object files.
 
-setup:                                      ## Setup build, test, and report compilation environment.
+setup:                                                                            ## Setup build, test, and report compilation environment.
 	@echo "=== Setting Up Submodules ==="
 	@git submodule init
 	@git submodule update --recursive
@@ -113,7 +113,3 @@ cleanObject:                                                                    
 
 clean: cleanObject                                                              ## Clean executables and object files.
 	$(RM) emulate assemble grim
-
-deepclean: clean
-	$(RM) -r ncurses
-	$(RM) -r testsuite
