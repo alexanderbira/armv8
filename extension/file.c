@@ -118,11 +118,23 @@ void handleKey(File *file, int key) {
             break;
 
         case KEY_DOWN:
-            if (file->lineNumber + 1 == file->size) return;
+            // We allow users to create a new line by pressing
+            // the down arrow on the last line of the file.
+            if (file->lineNumber + 1 == file->size) {
+                // But if they are already on a trailing empty line, return.
+                if (!lineLength(file->lines[file->lineNumber])) return;
+
+                addLine(file, NULL, file->lineNumber++);
+                file->cursor = 0;
+                return;
+            }
+
+            // Otherwise, go to the next line and coerce cursor x location.
             file->lineNumber++;
             if (file->cursor >= lineLength(file->lines[file->lineNumber])) {
                 file->cursor = lineLength(file->lines[file->lineNumber]);
             }
+
             break;
 
         case KEY_LEFT:

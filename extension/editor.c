@@ -19,7 +19,8 @@ int main(int argc, char *argv[]) {
     File *file = initialiseFile((argc > 1) ? argv[1] : NULL);
 
     // Note that [rows] and [cols] represent available space for TEXT.
-    size_t rows = getmaxy(stdscr);
+    size_t rows, cols;
+    getmaxyx(stdscr, rows, cols);
     size_t prefixPadding = 0;
     char formatString[9];
 
@@ -34,18 +35,28 @@ int main(int argc, char *argv[]) {
 
         // Display contents of file.
         clear();
-        for (size_t i = 0; i < file->size; i++) {
-            mvprintw(i, 0, formatString, i + 1, getLine(file->lines[i]));
+        for (size_t i = file->windowY; i < file->size; i++) {
+            mvprintw(i - file->windowY, 0, formatString, i + 1, getLine(file->lines[i]));
         }
 
-        move(file->lineNumber, file->cursor + prefixPadding + 1);
+        move(file->lineNumber - file->windowY, file->cursor + prefixPadding + 1);
         refresh();
 
         // Get and handle input.
         ch = getch();
         if (ch == '`') break;
+        if (ch == KEY_RESIZE) {
+            // TODO: Redraw title bar and help bar.
+            getmaxyx(stdscr, rows, cols);
+            continue;
+        }
 
         handleKey(file, ch);
+
+        // Scroll if necessary.
+        while (file->lineNumber >= file->windowY + rows) file->windowY++;
+        while (file->lineNumber < file->windowY) file->windowY--;
+        while (file->cursor - file->windowX >= cols) file->windowX++;
     }
 
     freeFile(file);
