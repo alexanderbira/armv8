@@ -45,12 +45,12 @@ TO_CLEAN = $(wildcard $(REPORT_DIR)/*.aux) \
 
 # Self documentation command modified from
 # https://stackoverflow.com/a/64996042/16731239
-help:                                                                             ## Show this help.
+help:                                                                              ## Show this help.
 	@egrep -h '\s##\s' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m  %-15s\033[0m %s\n", $$1, $$2}'
 
-all: assemble emulate grim cleanObject                                            ## Compile all programs and clean object files.
+all: assemble emulate editor cleanObject                                           ## Compile all programs and clean object files.
 
-setup:                                                                            ## Setup build, test, and report compilation environment.
+setup:                                                                             ## Setup build, test, and report compilation environment.
 	@echo "=== Setting Up Submodules ==="
 	@git submodule init
 	@git submodule update --recursive
@@ -61,19 +61,19 @@ setup:                                                                          
 	@cd testsuite/solution && ln -sf ../../assemble ./assemble
 	@cd testsuite/solution && ln -sf ../../emulate ./emulate
 
-test: all                                                                        ## Run all tests.
+test: all                                                                          ## Run all tests.
 	@cd testsuite && ./run -p
 
-testEmulate: emulate                                                             ## Run emulator tests.
+testEmulate: emulate                                                               ## Run emulator tests.
 	@cd testsuite && ./run -Ep
 
-testAssemble: assemble                                                           ## Run assembler tests.
+testAssemble: assemble                                                             ## Run assembler tests.
 	@cd testsuite && ./run -Ap
 
-emulate: $(COMMON_OBJECTS) $(EMULATOR_OBJECTS) $(EMULATOR_MAIN)                  ## Compile the emulator.
+emulate: $(COMMON_OBJECTS) $(EMULATOR_OBJECTS) $(EMULATOR_MAIN)                    ## Compile the emulator.
 	$(CC) $(CFLAGS) -o $@ $^
 
-assemble: $(COMMON_OBJECTS) $(ASSEMBLER_OBJECTS) $(ASSEMBLER_MAIN)               ## Compile the assembler.
+assemble: $(COMMON_OBJECTS) $(ASSEMBLER_OBJECTS) $(ASSEMBLER_MAIN)                 ## Compile the assembler.
 	$(CC) $(CFLAGS) -o $@ $^
 
 editor: $(COMMON_OBJECTS) $(EMULATOR_OBJECTS) $(ASSEMBLER_OBJECTS) $(GRIM_OBJECTS) ## Compile GRim. (The extension)
@@ -88,17 +88,17 @@ $(OBJECT_DIR)/%.o: $(EXTENSION_DIR)/%.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-report:                                                                         ## Generates checkpoint and final reports.
+report:                                                                            ## Generates checkpoint and final reports.
 	cd $(REPORT_DIR) && latexmk --xelatex --shell-escape $(REPORT).tex
 	cd $(REPORT_DIR) && latexmk --xelatex --shell-escape $(CHECKPOINT).tex
 
-cleanReport:                                                                    ## Clean report generation files.
+cleanReport:                                                                       ## Clean report generation files.
 	$(RM) -r $(TO_CLEAN) $(REPORT_DIR)/_minted-checkpoint
 	$(RM) $(REPORT_DIR)/$(REPORT).pdf
 	$(RM) $(REPORT_DIR)/$(CHECKPOINT).pdf
 
-cleanObject:                                                                    ## Clean all object files.
+cleanObject:                                                                       ## Clean all object files.
 	$(RM) -r $(OBJECT_DIR)
 
-clean: cleanObject                                                              ## Clean executables and object files.
+clean: cleanObject                                                                 ## Clean executables and object files.
 	$(RM) emulate assemble editor

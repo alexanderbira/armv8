@@ -43,6 +43,6 @@ int main(int argc, char *argv[]) {
 
 void displayFile(File *file) {
     for (size_t i = 0; i < file->size; i++) {
-        mvprintw(i, 0, getLine(file->lines[i]));
+        mvprintw(i, 0, "%s", getLine(file->lines[i]));
     }
 }
