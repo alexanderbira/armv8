@@ -18,12 +18,12 @@ static void initialise(const char *path) {
     initscr(); raw(); noecho(); curs_set(true);
     getmaxyx(stdscr, rows, cols);
 
-    // We initialise line numbers to be 2 chars wide.
-    lineNumbers = newwin(CONTENT_HEIGHT, 2, TITLE_HEIGHT, 0);
-    editor = newwin(CONTENT_HEIGHT, (int) cols - 2, TITLE_HEIGHT, 2);
+    // We initialise line numbers to be 3 chars wide.
+    lineNumbers = newwin(CONTENT_HEIGHT, 3, TITLE_HEIGHT, 0);
+    editor = newwin(CONTENT_HEIGHT, (int) cols - 3, TITLE_HEIGHT, 2);
 
     // Set [editor] to be the only window which receives key presses.
-    keypad(editor, true);
+    keypad(stdscr, true);
 
     // Initialise [File] object.
     file = initialiseFile(path);
@@ -38,7 +38,8 @@ static void updateLineNumbers(void) {
 
     // Resize line number window if widest line number has changed.
     if (maxWidth + 1 != currWidth) {
-        wresize(lineNumbers, CONTENT_HEIGHT, maxLineNumber + 1);
+        wresize(lineNumbers, CONTENT_HEIGHT, maxWidth + 1);
+        wresize(editor, CONTENT_HEIGHT, cols - maxWidth - 1);
     }
 }
 
@@ -46,7 +47,13 @@ static void printFile() {
     for (int i = (int) file->windowY; i < (int) file->size; i++) {
         mvwprintw(lineNumbers, i - file->windowY, 0, "%d", i + 1);
         mvwaddstr(editor, i - file->windowY, 0, getLine(file->lines[i]));
+        wclrtoeol(editor);
     }
+
+    wmove(lineNumbers, file->lineNumber - file->windowY + 1, 0);
+    wmove(editor, file->lineNumber - file->windowY + 1, 0);
+    wclrtobot(lineNumbers);
+    wclrtobot(editor);
 }
 
 static void handleScroll() {
@@ -62,10 +69,10 @@ int main(int argc, char *argv[]) {
     while (key != QUIT) {
 
         // Display contents of file.
-        clear();
         printFile();
         wmove(editor, file->lineNumber - file->windowY, file->cursor);
-        refresh();
+        wrefresh(lineNumbers);
+        wrefresh(editor);
 
         // Get and handle input.
         key = getch();
