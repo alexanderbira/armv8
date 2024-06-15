@@ -17,6 +17,8 @@ static void initialise(const char *path);
 
 static void updateUI(void);
 
+static void updateLine(Line *line, int index);
+
 static void updateFile(void);
 
 int main(int argc, char *argv[]) {
@@ -109,18 +111,22 @@ static void updateUI(void) {
     if (file->cursor < file->windowX) file->windowX = file->cursor;
 }
 
+/// Updates the contents of one line, with corresponding line number.
+/// @param line The [Line] to be updated on screen.
+static void updateLine(Line *line, int index) {
+    // Print the line number, then clear rest of line.
+    mvwprintw(lineNumbers, index - file->windowY, 0, "%d", index + 1);
+    wclrtoeol(lineNumbers);
+
+    // Print the line contents, then clear rest of line.
+    mvwaddstr(editor, index - file->windowY, 0, getLine(line));
+    wclrtoeol(editor);
+}
+
 /// Updates the contents of the file, with corresponding line numbers.
 static void updateFile(void) {
     // Print out all lines in current window.
-    for (int i = (int) file->windowY; i < (int) file->size; i++) {
-        // Print the line number, then clear rest of line.
-        mvwprintw(lineNumbers, i - file->windowY, 0, "%d", i + 1);
-        wclrtoeol(lineNumbers);
-
-        // Print the line contents, then clear rest of line.
-        mvwaddstr(editor, i - file->windowY, 0, getLine(file->lines[i]));
-        wclrtoeol(editor);
-    }
+    iterateLinesInWindow(file, &updateLine);
 
     // Clear all unoccupied space in line number and editor windows.
     wmove(lineNumbers, file->size - file->windowY, 0);

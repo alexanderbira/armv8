@@ -39,7 +39,7 @@ typedef struct {
     int windowX, windowY;
 } File;
 
-typedef void (*LineCallback)(Line line);
+typedef void (*LineCallback)(Line *line, int index);
 
 File *initialiseFile(const char *path);
 
@@ -50,6 +50,8 @@ void addLine(File *file, const char *content, int afterLine);
 void deleteLine(File *file, int lineNumber);
 
 void iterateLines(File *file, LineCallback callback);
+
+void iterateLinesInWindow(File *file, LineCallback callback);
 
 void handleFileAction(File *file, int key);
 
