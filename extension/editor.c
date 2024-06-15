@@ -13,91 +13,126 @@ static WINDOW *lineNumbers, *editor;
 
 static File *file;
 
-static void initialise(const char *path) {
-    // Pass input immediately, no echo of input, and display cursor.
-    initscr(); raw(); noecho(); curs_set(true);
-    getmaxyx(stdscr, rows, cols);
+static void initialise(const char *path);
 
-    // We initialise line numbers to be 3 chars wide.
-    lineNumbers = newwin(CONTENT_HEIGHT, 3, TITLE_HEIGHT, 0);
-    editor = newwin(CONTENT_HEIGHT, (int) cols - 3, TITLE_HEIGHT, 2);
+static void updateUI(void);
 
-    // Set [editor] to be the only window which receives key presses.
-    keypad(stdscr, true);
-
-    // Initialise [File] object.
-    file = initialiseFile(path);
-}
-
-static void updateLineNumbers(void) {
-    int currWidth = getmaxx(lineNumbers);
-    int maxLineNumber = file->windowY + rows;
-    int maxWidth = (maxLineNumber == 0)
-        ? 1
-        : (int) floor(log10((double) maxLineNumber)) + 1;
-
-    // Resize line number window if widest line number has changed.
-    if (maxWidth + 1 != currWidth) {
-        wresize(lineNumbers, CONTENT_HEIGHT, maxWidth + 1);
-        wresize(editor, CONTENT_HEIGHT, cols - maxWidth - 1);
-    }
-}
-
-static void printFile() {
-    for (int i = (int) file->windowY; i < (int) file->size; i++) {
-        mvwprintw(lineNumbers, i - file->windowY, 0, "%d", i + 1);
-        mvwaddstr(editor, i - file->windowY, 0, getLine(file->lines[i]));
-        wclrtoeol(editor);
-    }
-
-    wmove(lineNumbers, file->size - file->windowY, 0);
-    wmove(editor, file->size - file->windowY, 0);
-    wclrtobot(lineNumbers);
-    wclrtobot(editor);
-}
-
-static void handleScroll() {
-    while (file->lineNumber >= file->windowY + rows) file->windowY++;
-    while (file->lineNumber < file->windowY) file->windowY--;
-    while (file->cursor - file->windowX >= cols) file->windowX++;
-}
+static void updateFile(void);
 
 int main(int argc, char *argv[]) {
     initialise((argc > 1) ? argv[1] : NULL);
 
     int key = -1;
     while (key != QUIT) {
-
-        // Display contents of file.
-        printFile();
-        wmove(editor, file->lineNumber - file->windowY, file->cursor);
-        wrefresh(lineNumbers);
-        wrefresh(editor);
+        // Update what is displayed.
+        updateUI();
+        updateFile();
 
         // Get and handle input.
-        key = getch();
+        key = wgetch(editor);
         switch (key) {
             case SAVE:
                 // TODO: save file, prompt if no path.
                 break;
+
             case RUN:
                 // TODO: Run the assembly.
                 break;
+
             case KEY_RESIZE:
                 getmaxyx(stdscr, rows, cols);
                 // TODO: Mark everything to be re-rendered.
                 break;
-            default: handleFileAction(file, key);
-        }
 
-        updateLineNumbers();
-        handleScroll();
+            default:
+                handleFileAction(file, key);
+                break;
+        }
     }
 
     // TODO: save 'n stuff, prompt if no path.
 
+    // Cleanup
     freeFile(file);
     endwin();
 
     return 0;
+}
+
+static void initialise(const char *path) {
+    // Initialise <ncurses>.
+    initscr();       // ncurses setup.
+    raw();           // Pass raw input to our code.
+    noecho();        // Do not echo back when getting input.
+    curs_set(true);  // Display cursor.
+    getmaxyx(stdscr, rows, cols);
+
+    // We initialise line numbers to be 2 chars wide.
+    lineNumbers = newwin(CONTENT_HEIGHT, 2, TITLE_HEIGHT, 0);
+    editor = newwin(CONTENT_HEIGHT, (int) cols - 2, TITLE_HEIGHT, 2);
+
+    // Set [editor] to be the only window which receives key presses.
+    keypad(editor, true);
+
+    // Initialise [File] object.
+    file = initialiseFile(path);
+}
+
+/// Updates UI, including line numbers window, scrolling.
+static void updateUI(void) {
+    // Calculate the maximum width of a line number currently possible.
+    int currWidth = getmaxx(lineNumbers);
+
+    // The largest line number is either the bottom of the screen, or
+    // the last line of the file.
+    int maxLineNumber = file->windowY + CONTENT_HEIGHT + 1;
+    maxLineNumber = (file->size < maxLineNumber) ? file->size : maxLineNumber;
+    int maxWidth = (maxLineNumber == 0)
+                   ? 1 : (int) floor(log10((double) maxLineNumber)) + 1;
+
+    // Resize line number window if widest line number has changed.
+    if (maxWidth + 1 != currWidth) {
+        wresize(lineNumbers, CONTENT_HEIGHT, maxWidth + 1);
+        mvwin(lineNumbers, TITLE_HEIGHT, 0);
+        wresize(editor, CONTENT_HEIGHT, cols - maxWidth - 1);
+        mvwin(editor, TITLE_HEIGHT, maxWidth + 1);
+    }
+
+    // Scroll if out of bounds in any direction.
+    if (file->lineNumber >= file->windowY + CONTENT_HEIGHT) {
+        file->windowY = file->lineNumber - CONTENT_HEIGHT + 1;
+    }
+    if (file->lineNumber < file->windowY) file->windowY = file->lineNumber;
+    if (file->cursor >= file->windowX + cols) {
+        file->windowX = file->cursor - cols + 1;
+    }
+    if (file->cursor < file->windowX) file->windowX = file->cursor;
+}
+
+/// Updates the contents of the file, with corresponding line numbers.
+static void updateFile(void) {
+    // Print out all lines in current window.
+    for (int i = (int) file->windowY; i < (int) file->size; i++) {
+        // Print the line number, then clear rest of line.
+        mvwprintw(lineNumbers, i - file->windowY, 0, "%d", i + 1);
+        wclrtoeol(lineNumbers);
+
+        // Print the line contents, then clear rest of line.
+        mvwaddstr(editor, i - file->windowY, 0, getLine(file->lines[i]));
+        wclrtoeol(editor);
+    }
+
+    // Clear all unoccupied space in line number and editor windows.
+    wmove(lineNumbers, file->size - file->windowY, 0);
+    wclrtobot(lineNumbers);
+
+    wmove(editor, file->size - file->windowY, 0);
+    wclrtobot(editor);
+
+    // Move cursor to new position.
+    wmove(editor, file->lineNumber - file->windowY, file->cursor);
+
+    // Refresh relevant windows.
+    wrefresh(lineNumbers);
+    wrefresh(editor);
 }
