@@ -21,28 +21,28 @@ typedef struct {
     char *buffer;
 
     /// The total size of the buffer.
-    size_t size;
+    int size;
 
     /// The start of the gap, zero-indexed.
-    size_t gapStart;
+    int gapStart;
 
     /// The end of the gap, zero-indexed.
-    size_t gapEnd;
+    int gapEnd;
 } Line;
 
 Line *initialiseLine(const char *content);
 
 void freeLine(Line *line);
 
-void insertCharAt(Line *line, char toInsert, size_t index);
+void insertCharAt(Line *line, char toInsert, int index);
 
-void removeCharAt(Line *line, size_t index);
+void removeCharAt(Line *line, int index);
 
-void insertStrAt(Line *line, const char *toInsert, size_t index);
+void insertStrAt(Line *line, const char *toInsert, int index);
 
-void removeStrAt(Line *line, size_t start, size_t end);
+void removeStrAt(Line *line, int start, int end);
 
-size_t lineLength(Line *line);
+int lineLength(Line *line);
 
 char *getLine(Line *line);
 
