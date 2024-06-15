@@ -51,7 +51,7 @@ File *initialiseFile(const char *path) {
 void freeFile(File *file) {
     if (!file) return;
     free(file->path);
-    for (size_t i = 0; i < file->size; i++) {
+    for (int i = 0; i < file->size; i++) {
         freeLine(file->lines[i]);
     }
     free(file->lines);
@@ -62,7 +62,7 @@ void freeFile(File *file) {
 /// @param file The [File] to modify.
 /// @param content The text to add.
 /// @param atLine The line at which to add the new line.
-void addLine(File *file, const char *content, size_t afterLine) {
+void addLine(File *file, const char *content, int afterLine) {
     assert(afterLine <= file->size);
 
     Line *newLine = initialiseLine(content);
@@ -86,7 +86,7 @@ void addLine(File *file, const char *content, size_t afterLine) {
 /// Deletes a [Line] at a given line number from the [File].
 /// @param file The [File] to modify.
 /// @param lineNumber The line number to delete.
-void deleteLine(File *file, size_t lineNumber) {
+void deleteLine(File *file, int lineNumber) {
     assert(lineNumber < file->size);
 
     freeLine(file->lines[lineNumber]);
@@ -99,7 +99,7 @@ void deleteLine(File *file, size_t lineNumber) {
 /// @param file The [File] to process.
 /// @param callback The [LineCallback] to execute on each line.
 void iterateLines(File *file, LineCallback callback) {
-    for (size_t i = 0; i < file->size; ++i) {
+    for (int i = 0; i < file->size; ++i) {
         callback(*(file->lines[i]));
     }
 }

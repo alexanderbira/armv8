@@ -7,52 +7,64 @@
 
 #include "editor.h"
 
-static size_t rows, cols;
+static int rows, cols;
 
-static size_t prefixPadding = 0;
+static WINDOW *lineNumbers, *editor;
 
-static char formatString[9];
+static File *file;
 
-static size_t countDigits(size_t number);
+static void initialise(const char *path) {
+    // Pass input immediately, no echo of input, and display cursor.
+    initscr(); raw(); noecho(); curs_set(true);
+    getmaxyx(stdscr, rows, cols);
 
-static void initialiseEditor() {
-    initscr();
-    raw();
-    noecho();
-    keypad(stdscr, TRUE);
-    curs_set(TRUE);
+    // We initialise line numbers to be 2 chars wide.
+    lineNumbers = newwin(CONTENT_HEIGHT, 2, TITLE_HEIGHT, 0);
+    editor = newwin(CONTENT_HEIGHT, (int) cols - 2, TITLE_HEIGHT, 2);
+
+    // Set [editor] to be the only window which receives key presses.
+    keypad(editor, true);
+
+    // Initialise [File] object.
+    file = initialiseFile(path);
 }
 
-static void printFile(File *file) {
-    for (int i = (int) file->windowY; i < (int) file->size; i++) {
-        mvprintw(i - (int) file->windowY, 0, formatString, i + 1, getLine(file->lines[i]));
+static void updateLineNumbers(void) {
+    int currWidth = getmaxx(lineNumbers);
+    int maxLineNumber = file->windowY + rows;
+    int maxWidth = (maxLineNumber == 0)
+        ? 1
+        : (int) floor(log10((double) maxLineNumber)) + 1;
+
+    // Resize line number window if widest line number has changed.
+    if (maxWidth + 1 != currWidth) {
+        wresize(lineNumbers, CONTENT_HEIGHT, maxLineNumber + 1);
     }
 }
 
-static void handleScroll(File *file) {
+static void printFile() {
+    for (int i = (int) file->windowY; i < (int) file->size; i++) {
+        mvwprintw(lineNumbers, i - file->windowY, 0, "%d", i + 1);
+        mvwaddstr(editor, i - file->windowY, 0, getLine(file->lines[i]));
+    }
+}
+
+static void handleScroll() {
     while (file->lineNumber >= file->windowY + rows) file->windowY++;
     while (file->lineNumber < file->windowY) file->windowY--;
     while (file->cursor - file->windowX >= cols) file->windowX++;
 }
 
 int main(int argc, char *argv[]) {
-    initialiseEditor();
-    File *file = initialiseFile((argc > 1) ? argv[1] : NULL);
-    getmaxyx(stdscr, rows, cols);
+    initialise((argc > 1) ? argv[1] : NULL);
 
     int key = -1;
     while (key != QUIT) {
-        // If necessary, refresh format string.
-        size_t newPadding = countDigits(file->lineNumber + rows + 1) + 1;
-        if (newPadding != prefixPadding) {
-            prefixPadding = newPadding;
-            snprintf(formatString, sizeof(formatString), "%%%zuzu %%s", prefixPadding);
-        }
 
         // Display contents of file.
         clear();
-        printFile(file);
-        move(file->lineNumber - file->windowY, file->cursor + prefixPadding + 1);
+        printFile();
+        wmove(editor, file->lineNumber - file->windowY, file->cursor);
         refresh();
 
         // Get and handle input.
@@ -71,7 +83,8 @@ int main(int argc, char *argv[]) {
             default: handleFileAction(file, key);
         }
 
-        handleScroll(file);
+        updateLineNumbers();
+        handleScroll();
     }
 
     // TODO: save 'n stuff, prompt if no path.
@@ -80,9 +93,4 @@ int main(int argc, char *argv[]) {
     endwin();
 
     return 0;
-}
-
-static size_t countDigits(size_t number) {
-    if (number == 0) return 1;
-    return (size_t) floor(log10((double) number)) + 1;
 }

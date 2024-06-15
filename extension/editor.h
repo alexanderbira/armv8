@@ -26,6 +26,15 @@
 /// The key code to run the assembly file.
 #define RUN CTRL('r')
 
+/// The height (in characters) of the program title.
+#define TITLE_HEIGHT 1
+
+/// The height (in characters) of the program help menu.
+#define MENU_HEIGHT 2
+
+/// The height (in characters) of the main content.
+#define CONTENT_HEIGHT ((int) rows - TITLE_HEIGHT - MENU_HEIGHT)
+
 int main(int argc, char *argv[]);
 
 #endif // EXTENSION_EDITOR_H

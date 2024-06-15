@@ -42,7 +42,7 @@ void insertStrAt(Line *line, const char *toInsert, size_t index);
 
 void removeStrAt(Line *line, size_t start, size_t end);
 
-size_t lineLength(Line *line);
+int lineLength(Line *line);
 
 char *getLine(Line *line);
 

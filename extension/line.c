@@ -133,7 +133,7 @@ void removeStrAt(Line *line, size_t start, size_t end) {
 /// Calculates the length of the given [Line].
 /// @param line The [Line] to calculate over.
 /// @returns The length of the text represented by the [Line].
-size_t lineLength(Line *line) {
+int lineLength(Line *line) {
     return line->size - (line->gapEnd - line->gapStart);
 }
 
