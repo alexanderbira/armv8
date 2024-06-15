@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
     char formatString[9];
 
     int ch;
-    while ((ch = getch()) != '`') {
+    while (true) {
         // If necessary, refresh format string.
         size_t newPadding = countDigits(file->lineNumber + rows + 1) + 1;
         if (newPadding != prefixPadding) {
@@ -32,16 +32,20 @@ int main(int argc, char *argv[]) {
             snprintf(formatString, sizeof(formatString), "%%%zuzu %%s", prefixPadding);
         }
 
-        handleKey(file, ch);
-
+        // Display contents of file.
         clear();
-
         for (size_t i = 0; i < file->size; i++) {
             mvprintw(i, 0, formatString, i + 1, getLine(file->lines[i]));
         }
 
         move(file->lineNumber, file->cursor + prefixPadding + 1);
         refresh();
+
+        // Get and handle input.
+        ch = getch();
+        if (ch == '`') break;
+
+        handleKey(file, ch);
     }
 
     freeFile(file);
