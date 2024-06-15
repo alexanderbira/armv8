@@ -34,6 +34,9 @@ typedef struct {
 
     /// The current cursor position within the line, zero-indexed.
     size_t cursor;
+
+    /// The top-left corner of the window currently being rendered.
+    size_t windowX, windowY;
 } File;
 
 typedef void (*LineCallback)(Line line);

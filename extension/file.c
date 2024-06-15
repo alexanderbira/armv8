@@ -17,6 +17,8 @@ File *initialiseFile(const char *path) {
     file->maxSize = INITIAL_FILE_SIZE;
     file->lineNumber = 0;
     file->cursor = 0;
+    file->windowX = 0;
+    file->windowY = 0;
 
     file->lines = (Line **) malloc(INITIAL_FILE_SIZE * sizeof(Line *));
     file->path = path ? strdup(path) : NULL;

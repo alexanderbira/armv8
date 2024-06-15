@@ -8,6 +8,7 @@
 #ifndef EXTENSION_EDITOR_H
 #define EXTENSION_EDITOR_H
 
+#include <math.h>
 #include <ncurses.h>
 
 #include "file.h"

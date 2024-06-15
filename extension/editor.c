@@ -7,8 +7,7 @@
 
 #include "editor.h"
 
-// Function prototypes
-void displayFile(File *file);
+static size_t countDigits(size_t number);
 
 int main(int argc, char *argv[]) {
     initscr();
@@ -17,21 +16,31 @@ int main(int argc, char *argv[]) {
     keypad(stdscr, TRUE);
     curs_set(TRUE);
 
-    // Initialize the file
-    File *file = NULL;
-    if (argc > 1) {
-        file = initialiseFile(argv[1]);
-    } else {
-        file = initialiseFile(NULL);
-    }
+    File *file = initialiseFile((argc > 1) ? argv[1] : NULL);
+
+    // Note that [rows] and [cols] represent available space for TEXT.
+    size_t rows = getmaxy(stdscr);
+    size_t prefixPadding = 0;
+    char formatString[9];
 
     int ch;
-    while ((ch = getch()) != 'q') {
+    while ((ch = getch()) != '`') {
+        // If necessary, refresh format string.
+        size_t newPadding = countDigits(file->lineNumber + rows + 1) + 1;
+        if (newPadding != prefixPadding) {
+            prefixPadding = newPadding;
+            snprintf(formatString, sizeof(formatString), "%%%zuzu %%s", prefixPadding);
+        }
+
         handleKey(file, ch);
 
         clear();
-        displayFile(file);
-        move(file->lineNumber, file->cursor);
+
+        for (size_t i = 0; i < file->size; i++) {
+            mvprintw(i, 0, formatString, i + 1, getLine(file->lines[i]));
+        }
+
+        move(file->lineNumber, file->cursor + prefixPadding + 1);
         refresh();
     }
 
@@ -41,8 +50,7 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-void displayFile(File *file) {
-    for (size_t i = 0; i < file->size; i++) {
-        mvprintw(i, 0, "%s", getLine(file->lines[i]));
-    }
+static size_t countDigits(size_t number) {
+    if (number == 0) return 1;
+    return (size_t) floor(log10((double) number)) + 1;
 }
