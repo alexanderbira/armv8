@@ -104,10 +104,10 @@ void iterateLines(File *file, LineCallback callback) {
     }
 }
 
-/// Performs some action of [file] given a special [ControlKey].
+/// Performs some action of [file] given some [key].
 /// @param file The [File] to modify.
-/// @param key The [ControlKey] that was pressed.
-void handleKey(File *file, int key) {
+/// @param key The key code in question.
+void handleFileAction(File *file, int key) {
     switch (key) {
         case KEY_UP:
             if (file->lineNumber == 0) return;

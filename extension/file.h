@@ -51,6 +51,6 @@ void deleteLine(File *file, size_t lineNumber);
 
 void iterateLines(File *file, LineCallback callback);
 
-void handleKey(File *file, int key);
+void handleFileAction(File *file, int key);
 
 #endif // EXTENSION_FILE_H

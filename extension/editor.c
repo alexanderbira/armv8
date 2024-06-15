@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
     size_t prefixPadding = 0;
     char formatString[9];
 
-    int ch;
+    int key;
     while (true) {
         // If necessary, refresh format string.
         size_t newPadding = countDigits(file->lineNumber + rows + 1) + 1;
@@ -43,15 +43,25 @@ int main(int argc, char *argv[]) {
         refresh();
 
         // Get and handle input.
-        ch = getch();
-        if (ch == '`') break;
-        if (ch == KEY_RESIZE) {
-            // TODO: Redraw title bar and help bar.
-            getmaxyx(stdscr, rows, cols);
-            continue;
-        }
+        key = getch();
 
-        handleKey(file, ch);
+        switch (key) {
+            case QUIT:
+                // TODO: save 'n stuff, prompt if no path.
+                exit(0);
+
+            case SAVE:
+                // TODO: save file, prompt if no path.
+
+            case RUN:
+                // TODO: Run the assembly.
+
+            case KEY_RESIZE:
+                getmaxyx(stdscr, rows, cols);
+                // TODO: Mark everything to be re-rendered.
+
+            default: handleFileAction(file, key);
+        }
 
         // Scroll if necessary.
         while (file->lineNumber >= file->windowY + rows) file->windowY++;
