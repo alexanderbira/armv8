@@ -184,7 +184,7 @@ void handleFileAction(File *file, int key) {
                 // Current line will be removed, but we copy over text.
                 Line *currentLine = file->lines[file->lineNumber];
                 Line *previousLine = file->lines[file->lineNumber - 1];
-                size_t previousLineLength = lineLength(previousLine);
+                int previousLineLength = lineLength(previousLine);
 
                 if (lineLength(currentLine) != 0) {
                     // Copy text to previous line if any exist.
