@@ -12,21 +12,21 @@
 /// @returns A pointer to a new empty [Line].
 Line *initialiseLine(const char *content) {
     Line *line = (Line *) malloc(sizeof(Line));
+    assert(line != NULL);
 
-    line->size = INITIAL_LINE_SIZE;
-    if (content != NULL) {
-        line->size = (strlen(content) > line->size)
-                     ? strlen(content)
-                     : line->size;
+    size_t contentLength = content ? strlen(content) : 0;
+    size_t bufferSize = (contentLength > INITIAL_LINE_SIZE) ? contentLength * 2 : INITIAL_LINE_SIZE;
+
+    line->buffer = (char *) malloc(bufferSize);
+    assert(line->buffer != NULL);
+
+    line->size = bufferSize;
+    line->gapStart = contentLength;
+    line->gapEnd = bufferSize;
+
+    if (contentLength > 0) {
+        memcpy(line->buffer, content, contentLength);
     }
-
-    line->buffer = (char *) malloc(line->size);
-    if (content != NULL) {
-        memcpy(line->buffer, content, line->size);
-    }
-
-    line->gapStart = (content == NULL) ? 0 : line->size;
-    line->gapEnd = line->size;
 
     return line;
 }
@@ -34,6 +34,7 @@ Line *initialiseLine(const char *content) {
 /// Free the allocated memory of a [Line].
 /// @param line A pointer to the [Line] to free.
 void freeLine(Line *line) {
+    if (!line) return;
     free(line->buffer);
     free(line);
 }
@@ -43,17 +44,16 @@ void freeLine(Line *line) {
 /// @param newSize The new size desired.
 static void resizeLine(Line *line, size_t newSize) {
     char *newBuffer = (char *) malloc(newSize);
+    assert(newBuffer != NULL);
+
+    size_t newGapEnd = newSize - (line->size - line->gapEnd);
 
     memcpy(newBuffer, line->buffer, line->gapStart);
-    memcpy(
-        newBuffer + newSize - (line->size - line->gapEnd),
-        line->buffer + line->gapEnd,
-        line->size - line->gapEnd
-    );
+    memcpy(newBuffer + newGapEnd, line->buffer + line->gapEnd, line->size - line->gapEnd);
 
     free(line->buffer);
     line->buffer = newBuffer;
-    line->gapEnd = newSize - (line->size - line->gapEnd);
+    line->gapEnd = newGapEnd;
     line->size = newSize;
 }
 
@@ -61,24 +61,15 @@ static void resizeLine(Line *line, size_t newSize) {
 /// @param line The [Line] for which the gap should be moved.
 /// @param index The position the gap should be moved to.
 static void moveGap(Line *line, size_t index) {
-    if (index == line->gapStart) return;
-
     if (index < line->gapStart) {
-        size_t moveSize = line->gapStart - index;
-        memmove(
-            line->buffer + line->gapEnd - moveSize,
-            line->buffer + index, moveSize
-        );
-    } else {
-        size_t moveSize = index - line->gapStart;
-        memmove(
-            line->buffer + line->gapStart,
-            line->buffer + line->gapEnd, moveSize
-        );
+        memmove(line->buffer + line->gapEnd - (line->gapStart - index), line->buffer + index, line->gapStart - index);
+        line->gapEnd -= (line->gapStart - index);
+        line->gapStart = index;
+    } else if (index > line->gapStart) {
+        memmove(line->buffer + line->gapStart, line->buffer + line->gapEnd, index - line->gapStart);
+        line->gapEnd += (index - line->gapStart);
+        line->gapStart = index;
     }
-
-    line->gapEnd -= line->gapStart - index;
-    line->gapStart = index;
 }
 
 /// Insert a [char] into a [Line]'s contents at a given index.
@@ -105,13 +96,8 @@ void insertCharAt(Line *line, char toInsert, size_t index) {
 void removeCharAt(Line *line, size_t index) {
     assert(index < line->size);
 
-    if (index < line->gapStart) {
-        memmove(line->buffer + index, line->buffer + index + 1, line->gapStart - index - 1);
-        line->gapStart--;
-    } else if (index >= line->gapEnd) {
-        memmove(line->buffer + index, line->buffer + index + 1, line->size - index - 1);
-        line->gapEnd++;
-    }
+    moveGap(line, index);
+    line->gapEnd++;
 }
 
 /// Insert a string into a [Line]'s contents at a given index.
@@ -123,19 +109,14 @@ void insertStrAt(Line *line, const char *toInsert, size_t index) {
     assert(index >= 0);
     assert(index <= (line->size - (line->gapEnd - line->gapStart)));
 
-    size_t length = strlen(toInsert);
-
-    // Resize buffer if needed
-    while (line->gapEnd - line->gapStart < length) {
+    size_t insertLength = strlen(toInsert);
+    while (line->gapEnd - line->gapStart < insertLength) {
         resizeLine(line, line->size * 2);
     }
 
-    // Move gap to the insert position
     moveGap(line, index);
-
-    // Copy the string into the gap
-    strncpy(line->buffer + line->gapStart, toInsert, length);
-    line->gapStart += length;
+    memcpy(line->buffer + line->gapStart, toInsert, insertLength);
+    line->gapStart += insertLength;
 }
 
 /// Remove a substring from a [Line]'s contents between [start] and [end].
@@ -146,11 +127,8 @@ void removeStrAt(Line *line, size_t start, size_t end) {
     assert(start <= end);
     assert(end <= (line->size - (line->gapEnd - line->gapStart)));
 
-    // Move gap to the start position
     moveGap(line, start);
-
-    // Increase the gap size by moving the gap end backward
-    line->gapEnd -= (end - start);
+    line->gapEnd += (end - start);
 }
 
 /// Calculates the length of the given [Line].
@@ -164,9 +142,13 @@ size_t lineLength(Line *line) {
 /// @param line The [Line] to prettify.
 /// @returns The text represented by the [Line].
 char *getLine(Line *line) {
-    char *result = malloc(line->size + 1);
-    strncpy(result, line->buffer, line->gapStart);
-    strncpy(result + line->gapStart, line->buffer + line->gapEnd, line->size - line->gapEnd);
-    result[line->size] = '\0';
+    size_t len = lineLength(line);
+    char *result = (char *) malloc(len + 1);
+    assert(result != NULL);
+
+    memcpy(result, line->buffer, line->gapStart);
+    memcpy(result + line->gapStart, line->buffer + line->gapEnd, line->size - line->gapEnd);
+    result[len] = '\0';
+
     return result;
 }

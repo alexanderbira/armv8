@@ -15,6 +15,9 @@ File *initialiseFile(const char *path) {
 
     file->size = 0;
     file->maxSize = INITIAL_FILE_SIZE;
+    file->lineNumber = 0;
+    file->cursor = 0;
+
     file->lines = (Line **) malloc(INITIAL_FILE_SIZE * sizeof(Line *));
     file->path = path ? strdup(path) : NULL;
 
@@ -44,6 +47,7 @@ File *initialiseFile(const char *path) {
 /// Free the allocated memory of a [File].
 /// @param file A pointer to the [File] to free.
 void freeFile(File *file) {
+    if (!file) return;
     free(file->path);
     for (size_t i = 0; i < file->size; i++) {
         freeLine(file->lines[i]);
@@ -56,26 +60,25 @@ void freeFile(File *file) {
 /// @param file The [File] to modify.
 /// @param content The text to add.
 /// @param atLine The line at which to add the new line.
-void addLine(File *file, const char *content, size_t atLine) {
-    assert(atLine <= file->size);
+void addLine(File *file, const char *content, size_t afterLine) {
+    assert(afterLine <= file->size);
 
-    Line *line = initialiseLine(content);
+    Line *newLine = initialiseLine(content);
 
     if (file->size >= file->maxSize) {
         file->maxSize *= 2; // Exponential scaling policy.
         file->lines = (Line **) realloc(file->lines, file->maxSize * sizeof(Line *));
+        assert(file->lines != NULL);
     }
 
-    // Move subsequent lines one along.
-    memmove(
-        file->lines + (int) atLine + 1,
-        file->lines + (int) atLine,
-        (file->size - (int) atLine) * sizeof(Line *)
-    );
-
-    // Insert the new line
-    file->lines[atLine] = line;
-    file->size++;
+    if (afterLine == file->size) {
+        file->lines[file->size++] = newLine;
+    } else {
+        memmove(&file->lines[afterLine + 2], &file->lines[afterLine + 1],
+                (file->size - afterLine - 1) * sizeof(Line *));
+        file->lines[afterLine + 1] = newLine;
+        file->size++;
+    }
 }
 
 /// Deletes a [Line] at a given line number from the [File].
@@ -85,9 +88,18 @@ void deleteLine(File *file, size_t lineNumber) {
     assert(lineNumber < file->size);
 
     freeLine(file->lines[lineNumber]);
-    memmove(file->lines + lineNumber, file->lines + lineNumber + 1, (file->size - lineNumber - 1) * sizeof(Line *));
+    memmove(&file->lines[lineNumber], &file->lines[lineNumber + 1], (file->size - lineNumber - 1) * sizeof(Line *));
 
     file->size--;
+}
+
+/// Executes [callback] on every line in the [File].
+/// @param file The [File] to process.
+/// @param callback The [LineCallback] to execute on each line.
+void iterateLines(File *file, LineCallback callback) {
+    for (size_t i = 0; i < file->size; ++i) {
+        callback(*(file->lines[i]));
+    }
 }
 
 /// Performs some action of [file] given a special [ControlKey].
@@ -97,23 +109,28 @@ void handleKey(File *file, int key) {
     switch (key) {
         case KEY_UP:
             if (file->lineNumber == 0) return;
+            file->lineNumber--;
+            if (file->cursor >= lineLength(file->lines[file->lineNumber])) {
+                file->cursor = lineLength(file->lines[file->lineNumber]);
+            }
+            break;
 
         case KEY_DOWN:
             if (file->lineNumber + 1 == file->size) return;
-
-            file->lineNumber += (key == ARROW_UP) ? -1 : 1;
-            if (file->cursor >= file->lines[file->lineNumber]->size) {
-                file->cursor = file->lines[file->lineNumber]->size - 1;
+            file->lineNumber++;
+            if (file->cursor >= lineLength(file->lines[file->lineNumber])) {
+                file->cursor = lineLength(file->lines[file->lineNumber]);
             }
             break;
 
         case KEY_LEFT:
             if (file->cursor == 0) return;
+            file->cursor--;
+            break;
 
         case KEY_RIGHT:
-            if (file->cursor >= file->lines[file->lineNumber]->size) return;
-
-            file->cursor += (key == ARROW_LEFT) ? -1 : 1;
+            if (file->cursor >= lineLength(file->lines[file->lineNumber])) return;
+            file->cursor++;
             break;
 
         case '\n': {
@@ -126,6 +143,7 @@ void handleKey(File *file, int key) {
             addLine(file, currentText + file->cursor, file->lineNumber++);
             file->cursor = 0;
             free(currentText);
+            break;
         }
 
         case KEY_BACKSPACE:

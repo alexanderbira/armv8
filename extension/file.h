@@ -36,11 +36,6 @@ typedef struct {
     size_t cursor;
 } File;
 
-/// Special keys which control the editor.
-typedef enum {
-    ARROW_UP, ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT, RETURN, DELETE
-} ControlKey;
-
 typedef void (*LineCallback)(Line line);
 
 File *initialiseFile(const char *path);
@@ -50,6 +45,8 @@ void freeFile(File *file);
 void addLine(File *file, const char *content, size_t afterLine);
 
 void deleteLine(File *file, size_t lineNumber);
+
+void iterateLines(File *file, LineCallback callback);
 
 void handleKey(File *file, int key);
 
