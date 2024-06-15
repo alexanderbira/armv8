@@ -24,30 +24,35 @@ typedef struct {
     Line **lines;
 
     /// The number of lines.
-    size_t size;
+    int size;
 
     /// The total capacity of [lines].
-    size_t maxSize;
+    int maxSize;
 
     /// The current line of the cursor, zero-indexed.
-    size_t lineNumber;
+    int lineNumber;
 
     /// The current cursor position within the line, zero-indexed.
-    size_t cursor;
+    int cursor;
+
+    /// The top-left corner of the window currently being rendered.
+    int windowX, windowY;
 } File;
 
-typedef void (*LineCallback)(Line line);
+typedef void (*LineCallback)(Line *line, int index);
 
 File *initialiseFile(const char *path);
 
 void freeFile(File *file);
 
-void addLine(File *file, const char *content, size_t afterLine);
+void addLine(File *file, const char *content, int afterLine);
 
-void deleteLine(File *file, size_t lineNumber);
+void deleteLine(File *file, int lineNumber);
 
 void iterateLines(File *file, LineCallback callback);
 
-void handleKey(File *file, int key);
+void iterateLinesInWindow(File *file, LineCallback callback);
+
+void handleFileAction(File *file, int key);
 
 #endif // EXTENSION_FILE_H

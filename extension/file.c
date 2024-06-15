@@ -17,6 +17,8 @@ File *initialiseFile(const char *path) {
     file->maxSize = INITIAL_FILE_SIZE;
     file->lineNumber = 0;
     file->cursor = 0;
+    file->windowX = 0;
+    file->windowY = 0;
 
     file->lines = (Line **) malloc(INITIAL_FILE_SIZE * sizeof(Line *));
     file->path = path ? strdup(path) : NULL;
@@ -49,7 +51,7 @@ File *initialiseFile(const char *path) {
 void freeFile(File *file) {
     if (!file) return;
     free(file->path);
-    for (size_t i = 0; i < file->size; i++) {
+    for (int i = 0; i < file->size; i++) {
         freeLine(file->lines[i]);
     }
     free(file->lines);
@@ -60,7 +62,7 @@ void freeFile(File *file) {
 /// @param file The [File] to modify.
 /// @param content The text to add.
 /// @param atLine The line at which to add the new line.
-void addLine(File *file, const char *content, size_t afterLine) {
+void addLine(File *file, const char *content, int afterLine) {
     assert(afterLine <= file->size);
 
     Line *newLine = initialiseLine(content);
@@ -84,7 +86,7 @@ void addLine(File *file, const char *content, size_t afterLine) {
 /// Deletes a [Line] at a given line number from the [File].
 /// @param file The [File] to modify.
 /// @param lineNumber The line number to delete.
-void deleteLine(File *file, size_t lineNumber) {
+void deleteLine(File *file, int lineNumber) {
     assert(lineNumber < file->size);
 
     freeLine(file->lines[lineNumber]);
@@ -97,15 +99,24 @@ void deleteLine(File *file, size_t lineNumber) {
 /// @param file The [File] to process.
 /// @param callback The [LineCallback] to execute on each line.
 void iterateLines(File *file, LineCallback callback) {
-    for (size_t i = 0; i < file->size; ++i) {
-        callback(*(file->lines[i]));
+    for (int i = 0; i < file->size; ++i) {
+        callback(file->lines[i], i);
     }
 }
 
-/// Performs some action of [file] given a special [ControlKey].
+/// Executes [callback] on all lines in the [File] which are in the window.
+/// @param file The [File] to process.
+/// @param callback The [LineCallback] to execute on the lines.
+void iterateLinesInWindow(File *file, LineCallback callback) {
+    for (int i = (int) file->windowY; i < (int) file->size; i++) {
+        callback(file->lines[i], i);
+    }
+}
+
+/// Performs some action of [file] given some [key].
 /// @param file The [File] to modify.
-/// @param key The [ControlKey] that was pressed.
-void handleKey(File *file, int key) {
+/// @param key The key code in question.
+void handleFileAction(File *file, int key) {
     switch (key) {
         case KEY_UP:
             if (file->lineNumber == 0) return;
@@ -116,21 +127,47 @@ void handleKey(File *file, int key) {
             break;
 
         case KEY_DOWN:
-            if (file->lineNumber + 1 == file->size) return;
+            // We allow users to create a new line by pressing
+            // the down arrow on the last line of the file.
+            if (file->lineNumber + 1 == file->size) {
+                // But if they are already on a trailing empty line, return.
+                if (!lineLength(file->lines[file->lineNumber])) return;
+
+                addLine(file, NULL, file->lineNumber++);
+                file->cursor = 0;
+                return;
+            }
+
+            // Otherwise, go to the next line and coerce cursor x location.
             file->lineNumber++;
             if (file->cursor >= lineLength(file->lines[file->lineNumber])) {
                 file->cursor = lineLength(file->lines[file->lineNumber]);
             }
+
             break;
 
         case KEY_LEFT:
-            if (file->cursor == 0) return;
-            file->cursor--;
+            if (file->cursor == 0) {
+                // Go to end of previous line if it exists.
+                if (file->lineNumber == 0) return;
+
+                file->lineNumber--;
+                file->cursor = lineLength(file->lines[file->lineNumber]);
+            } else {
+                file->cursor--;
+            }
             break;
 
         case KEY_RIGHT:
-            if (file->cursor >= lineLength(file->lines[file->lineNumber])) return;
-            file->cursor++;
+            if (file->cursor >= lineLength(file->lines[file->lineNumber])) {
+                // Go to end of previous line if it exists.
+                if (file->lineNumber + 1 == file->size) return;
+
+                file->lineNumber++;
+                file->cursor = 0;
+            } else {
+                file->cursor++;
+            }
             break;
 
         case '\n': {
@@ -156,7 +193,7 @@ void handleKey(File *file, int key) {
                 // Current line will be removed, but we copy over text.
                 Line *currentLine = file->lines[file->lineNumber];
                 Line *previousLine = file->lines[file->lineNumber - 1];
-                size_t previousLineLength = lineLength(previousLine);
+                int previousLineLength = lineLength(previousLine);
 
                 if (lineLength(currentLine) != 0) {
                     // Copy text to previous line if any exist.

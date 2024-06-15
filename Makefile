@@ -77,7 +77,7 @@ assemble: $(COMMON_OBJECTS) $(ASSEMBLER_OBJECTS) $(ASSEMBLER_MAIN)              
 	$(CC) $(CFLAGS) -o $@ $^
 
 editor: $(COMMON_OBJECTS) $(EMULATOR_OBJECTS) $(ASSEMBLER_OBJECTS) $(GRIM_OBJECTS) ## Compile GRim. (The extension)
-	$(CC) $(CFLAGS) -o $@ $^ -lncurses
+	$(CC) $(CFLAGS) -o $@ $^ -lncurses -lm
 
 # Compile rules for all .c files
 $(OBJECT_DIR)/%.o: $(SOURCE_DIR)/%.c

@@ -14,8 +14,8 @@ Line *initialiseLine(const char *content) {
     Line *line = (Line *) malloc(sizeof(Line));
     assert(line != NULL);
 
-    size_t contentLength = content ? strlen(content) : 0;
-    size_t bufferSize = (contentLength > INITIAL_LINE_SIZE) ? contentLength * 2 : INITIAL_LINE_SIZE;
+    int contentLength = content ? strlen(content) : 0;
+    int bufferSize = (contentLength > INITIAL_LINE_SIZE) ? contentLength * 2 : INITIAL_LINE_SIZE;
 
     line->buffer = (char *) malloc(bufferSize);
     assert(line->buffer != NULL);
@@ -42,11 +42,11 @@ void freeLine(Line *line) {
 /// Resizes [Line], the gap buffer, to [newSize].
 /// @param line The [Line] to be resized.
 /// @param newSize The new size desired.
-static void resizeLine(Line *line, size_t newSize) {
+static void resizeLine(Line *line, int newSize) {
     char *newBuffer = (char *) malloc(newSize);
     assert(newBuffer != NULL);
 
-    size_t newGapEnd = newSize - (line->size - line->gapEnd);
+    int newGapEnd = newSize - (line->size - line->gapEnd);
 
     memcpy(newBuffer, line->buffer, line->gapStart);
     memcpy(newBuffer + newGapEnd, line->buffer + line->gapEnd, line->size - line->gapEnd);
@@ -60,7 +60,7 @@ static void resizeLine(Line *line, size_t newSize) {
 /// Moves the gap in a [Line], the gap buffer, to [index].
 /// @param line The [Line] for which the gap should be moved.
 /// @param index The position the gap should be moved to.
-static void moveGap(Line *line, size_t index) {
+static void moveGap(Line *line, int index) {
     if (index < line->gapStart) {
         memmove(line->buffer + line->gapEnd - (line->gapStart - index), line->buffer + index, line->gapStart - index);
         line->gapEnd -= (line->gapStart - index);
@@ -77,7 +77,7 @@ static void moveGap(Line *line, size_t index) {
 /// @param toInsert The [char] to insert.
 /// @param index The index at which to insert the [char].
 /// @pre The index must be smaller than the [Line] length.
-void insertCharAt(Line *line, char toInsert, size_t index) {
+void insertCharAt(Line *line, char toInsert, int index) {
     assert(index <= line->size);
 
     // If we have run out of space, double size.
@@ -93,7 +93,7 @@ void insertCharAt(Line *line, char toInsert, size_t index) {
 /// @param line The [Line] from which to remove the [char].
 /// @param index The index of the [char] to remove.
 /// @pre The index must be smaller than the [Line] length.
-void removeCharAt(Line *line, size_t index) {
+void removeCharAt(Line *line, int index) {
     assert(index < line->size);
 
     moveGap(line, index);
@@ -105,10 +105,10 @@ void removeCharAt(Line *line, size_t index) {
 /// @param toInsert The string to insert.
 /// @param index The index at which to insert the string.
 /// @pre The index must be smaller than the [Line] length.
-void insertStrAt(Line *line, const char *toInsert, size_t index) {
+void insertStrAt(Line *line, const char *toInsert, int index) {
     assert(index <= (line->size - (line->gapEnd - line->gapStart)));
 
-    size_t insertLength = strlen(toInsert);
+    int insertLength = strlen(toInsert);
     while (line->gapEnd - line->gapStart < insertLength) {
         resizeLine(line, line->size * 2);
     }
@@ -122,7 +122,7 @@ void insertStrAt(Line *line, const char *toInsert, size_t index) {
 /// @param line The [Line] from which to remove the string.
 /// @param start The starting index of the substring to remove.
 /// @param end The ending index of the substring to remove.
-void removeStrAt(Line *line, size_t start, size_t end) {
+void removeStrAt(Line *line, int start, int end) {
     assert(start <= end);
     assert(end <= (line->size - (line->gapEnd - line->gapStart)));
 
@@ -133,7 +133,7 @@ void removeStrAt(Line *line, size_t start, size_t end) {
 /// Calculates the length of the given [Line].
 /// @param line The [Line] to calculate over.
 /// @returns The length of the text represented by the [Line].
-size_t lineLength(Line *line) {
+int lineLength(Line *line) {
     return line->size - (line->gapEnd - line->gapStart);
 }
 
@@ -141,7 +141,7 @@ size_t lineLength(Line *line) {
 /// @param line The [Line] to prettify.
 /// @returns The text represented by the [Line].
 char *getLine(Line *line) {
-    size_t len = lineLength(line);
+    int len = lineLength(line);
     char *result = (char *) malloc(len + 1);
     assert(result != NULL);
 
