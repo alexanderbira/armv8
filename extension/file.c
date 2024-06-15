@@ -124,13 +124,27 @@ void handleKey(File *file, int key) {
             break;
 
         case KEY_LEFT:
-            if (file->cursor == 0) return;
-            file->cursor--;
+            if (file->cursor == 0) {
+                // Go to end of previous line if it exists.
+                if (file->lineNumber == 0) return;
+
+                file->lineNumber--;
+                file->cursor = lineLength(file->lines[file->lineNumber]);
+            } else {
+                file->cursor--;
+            }
             break;
 
         case KEY_RIGHT:
-            if (file->cursor >= lineLength(file->lines[file->lineNumber])) return;
-            file->cursor++;
+            if (file->cursor >= lineLength(file->lines[file->lineNumber])) {
+                // Go to end of previous line if it exists.
+                if (file->lineNumber + 1 == file->size) return;
+
+                file->lineNumber++;
+                file->cursor = 0;
+            } else {
+                file->cursor++;
+            }
             break;
 
         case '\n': {

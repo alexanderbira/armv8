@@ -106,7 +106,6 @@ void removeCharAt(Line *line, size_t index) {
 /// @param index The index at which to insert the string.
 /// @pre The index must be smaller than the [Line] length.
 void insertStrAt(Line *line, const char *toInsert, size_t index) {
-    assert(index >= 0);
     assert(index <= (line->size - (line->gapEnd - line->gapStart)));
 
     size_t insertLength = strlen(toInsert);
