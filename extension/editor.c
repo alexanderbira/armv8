@@ -50,8 +50,8 @@ static void printFile() {
         wclrtoeol(editor);
     }
 
-    wmove(lineNumbers, file->lineNumber - file->windowY + 1, 0);
-    wmove(editor, file->lineNumber - file->windowY + 1, 0);
+    wmove(lineNumbers, file->size - file->windowY, 0);
+    wmove(editor, file->size - file->windowY, 0);
     wclrtobot(lineNumbers);
     wclrtobot(editor);
 }
