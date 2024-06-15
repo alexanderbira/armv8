@@ -6,6 +6,7 @@
 ///
 
 #include "editor.h"
+#include "../src/assemble.h"
 
 // Function prototypes
 void displayFile(File *file);
@@ -44,5 +45,6 @@ int main(int argc, char *argv[]) {
 void displayFile(File *file) {
     for (size_t i = 0; i < file->size; i++) {
         mvprintw(i, 0, "%s", getLine(file->lines[i]));
+        handleAssembly();
     }
 }

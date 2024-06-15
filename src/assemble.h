@@ -20,4 +20,4 @@ int main(int argc, char **argv);
 
 void handleAssembly(char *assembly, AssemblerState *state);
 
-#endif //ASSEMBLER_ASSEMBLE_H
+#endif // ASSEMBLER_ASSEMBLE_H

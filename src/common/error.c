@@ -12,10 +12,15 @@ void assertFatal_(bool condition, char message[], char *file, int line, const ch
 }
 
 noreturn void throwFatal_(char message[], char *file, int line, const char *func) {
+    #ifdef JUMP_ON_ERROR
+    fatalError = strdup(message);
+    longjmp(fatalBuffer, 1);
+    #else
     fprintf(stderr, "[%s] %s\n", func, message);
     fprintf(stderr, "    In file %s, line %d\n", file, line);
     if (errno) {
         fprintf(stderr, "    With description: %s\n", strerror(errno));
     }
-    exit(-1);
+    #endif
+    exit(1);
 }
