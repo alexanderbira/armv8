@@ -198,8 +198,14 @@ void wPrintLine(WINDOW *window, char *string) {
             } else if (
                 (tolower(first) == 'w' || tolower(first) == 'x') &&
                 wholeNum &&
+                tokenLength > 1 && // No isolated highlighted "w" or "x" allowed.
                 atoi(&string[printedIndex+1]) <= 31 && // Reg nums range 0-31.
-                tokenLength > 1 // No isolated highlighted "w" or "x" allowed.
+                (
+                    (atoi(&string[printedIndex+1]) >= 10 &&
+                tokenLength == 3) || 
+                    (atoi(&string[printedIndex+1]) <= 9 &&
+                tokenLength == 2)
+                ) // No trailing 0s before the register number allowed.
             ) {
                 highlightType = REGISTER;
             }
