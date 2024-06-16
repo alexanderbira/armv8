@@ -78,6 +78,9 @@ static void initialise(const char *path) {
 
     // Initialise [File] object.
     file = initialiseFile(path);
+
+    // Initialise syntax highlighting.
+    initialiseHighlight();
 }
 
 /// Updates UI, including line numbers window, scrolling.
@@ -119,7 +122,9 @@ static void updateLine(Line *line, int index) {
     wclrtoeol(lineNumbers);
 
     // Print the line contents, then clear rest of line.
-    mvwaddstr(editor, index - file->windowY, 0, getLine(line));
+    wmove(editor, index - file->windowY, 0);
+    wPrintLine(editor, getLine(line));
+
     wclrtoeol(editor);
 }
 

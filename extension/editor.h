@@ -12,6 +12,7 @@
 #include <ncurses.h>
 
 #include "file.h"
+#include "highlight.h"
 #include "line.h"
 
 /// The key-code for CTRL plus some other key.
