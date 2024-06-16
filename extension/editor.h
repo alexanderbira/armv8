@@ -15,8 +15,8 @@
 #include "file.h"
 #include "line.h"
 #include "error.h"
-#include "assemble.h"
-#include "emulate.h"
+#include "handleAssembly.h"
+// #include "emulate.h"
 
 /// The key-code for CTRL plus some other key.
 #define CTRL(__KEY__) ((__KEY__) & 0x1F)
