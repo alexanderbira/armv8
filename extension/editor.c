@@ -92,8 +92,7 @@ static void updateUI(void) {
     // the last line of the file.
     int maxLineNumber = file->windowY + CONTENT_HEIGHT + 1;
     maxLineNumber = (file->size < maxLineNumber) ? file->size : maxLineNumber;
-    int maxWidth = (maxLineNumber == 0)
-                   ? 1 : (int) floor(log10((double) maxLineNumber)) + 1;
+    int maxWidth = countDigits(maxLineNumber);
 
     // Resize line number window if widest line number has changed.
     if (maxWidth + 1 != currWidth) {
@@ -118,13 +117,14 @@ static void updateUI(void) {
 /// @param line The [Line] to be updated on screen.
 static void updateLine(Line *line, int index) {
     // Print the line number, then clear rest of line.
-    mvwprintw(lineNumbers, index - file->windowY, 0, "%d", index + 1);
+    int padding = getmaxx(lineNumbers) - countDigits(index + 1) - 1;
+    wmove(lineNumbers, index - file->windowY, 0);
     wclrtoeol(lineNumbers);
+    mvwprintw(lineNumbers, index - file->windowY, padding, "%d", index + 1);
 
     // Print the line contents, then clear rest of line.
     wmove(editor, index - file->windowY, 0);
     wPrintLine(editor, getLine(line));
-
     wclrtoeol(editor);
 }
 

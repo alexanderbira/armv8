@@ -9,6 +9,7 @@
 #define COMMON_CONST_H
 
 #include <limits.h>
+#include <math.h>
 #include <stdint.h>
 
 /// The virtual memory size of the emulated machine.
@@ -45,6 +46,7 @@ typedef uint32_t Component;
 /// @example \code b(1010_0101) = 0xA5 \endcode
 /// @warning May not be optimised at compile - do not abuse!
 #define b(__LITERAL__) toBinary(#__LITERAL__)
+
 static inline uint64_t toBinary(const char *str) {
     uint64_t result = 0;
     while (*str) {
@@ -102,6 +104,7 @@ static inline uint64_t toBinary(const char *str) {
 /// @example \code decompose(10111, 11100) == 00101 \endcode
 /// @authors Billy Highley and Alexander Biraben-Renard
 #define decompose(__WORD__, __MASK__) decompose(__WORD__, __MASK__)
+
 static inline Component decompose(Instruction word, Mask mask) {
     uint32_t bits = word & mask;
     while (!(mask & 1) && (mask >>= 1)) bits >>= 1;
@@ -116,5 +119,11 @@ static inline Component decompose(Instruction word, Mask mask) {
 #define signExtend(__VALUE__, __ACTUAL_WIDTH__) \
     ((__typeof__(__VALUE__))((__VALUE__) << (8 * sizeof(__VALUE__) - (__ACTUAL_WIDTH__))) >> \
     (8 * sizeof(__VALUE__) - (__ACTUAL_WIDTH__)))
+
+/// Counts the number of digits in [__VALUE__] if it were printed in decimal.
+/// @param __VALUE__ The value to count digits for.
+/// @returns The number of digits in [__VALUE__].
+#define countDigits(__VALUE__) \
+    ((__VALUE__ == 0) ? 1 : (int) floor(log10((double) __VALUE__)) + 1)
 
 #endif // COMMON_CONST_H
