@@ -145,7 +145,7 @@ void wPrintLine(WINDOW *window, char *string) {
                     lastWasColon = false;
                     wholeAlphaNum = wholeAlphaNum && (
                         isalpha(currChar) ||
-                        isnumber(currChar)
+                        isdigit(currChar)
                     );
 
                 } else {
@@ -156,7 +156,7 @@ void wPrintLine(WINDOW *window, char *string) {
                 }
 
                 wholeHex = wholeHex && isxdigit(currChar);
-                wholeNum = wholeNum && isnumber(currChar);
+                wholeNum = wholeNum && isdigit(currChar);
 
                 scannedIndex++;
             }
@@ -166,7 +166,8 @@ void wPrintLine(WINDOW *window, char *string) {
 
             // Make a copy of the token for searching in the list of mnemonics.
             char *tokenCopy = malloc(sizeof(char) * (tokenLength+1));
-            strlcpy(tokenCopy, tokenPtr, tokenLength+1);
+            strncpy(tokenCopy, tokenPtr, tokenLength);
+            tokenCopy[tokenLength] = '\0';
 
             if (tokenLength <= 4 && // Longest mnemonic is 4 chars.
                 // Search for the token in the sorted list of mnemonics.
