@@ -100,7 +100,16 @@ void deleteLine(File *file, int lineNumber) {
 /// @param callback The [LineCallback] to execute on each line.
 void iterateLines(File *file, LineCallback callback) {
     for (int i = 0; i < file->size; ++i) {
-        callback(*(file->lines[i]));
+        callback(file->lines[i], i);
+    }
+}
+
+/// Executes [callback] on all lines in the [File] which are in the window.
+/// @param file The [File] to process.
+/// @param callback The [LineCallback] to execute on the lines.
+void iterateLinesInWindow(File *file, LineCallback callback) {
+    for (int i = (int) file->windowY; i < (int) file->size; i++) {
+        callback(file->lines[i], i);
     }
 }
 
