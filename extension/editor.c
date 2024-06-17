@@ -42,8 +42,17 @@ int main(int argc, char *argv[]) {
                 break;
 
             case RUN_KEY:
-                // TODO: Run the assembly.
+            {
+                AssemblerState state = createState();
+                if (!setjmp(fatalBuffer)) {
+                    for (int currentLine = 0; currentLine < file->size; currentLine++) {
+                        handleAssembly(getLine(file->lines[currentLine]), &state);
+                    }
+                } else {
+                    // TODO: Send the error message where needed.
+                }
                 break;
+            }
 
             case DEBUG_KEY:
                 // TODO: Enter debug mode.
