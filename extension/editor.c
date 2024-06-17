@@ -13,18 +13,9 @@ static WINDOW *title, *lineNumbers, *editor, *menu;
 
 static File *file;
 
-static const char *name     = "[GRIM]";
-static const char *mode     = "MODE : EDIT";
-static const char *fileName = "[filename.c]";
-static const char *status   = "STATUS : SAVED";
-static const char *position = "[1,1]";
-static const char *command  = "[^Q] - QUIT | [^R] - RUN";
+static EditorMode mode;
 
 static void initialise(const char *path);
-
-static void initialiseTitle(void);
-
-static void initialiseMenu(void);
 
 static void updateUI(void);
 
@@ -87,18 +78,15 @@ static void initialise(const char *path) {
     init_pair(11, 15, 16);
 
     title = newwin(TITLE_HEIGHT, cols, 0, 0);
+    menu = newwin(MENU_HEIGHT, cols, rows - MENU_HEIGHT, 0);
+    wbkgd(menu, COLOR_PAIR(10));
     wbkgd(title, COLOR_PAIR(10));
-    initialiseTitle();
 
     lineNumbers = newwin(CONTENT_HEIGHT, 2, TITLE_HEIGHT, 0);
     wbkgd(lineNumbers, COLOR_PAIR(11));
 
     editor = newwin(CONTENT_HEIGHT, cols - 2, TITLE_HEIGHT, 2);
     wbkgd(editor, COLOR_PAIR(11));
-
-    menu = newwin(MENU_HEIGHT, cols, rows - MENU_HEIGHT, 0);
-    wbkgd(menu, COLOR_PAIR(10));
-    initialiseMenu();
 
     // Set [editor] to be the only window which receives key presses.
     keypad(editor, true);
@@ -108,24 +96,6 @@ static void initialise(const char *path) {
 
     // Initialise syntax highlighting.
     initialiseHighlight();
-}
-
-static void initialiseTitle(void) {
-    wattron(title, A_BOLD);
-    mvwprintw(title, 0, 0, "%s", name);
-    mvwprintw(title, 0, (int) (cols / 4 - strlen(mode) / 2),       "%s", mode);
-    mvwprintw(title, 0, (int) (cols / 2 - strlen(fileName) / 2),   "%s", fileName);
-    mvwprintw(title, 0, (int) (3 * cols / 4 - strlen(status) / 2), "%s", status);
-    mvwprintw(title, 0, (int) (cols - strlen(position)),           "%s", position);
-    wrefresh(title);
-    wattroff(title, A_BOLD);
-}
-
-static void initialiseMenu(void) {
-    wattron(menu, A_BOLD);
-    mvwprintw(menu, 0, (int) (cols - strlen(command)) / 2, "%s", command);
-    wrefresh(menu);
-    wattroff(menu, A_BOLD);
 }
 
 /// Updates UI, including line numbers window, scrolling.
@@ -146,6 +116,16 @@ static void updateUI(void) {
         wresize(editor, CONTENT_HEIGHT, cols - maxWidth - 1);
         mvwin(editor, TITLE_HEIGHT, maxWidth + 1);
     }
+
+    // Update top title bar.
+    wattron(title, A_BOLD);
+    mvwprintw(title, 0, 0, "[GRIM]");
+    mvwprintw(title, 0, (int) (cols / 5), "MODE: %s", modes[mode]);
+    mvwprintw(title, 0, (int) (2 * cols / 5), "PATH: [%s]", file->path ? file->path : "<UNKNOWN>");
+    mvwprintw(title, 0, (int) (3 * cols / 5), "STATUS: %s", "UNSAVED");
+    mvwprintw(title, 0, (int) (4 * cols / 5), "line %d, col %d", file->lineNumber + 1, file->cursor + 1);
+    wrefresh(title);
+    wattroff(title, A_BOLD);
 
     // Scroll if out of bounds in any direction.
     if (file->lineNumber >= file->windowY + CONTENT_HEIGHT) {
@@ -201,7 +181,6 @@ static void updateFile(void) {
 static void resizeUI(void) {
     wclear(title);
     wresize(title, TITLE_HEIGHT, cols);
-    initialiseTitle();
 
     wresize(lineNumbers, CONTENT_HEIGHT, 2);
     wrefresh(lineNumbers);
@@ -212,5 +191,4 @@ static void resizeUI(void) {
     wclear(menu);
     wresize(menu, MENU_HEIGHT, cols);
     mvwin(menu, rows - MENU_HEIGHT, 0);
-    initialiseMenu();
 }
