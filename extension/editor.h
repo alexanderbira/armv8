@@ -8,9 +8,9 @@
 #ifndef EXTENSION_EDITOR_H
 #define EXTENSION_EDITOR_H
 
-#include <math.h>
 #include <ncurses.h>
 
+#include "const.h"
 #include "file.h"
 #include "highlight.h"
 #include "line.h"
