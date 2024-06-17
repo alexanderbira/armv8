@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
     initialise((argc > 1) ? argv[1] : NULL);
 
     int key = -1;
-    while (key != QUIT) {
+    while (key != QUIT_KEY) {
         // Update what is displayed.
         updateUI();
         updateFile();
@@ -37,13 +37,19 @@ int main(int argc, char *argv[]) {
         // Get and handle input.
         key = wgetch(editor);
         switch (key) {
-            case SAVE:
+            case SAVE_KEY:
                 // TODO: save file, prompt if no path.
                 break;
 
-            case RUN:
+            case RUN_KEY:
                 // TODO: Run the assembly.
                 break;
+
+            case DEBUG_KEY:
+                // TODO: Enter debug mode.
+
+            case BINARY_KEY:
+                // TODO: Enter binary mode.
 
             case KEY_RESIZE:
                 getmaxyx(stdscr, rows, cols);
