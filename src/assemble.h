@@ -15,7 +15,10 @@
 
 #include "assemblerDelegate.h"
 #include "helpers.h"
+#include "handleAssembly.h"
 
 int main(int argc, char **argv);
 
-#endif //ASSEMBLER_ASSEMBLE_H
+void handleAssembly(char *assembly, AssemblerState *state);
+
+#endif // ASSEMBLER_ASSEMBLE_H

@@ -9,12 +9,16 @@
 #define EXTENSION_EDITOR_H
 
 #include <ncurses.h>
+#include <setjmp.h>
 #include <stdio.h>
 
 #include "const.h"
 #include "file.h"
 #include "highlight.h"
 #include "line.h"
+#include "error.h"
+#include "handleAssembly.h"
+// #include "emulate.h"
 
 /// The key-code for CTRL plus some other key.
 #define CTRL(__KEY__) ((__KEY__) & 0x1F)
@@ -70,6 +74,11 @@ typedef enum {
 
 /// The human-readable titles of [Mode].
 static const char *modes[] = { "EDIT", "DEBUG_KEY", "BINARY_KEY" };
+
+#define JUMP_ON_ERROR
+
+jmp_buf fatalBuffer;
+char *fatalError;
 
 int main(int argc, char *argv[]);
 
