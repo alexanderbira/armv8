@@ -9,7 +9,7 @@
 
 static int rows, cols;
 
-static WINDOW *title, *lineNumbers, *editor, *help;
+static WINDOW *title, *lineNumbers, *editor, *help, *separator, *regView;
 
 static File *file;
 
@@ -82,6 +82,7 @@ static void initialise(const char *path) {
     start_color();
     init_pair(10, 15, 127);
     init_pair(11, 15, 16);
+    init_pair(12, 127, 16);
 
     title = newwin(TITLE_HEIGHT, cols, 0, 0);
     help = newwin(MENU_HEIGHT, cols, rows - MENU_HEIGHT, 0);
@@ -91,8 +92,16 @@ static void initialise(const char *path) {
     lineNumbers = newwin(CONTENT_HEIGHT, 2, TITLE_HEIGHT, 0);
     wbkgd(lineNumbers, COLOR_PAIR(11));
 
-    editor = newwin(CONTENT_HEIGHT, cols - 2, TITLE_HEIGHT, 2);
+    editor = newwin(CONTENT_HEIGHT, cols/2 - 2, TITLE_HEIGHT, 2);
     wbkgd(editor, COLOR_PAIR(11));
+
+    separator = newwin(CONTENT_HEIGHT, 1, TITLE_HEIGHT, cols/2);
+    wbkgd(separator, COLOR_PAIR(12));
+    mvwvline(separator, TITLE_HEIGHT-1, 0, ACS_VLINE, CONTENT_HEIGHT);
+    wrefresh(separator);
+
+    regView = newwin(CONTENT_HEIGHT, cols/2 - 1, TITLE_HEIGHT, cols/2 + 1);
+    wrefresh(regView);
 
     // Set [editor] to be the only window which receives key presses.
     keypad(editor, true);
@@ -135,7 +144,7 @@ static void updateUI(void) {
     if (maxWidth + 1 != currWidth) {
         wresize(lineNumbers, CONTENT_HEIGHT, maxWidth + 1);
         mvwin(lineNumbers, TITLE_HEIGHT, 0);
-        wresize(editor, CONTENT_HEIGHT, cols - maxWidth - 1);
+        wresize(editor, CONTENT_HEIGHT, cols/2 - maxWidth - 1);
         mvwin(editor, TITLE_HEIGHT, maxWidth + 1);
     }
 
@@ -219,8 +228,17 @@ static void resizeUI(void) {
     wresize(lineNumbers, CONTENT_HEIGHT, 2);
     wrefresh(lineNumbers);
 
-    wresize(editor, CONTENT_HEIGHT, cols - 2);
+    wresize(editor, CONTENT_HEIGHT, cols/2 - 2);
     wrefresh(editor);
+
+    wresize(regView, CONTENT_HEIGHT, cols/2 - 1);
+    mvwin(regView, TITLE_HEIGHT, cols/2 + 1);
+    wrefresh(regView);
+
+    wresize(separator, CONTENT_HEIGHT, 1);
+    mvwin(separator, TITLE_HEIGHT, cols/2);
+    mvwvline(separator, TITLE_HEIGHT-1, 0, ACS_VLINE, CONTENT_HEIGHT);
+    wrefresh(separator);
 
     wclear(help);
     wresize(help, MENU_HEIGHT, cols);
