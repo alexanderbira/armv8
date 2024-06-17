@@ -16,10 +16,9 @@
 #include <stdnoreturn.h>
 #include <string.h>
 
-#ifdef JUMP_ON_ERROR
+extern bool JUMP_ON_ERROR;
 extern jmp_buf fatalBuffer;
 extern char* fatalError;
-#endif
 
 /// Assert [__CONDITION__], pretty-printing an error and exiting if it is not met.
 /// @param __CONDITION__ The condition to assert over.

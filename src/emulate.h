@@ -18,4 +18,8 @@
 
 #define HALT 0x8a000000
 
+bool JUMP_ON_ERROR;
+jmp_buf fatalBuffer;
+char *fatalError;
+
 #endif //EMULATE_H
