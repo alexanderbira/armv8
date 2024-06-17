@@ -9,7 +9,7 @@
 
 static int rows, cols;
 
-static WINDOW *title, *lineNumbers, *editor, *menu;
+static WINDOW *title, *lineNumbers, *editor, *help;
 
 static File *file;
 
@@ -78,8 +78,8 @@ static void initialise(const char *path) {
     init_pair(11, 15, 16);
 
     title = newwin(TITLE_HEIGHT, cols, 0, 0);
-    menu = newwin(MENU_HEIGHT, cols, rows - MENU_HEIGHT, 0);
-    wbkgd(menu, COLOR_PAIR(10));
+    help = newwin(MENU_HEIGHT, cols, rows - MENU_HEIGHT, 0);
+    wbkgd(help, COLOR_PAIR(10));
     wbkgd(title, COLOR_PAIR(10));
 
     lineNumbers = newwin(CONTENT_HEIGHT, 2, TITLE_HEIGHT, 0);
@@ -126,6 +126,15 @@ static void updateUI(void) {
     mvwprintw(title, 0, (int) (4 * cols / 5), "line %d, col %d", file->lineNumber + 1, file->cursor + 1);
     wrefresh(title);
     wattroff(title, A_BOLD);
+
+    // Update bottom help bar.
+    wattron(help, A_BOLD);
+    int numCommands = 5;
+    for (int i = 0; i < numCommands; i++) {
+        mvwprintw(help, 0, (int) (i * cols / numCommands), "%s", commands[i]);
+    }
+    wrefresh(help);
+    wattroff(help, A_BOLD);
 
     // Scroll if out of bounds in any direction.
     if (file->lineNumber >= file->windowY + CONTENT_HEIGHT) {
@@ -188,7 +197,7 @@ static void resizeUI(void) {
     wresize(editor, CONTENT_HEIGHT, cols - 2);
     wrefresh(editor);
 
-    wclear(menu);
-    wresize(menu, MENU_HEIGHT, cols);
-    mvwin(menu, rows - MENU_HEIGHT, 0);
+    wclear(help);
+    wresize(help, MENU_HEIGHT, cols);
+    mvwin(help, rows - MENU_HEIGHT, 0);
 }

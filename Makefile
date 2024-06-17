@@ -48,7 +48,7 @@ TO_CLEAN = $(wildcard $(REPORT_DIR)/*.aux) \
 help:                                                                             ## Show this help.
 	@egrep -h '\s##\s' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m  %-15s\033[0m %s\n", $$1, $$2}'
 
-all: assemble emulate grim cleanObject                                            ## Compile all programs and clean object files.
+all: assemble emulate editor cleanObject                                            ## Compile all programs and clean object files.
 
 setup:                                                                            ## Setup build, test, and report compilation environment.
 	@echo "=== Setting Up Submodules ==="

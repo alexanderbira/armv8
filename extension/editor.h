@@ -36,6 +36,14 @@
 /// The height (in characters) of the main content.
 #define CONTENT_HEIGHT ((int) rows - TITLE_HEIGHT - MENU_HEIGHT)
 
+static const char *commands[5] = {
+        "[^Q] - QUIT",
+        "[^S] - SAVE",
+        "[^R] - RUN",
+        "[^D] - DEBUG",
+        "[^B] - BINARY",
+};
+
 /// The mode that GRIM is in.
 typedef enum {
     EDIT,   ///< Standard editing mode.
