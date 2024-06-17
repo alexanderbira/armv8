@@ -18,7 +18,7 @@
 
 #define HALT 0x8a000000
 
-bool JUMP_ON_ERROR;
+bool JUMP_ON_ERROR = false;
 jmp_buf fatalBuffer;
 char *fatalError;
 

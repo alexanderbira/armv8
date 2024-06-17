@@ -21,7 +21,7 @@ int main(int argc, char **argv);
 
 void handleAssembly(char *assembly, AssemblerState *state);
 
-bool JUMP_ON_ERROR;
+bool JUMP_ON_ERROR = false;
 jmp_buf fatalBuffer;
 char *fatalError;
 

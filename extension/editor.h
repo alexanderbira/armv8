@@ -75,7 +75,7 @@ typedef enum {
 /// The human-readable titles of [Mode].
 static const char *modes[] = { "EDIT", "DEBUG_KEY", "BINARY_KEY" };
 
-bool JUMP_ON_ERROR;
+bool JUMP_ON_ERROR = true;
 jmp_buf fatalBuffer;
 char *fatalError;
 
