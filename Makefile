@@ -10,7 +10,7 @@ INCLUDE_FLAGS := $(addprefix -I,$(INCLUDE_DIRS))
 # No -D_POSIX_SOURCE as that interferes with MAP_ANONYMOUS in <sys/mman.h>!
 CFLAGS        ?= -std=c17 -g \
 	-Wall -Werror -Wextra --pedantic-errors \
-	-D_DEFAULT_SOURCE $(INCLUDE_FLAGS)
+	-D_GNU_SOURCE $(INCLUDE_FLAGS)
 
 .PHONY: help all setup test testEmulate testAssemble report cleanReport cleanObject clean
 

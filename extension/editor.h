@@ -9,6 +9,7 @@
 #define EXTENSION_EDITOR_H
 
 #include <ncurses.h>
+#include <stdio.h>
 
 #include "const.h"
 #include "file.h"
@@ -43,6 +44,15 @@ static const char *commands[5] = {
         "[^D] - DEBUG",
         "[^B] - BINARY",
 };
+
+//static const char *debugCommands[] = {
+//        "[ENTER] - STEP",
+//        "[^D] - EDIT"
+//};
+//
+//static const char *binaryCommands[] = {
+//        "[^B] - EDIT"
+//};
 
 /// The mode that GRIM is in.
 typedef enum {

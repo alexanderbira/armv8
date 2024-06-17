@@ -98,6 +98,22 @@ static void initialise(const char *path) {
     initialiseHighlight();
 }
 
+/// Prints the given [...] strings equally spaced.
+/// @param window The window to print to.
+/// @param row The row in the window to print to.
+/// @param content The pieces of text to print.
+static void printSpaced(WINDOW *window, int row, int count, char **content) {
+    if (count == 0) return;
+    mvwaddstr(window, row, 0, content[0]);
+
+    for (int i = 1; i < count - 1; i++) {
+        mvwaddstr(window, row, (int) (i * cols / (count - 1) - strlen(content[i]) / 2), content[i]);
+    }
+
+    if (count == 1) return;
+    mvwaddstr(window, row, cols - (int) strlen(content[count - 1]), content[count - 1]);
+}
+
 /// Updates UI, including line numbers window, scrolling.
 static void updateUI(void) {
     // Calculate the maximum width of a line number currently possible.
@@ -118,21 +134,24 @@ static void updateUI(void) {
     }
 
     // Update top title bar.
+    char **buffer = (char **) malloc(5 * sizeof(char *));
     wattron(title, A_BOLD);
-    mvwprintw(title, 0, 0, "[GRIM]");
-    mvwprintw(title, 0, (int) (cols / 5), "MODE: %s", modes[mode]);
-    mvwprintw(title, 0, (int) (2 * cols / 5), "PATH: [%s]", file->path ? file->path : "<UNKNOWN>");
-    mvwprintw(title, 0, (int) (3 * cols / 5), "STATUS: %s", "UNSAVED");
-    mvwprintw(title, 0, (int) (4 * cols / 5), "line %d, col %d", file->lineNumber + 1, file->cursor + 1);
+
+    asprintf(&buffer[0], "[GRIM]");
+    asprintf(&buffer[1], "MODE: %s", modes[mode]);
+    asprintf(&buffer[2], "PATH: [%s]", file->path ? file->path : "<UNKNOWN>");
+    // TODO: Change after status is properly defined.
+    asprintf(&buffer[3], "STATUS: %s", "UNSAVED");
+    asprintf(&buffer[4], "line %d, col %d", file->lineNumber + 1, file->cursor + 1);
+    printSpaced(title, 0, 5, buffer);
+
     wrefresh(title);
     wattroff(title, A_BOLD);
+    for (int i = 1; i < 5; i++) free(buffer[i]);
 
     // Update bottom help bar.
     wattron(help, A_BOLD);
-    int numCommands = 5;
-    for (int i = 0; i < numCommands; i++) {
-        mvwprintw(help, 0, (int) (i * cols / numCommands), "%s", commands[i]);
-    }
+    printSpaced(help, 0, 5, (char **) commands);
     wrefresh(help);
     wattroff(help, A_BOLD);
 

@@ -168,4 +168,5 @@ static void setLine(TokenisedLine *line, const char *newMnemonic, int newOperand
 
     line->operands = newOperands;
     line->operandCount = newOperandCount;
+    va_end(args);
 }
