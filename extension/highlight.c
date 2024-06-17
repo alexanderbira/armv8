@@ -7,6 +7,8 @@
 
 #include "highlight.h"
 
+#define COLOR_TRUE_BLACK 16
+
 /// Mnemonics of all instructions.
 static const char *mnemonics[] = {
         "add",  "adds", "and",
@@ -36,13 +38,13 @@ static int strPtrCmp(char **ptr1, char **ptr2) {
 void initialiseHighlight(void) {
     start_color();
 
-    init_pair(NONE, COLOR_WHITE, COLOR_BLACK);
-    init_pair(MNEMONIC, COLOR_MAGENTA, COLOR_BLACK);
-    init_pair(LABEL, COLOR_CYAN, COLOR_BLACK);
-    init_pair(DIRECTIVE, COLOR_BLUE, COLOR_BLACK);
-    init_pair(LITERAL, COLOR_RED, COLOR_BLACK);
-    init_pair(COMMENT, COLOR_BLACK, COLOR_BLACK);
-    init_pair(REGISTER, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(NONE, COLOR_WHITE, COLOR_TRUE_BLACK);
+    init_pair(MNEMONIC, COLOR_MAGENTA, COLOR_TRUE_BLACK);
+    init_pair(LABEL, COLOR_CYAN, COLOR_TRUE_BLACK);
+    init_pair(DIRECTIVE, COLOR_BLUE, COLOR_TRUE_BLACK);
+    init_pair(LITERAL, COLOR_RED, COLOR_TRUE_BLACK);
+    init_pair(COMMENT, COLOR_BLACK, COLOR_TRUE_BLACK);
+    init_pair(REGISTER, COLOR_YELLOW, COLOR_TRUE_BLACK);
 }
 
 /// Print a line with syntax-highlighting at the current cursor position.
@@ -58,6 +60,9 @@ void wPrintLine(WINDOW *window, char *string) {
         waddch(window, string[printedIndex]);
         printedIndex++;
     }
+
+    // Whether it's the first token on the line.
+    bool firstToken = true;
 
     // This loop will run once per "token" in the line.
     while (string[printedIndex] != '\0') {
@@ -169,8 +174,12 @@ void wPrintLine(WINDOW *window, char *string) {
             strncpy(tokenCopy, tokenPtr, tokenLength);
             tokenCopy[tokenLength] = '\0';
 
-            if (tokenLength <= 4 && // Longest mnemonic is 4 chars.
-                // Search for the token in the sorted list of mnemonics.
+            if (
+                // Token is at most 4 chars.
+                tokenLength <= 4 &&
+                // Token is the first token on the line.
+                firstToken &&
+                // The token is in the list of mnemonics.
                 bsearch(
                     &tokenCopy,
                     mnemonics,
@@ -181,31 +190,72 @@ void wPrintLine(WINDOW *window, char *string) {
             ) {
                 highlightType = MNEMONIC;
 
-            } else if (wholeAlphaNum && lastWasColon) {
+            } else if (
+                // Token is alphanumeric (before the ':').
+                wholeAlphaNum &&
+                // Token ends with ':'.
+                lastWasColon
+            ) {
                 highlightType = LABEL;
 
-            } else if (tokenLength == 4 && strncmp(tokenPtr, ".int", 4) == 0) {
+            } else if (
+                // Token is 4 chars long.
+                tokenLength == 4 &&
+                // Token is the first token on the line.
+                firstToken &&
+                // Token is ".int".
+                strncmp(tokenPtr, ".int", 4) == 0
+            ) {
                 highlightType = DIRECTIVE;
 
             } else if (
-                // Decimal literal.
-                (first == '#' && wholeNum && tokenLength > 1) ||
-                // Hexadecimal literal.
-                (hexStart && wholeHex && tokenLength > 2)
+                // Token is not the first token on the line.
+                !firstToken &&
+                (
+                    // Decimal literal.
+                    (
+                        // Token starts with '#'.
+                        first == '#' &&
+                        // Token is fully numeric.
+                        wholeNum &&
+                        // Token is over 1 char long.
+                        tokenLength > 1
+                    ) ||
+                    // Hexadecimal literal.
+                    (
+                        // Token starts with "0x".
+                        hexStart &&
+                        // Token contains only hexadecimal digits.
+                        wholeHex &&
+                        // Token is over 2 chars long.
+                        tokenLength > 2
+                    )
+                )
             ) {
                 highlightType = LITERAL;
 
             } else if (
+                // Token is not the first token on the line.
+                !firstToken &&
+                // Token starts with one of 'x', 'X', 'w', or 'W'.
                 (tolower(first) == 'w' || tolower(first) == 'x') &&
+                // Token is fully numeric (after the first char).
                 wholeNum &&
-                tokenLength > 1 && // No isolated highlighted "w" or "x" allowed.
-                atoi(&string[printedIndex+1]) <= 31 && // Reg nums range 0-31.
+                // Token is longer than 1 char.
+                tokenLength > 1 &&
+                // Token number is smaller than or equal to 31.
+                atoi(&string[printedIndex+1]) <= 31 &&
+                // Token number has no preceding 0s.
                 (
-                    (atoi(&string[printedIndex+1]) >= 10 &&
-                tokenLength == 3) || 
-                    (atoi(&string[printedIndex+1]) <= 9 &&
-                tokenLength == 2)
-                ) // No trailing 0s before the register number allowed.
+                    (
+                        atoi(&string[printedIndex+1]) >= 10 &&
+                        tokenLength == 3
+                    ) ||
+                    (
+                        atoi(&string[printedIndex+1]) <= 9 &&
+                        tokenLength == 2
+                    )
+                )
             ) {
                 highlightType = REGISTER;
             }
@@ -232,5 +282,7 @@ void wPrintLine(WINDOW *window, char *string) {
             waddch(window, string[printedIndex]);
             printedIndex++;
         }
+
+        firstToken = false;
     }
 }
