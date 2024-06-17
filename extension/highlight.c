@@ -38,13 +38,13 @@ static int strPtrCmp(char **ptr1, char **ptr2) {
 void initialiseHighlight(void) {
     start_color();
 
-    init_pair(NONE, COLOR_WHITE, COLOR_TRUE_BLACK);
-    init_pair(MNEMONIC, COLOR_MAGENTA, COLOR_TRUE_BLACK);
-    init_pair(LABEL, COLOR_CYAN, COLOR_TRUE_BLACK);
-    init_pair(DIRECTIVE, COLOR_BLUE, COLOR_TRUE_BLACK);
-    init_pair(LITERAL, COLOR_RED, COLOR_TRUE_BLACK);
-    init_pair(COMMENT, COLOR_BLACK, COLOR_TRUE_BLACK);
-    init_pair(REGISTER, COLOR_YELLOW, COLOR_TRUE_BLACK);
+    init_pair(H_NONE, COLOR_WHITE, COLOR_TRUE_BLACK);
+    init_pair(H_MNEMONIC, COLOR_MAGENTA, COLOR_TRUE_BLACK);
+    init_pair(H_LABEL, COLOR_CYAN, COLOR_TRUE_BLACK);
+    init_pair(H_DIRECTIVE, COLOR_BLUE, COLOR_TRUE_BLACK);
+    init_pair(H_LITERAL, COLOR_RED, COLOR_TRUE_BLACK);
+    init_pair(H_COMMENT, COLOR_BLACK, COLOR_TRUE_BLACK);
+    init_pair(H_REGISTER, COLOR_YELLOW, COLOR_TRUE_BLACK);
 }
 
 /// Print a line with syntax-highlighting at the current cursor position.
@@ -68,14 +68,14 @@ void wPrintLine(WINDOW *window, char *string) {
     while (string[printedIndex] != '\0') {
 
         // The type of token we're dealing with.
-        HighlightType highlightType = NONE;
+        HighlightType highlightType = H_NONE;
 
         // The index of last scanned char in the line/token.
         int scannedIndex = printedIndex;
 
         // Check if we're at the start of a comment.
         if (string[printedIndex] == '/' && string[printedIndex+1] == '/') {
-            highlightType = COMMENT;
+            highlightType = H_COMMENT;
             scannedIndex = strlen(string);
 
         } else {
@@ -188,7 +188,7 @@ void wPrintLine(WINDOW *window, char *string) {
                     (int (*)(const void *, const void *)) strPtrCmp
                 ) != NULL
             ) {
-                highlightType = MNEMONIC;
+                highlightType = H_MNEMONIC;
 
             } else if (
                 // Token is alphanumeric (before the ':').
@@ -196,7 +196,7 @@ void wPrintLine(WINDOW *window, char *string) {
                 // Token ends with ':'.
                 lastWasColon
             ) {
-                highlightType = LABEL;
+                highlightType = H_LABEL;
 
             } else if (
                 // Token is 4 chars long.
@@ -206,7 +206,7 @@ void wPrintLine(WINDOW *window, char *string) {
                 // Token is ".int".
                 strncmp(tokenPtr, ".int", 4) == 0
             ) {
-                highlightType = DIRECTIVE;
+                highlightType = H_DIRECTIVE;
 
             } else if (
                 // Token is not the first token on the line.
@@ -232,7 +232,7 @@ void wPrintLine(WINDOW *window, char *string) {
                     )
                 )
             ) {
-                highlightType = LITERAL;
+                highlightType = H_LITERAL;
 
             } else if (
                 // Token is not the first token on the line.
@@ -257,7 +257,7 @@ void wPrintLine(WINDOW *window, char *string) {
                     )
                 )
             ) {
-                highlightType = REGISTER;
+                highlightType = H_REGISTER;
             }
 
             free(tokenCopy);

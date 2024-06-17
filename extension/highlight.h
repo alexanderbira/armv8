@@ -16,32 +16,32 @@
 /// The numeric code for the highlighting colour pair.
 typedef enum {
     /// No syntax highlighting.
-    NONE,
+    H_NONE,
 
     /// Mnemonic syntax highlighting.
     /// @example ldr
-    MNEMONIC,
+    H_MNEMONIC,
 
     /// Label syntax highlighting.
     /// @example loop:
-    LABEL,
+    H_LABEL,
 
     /// Directive syntax highlighting.
     /// @example .int
-    DIRECTIVE,
+    H_DIRECTIVE,
 
     /// Literal syntax highlighting.
     /// @example #1234
     /// @example 0x12BEEF
-    LITERAL,
+    H_LITERAL,
 
     /// Comment syntax highlighting.
     /// @example // Store the result
-    COMMENT,
+    H_COMMENT,
 
     /// Register syntax highlighting.
     /// @example w30
-    REGISTER
+    H_REGISTER
 } HighlightType;
 
 
