@@ -156,6 +156,11 @@ static void updateUI(void) {
         file->windowX = file->cursor - cols + 1;
     }
     if (file->cursor < file->windowX) file->windowX = file->cursor;
+
+    // Scroll if last line could be at bottom of screen but is not.
+    if (CONTENT_HEIGHT - file->lineNumber < 2) {
+        file->windowY = file->lineNumber - CONTENT_HEIGHT + 1;
+    }
 }
 
 /// Updates the contents of one line, with corresponding line number.
