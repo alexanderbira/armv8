@@ -238,6 +238,9 @@ static void updateUI(void) {
 /// Updates the contents of one line, with corresponding line number.
 /// @param line The [Line] to be updated on screen.
 static void updateLine(Line *line, int index) {
+    // Don't render line below screen.
+    if (index >= file->windowY + CONTENT_HEIGHT) return;
+
     // Print the line number, then clear rest of line.
     int padding = getmaxx(lineNumbers) - countDigits(index + 1) - 1;
 
@@ -271,8 +274,8 @@ static void updateLine(Line *line, int index) {
 
     if (!lineError || file->lineNumber == index) {
         // Display editor line with syntax highlighting.
-        wPrintLine(editor, getLine(line));
         mvwprintw(lineNumbers, index - file->windowY, padding, "%d", index + 1);
+        wPrintLine(editor, getLine(line));
     } else {
         // Print the line number in red.
         wattron(lineNumbers, COLOR_PAIR(13));
