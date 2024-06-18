@@ -96,7 +96,6 @@ static void initialise(const char *path) {
     init_pair(11, 15, 16);
     init_pair(12, 15, 16);
     init_pair(13, 1, 16);
-    init_pair(14, COLOR_RED, 16);
 
     title = newwin(TITLE_HEIGHT, cols, 0, 0);
     help = newwin(MENU_HEIGHT, cols, rows - MENU_HEIGHT, 0);
@@ -115,7 +114,7 @@ static void initialise(const char *path) {
     wrefresh(separator);
 
     regView = newwin(CONTENT_HEIGHT, (cols - 1) / 2, TITLE_HEIGHT, cols / 2 + 1);
-    wbkgd(regView, COLOR_PAIR(14));
+    wbkgd(regView, COLOR_PAIR(13));
     wrefresh(regView);
 
     // Set [editor] to be the only window which receives key presses.
@@ -224,13 +223,12 @@ static void updateLine(Line *line, int index) {
     // the code will jump to here.
     setjmp(fatalBuffer);
 
+    // Whether a fatal error was encountered when parsing the line.
+    bool lineError = false;
+
     if (fatalError[0] != '\0') {
         // Fatal error was encountered during assembly of the line.
-
-        // Print the line number in red.
-        wattron(lineNumbers, COLOR_PAIR(13));
-        mvwprintw(lineNumbers, index - file->windowY, padding, "%d", index + 1);
-        wattroff(lineNumbers, COLOR_PAIR(13));
+        lineError = true;
 
         // Print the error message in the secondary window.
         mvwaddnstr(regView, index - file->windowY, 0, fatalError, (cols - 1) / 2);
@@ -254,7 +252,22 @@ static void updateLine(Line *line, int index) {
 
     // Print the line contents, then clear rest of line.
     wmove(editor, index - file->windowY, 0);
-    wPrintLine(editor, getLine(line));
+    if (!lineError || file->lineNumber == index) {
+        // Display editor line with syntax highlighting.
+        wPrintLine(editor, getLine(line));
+        mvwprintw(lineNumbers, index - file->windowY, padding, "%d", index + 1);
+    } else {
+        // Print the line number in red.
+        wattron(lineNumbers, COLOR_PAIR(13));
+        mvwprintw(lineNumbers, index - file->windowY, padding, "%d", index + 1);
+        wattroff(lineNumbers, COLOR_PAIR(13));
+
+        // Display editor line in red.
+        wattron(editor, COLOR_PAIR(13));
+        waddstr(editor, getLine(line));
+        wattroff(editor, COLOR_PAIR(13));
+    }
+
     wclrtoeol(editor);
 }
 
