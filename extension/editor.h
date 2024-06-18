@@ -19,7 +19,7 @@
 #include "error.h"
 #include "handleAssembly.h"
 #include "state.h"
-// #include "emulate.h"
+#include "termSizeOverlay.h"
 
 /// The key-code for CTRL plus some other key.
 #define CTRL(__KEY__) ((__KEY__) & 0x1F)
