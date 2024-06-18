@@ -208,6 +208,11 @@ void handleFileAction(File *file, int key) {
             }
             break;
 
+        case '\t':
+            insertStrAt(file->lines[file->lineNumber], "  ", file->cursor);
+            file->cursor += 2;
+            break;
+
         default:
             if (!isprint(key)) return;
             insertCharAt(file->lines[file->lineNumber], key, file->cursor);
