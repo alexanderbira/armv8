@@ -15,14 +15,10 @@
 /// The minimum height (in characters) of the terminal required for GRIM.
 #define MINIMUM_HEIGHT 20
 
-static const char *overlayText = "[ Terminal size too small! ]";
-
-static const int overlayLength = 28;
-
 extern int rows, cols;
 
 extern WINDOW *title, *lineNumbers, *editor, *help, *separator, *regView;
 
-extern WINDOW* termSizeOverlay;
+extern WINDOW *termSizeOverlay;
 
 void updateTermSizeOverlay(bool active);

@@ -19,8 +19,6 @@ static EditorMode mode;
 
 static void initialise(const char *path);
 
-static void updateBars(void);
-
 static void updateUI(void);
 
 static void updateLine(Line *line, int index);
@@ -119,36 +117,7 @@ static void initialise(const char *path) {
 
     // Initialise syntax highlighting.
     initialiseHighlight();
-    updateBars();
     updateUI();
-}
-
-static void updateBars(void) {
-    // Update top title bar.
-    char **buffer = (char **) malloc(5 * sizeof(char *));
-    wattron(title, A_BOLD);
-
-    asprintf(&buffer[0], "[GRIM]");
-    asprintf(&buffer[1], "MODE: %s", modes[mode]);
-    asprintf(&buffer[2], "%s", file->path ? file->path : "unknown.c");
-    // TODO: Change after status is properly defined.
-    asprintf(&buffer[3], "STATUS: %s", "UNSAVED");
-    asprintf(&buffer[4], "[%d, %d]", file->lineNumber + 1, file->cursor + 1);
-    printSpaced(title, 0, 5, buffer);
-
-    wattroff(title, A_BOLD);
-    for (int i = 1; i < 5; i++) free(buffer[i]);
-    wrefresh(title);
-
-    // Update bottom help bar.
-    wattron(help, A_BOLD);
-    printSpaced(help, 0, 5, (char **) commands);
-    wattroff(help, A_BOLD);
-    wrefresh(help);
-
-    // Update separator.
-    mvwvline(separator, TITLE_HEIGHT - 1, 0, ACS_VLINE, CONTENT_HEIGHT);
-    wrefresh(separator);
 }
 
 /// Updates UI, including line numbers window, scrolling.
@@ -186,9 +155,35 @@ static void updateUI(void) {
         werase(separator);
         wresize(separator, CONTENT_HEIGHT, 1);
         mvwin(separator, TITLE_HEIGHT, cols / 2);
-
-        updateBars();
     }
+
+    // Update top title bar.
+    char **buffer = (char **) malloc(5 * sizeof(char *));
+    wattron(title, A_BOLD);
+
+    asprintf(&buffer[0], "[GRIM]");
+    asprintf(&buffer[1], "MODE: %s", modes[mode]);
+    asprintf(&buffer[2], "%s", file->path ? file->path : "unknown.c");
+    // TODO: Change after status is properly defined.
+    asprintf(&buffer[3], "STATUS: %s", "UNSAVED");
+    asprintf(&buffer[4], "[%d, %d]", file->lineNumber + 1, file->cursor + 1);
+    werase(title);
+    printSpaced(title, 0, 5, buffer);
+
+    wattroff(title, A_BOLD);
+    for (int i = 1; i < 5; i++) free(buffer[i]);
+    wrefresh(title);
+
+    // Update bottom help bar.
+    wattron(help, A_BOLD);
+    werase(help);
+    printSpaced(help, 0, 5, (char **) commands);
+    wattroff(help, A_BOLD);
+    wrefresh(help);
+
+    // Update separator.
+    mvwvline(separator, TITLE_HEIGHT - 1, 0, ACS_VLINE, CONTENT_HEIGHT);
+    wrefresh(separator);
 
     // Scroll if out of bounds in any direction.
     if (file->lineNumber >= file->windowY + CONTENT_HEIGHT) {
