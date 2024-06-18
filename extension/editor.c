@@ -168,7 +168,7 @@ static void updateUI(void) {
 
     asprintf(&buffer[0], "[GRIM]");
     asprintf(&buffer[1], "MODE: %s", modes[mode]);
-    asprintf(&buffer[2], "PATH: [%s]", file->path ? file->path : "<UNKNOWN>");
+    asprintf(&buffer[2], "%s", file->path ? file->path : "unknown.c");
     // TODO: Change after status is properly defined.
     asprintf(&buffer[3], "STATUS: %s", "UNSAVED");
     asprintf(&buffer[4], "[%d, %d]", file->lineNumber + 1, file->cursor + 1);
