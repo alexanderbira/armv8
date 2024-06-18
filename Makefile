@@ -1,4 +1,4 @@
-CC            ?= clang
+CC            ?= gcc
 SOURCE_DIR    := src
 EXTENSION_DIR := extension
 OBJECT_DIR    := obj
@@ -6,7 +6,7 @@ INCLUDE_DIRS  := $(shell find $(SOURCE_DIR) -type d) \
 	$(shell find $(EXTENSION_DIR) -type d)
 INCLUDE_FLAGS := $(addprefix -I,$(INCLUDE_DIRS))
 # No -D_POSIX_SOURCE as that interferes with MAP_ANONYMOUS in <sys/mman.h>!
-CFLAGS        ?= -std=c17 -g \
+CFLAGS        ?= -std=gnu2x -g \
 	-Wall -Werror -Wextra --pedantic-errors \
 	-D_GNU_SOURCE $(INCLUDE_FLAGS)
 

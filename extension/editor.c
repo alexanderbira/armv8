@@ -41,8 +41,7 @@ int main(int argc, char *argv[]) {
                 // TODO: save file, prompt if no path.
                 break;
 
-            case RUN_KEY:
-            {
+            case RUN_KEY: {
                 AssemblerState state = createState();
                 if (!setjmp(fatalBuffer)) {
                     for (int currentLine = 0; currentLine < file->size; currentLine++) {
@@ -106,15 +105,15 @@ static void initialise(const char *path) {
     lineNumbers = newwin(CONTENT_HEIGHT, 2, TITLE_HEIGHT, 0);
     wbkgd(lineNumbers, COLOR_PAIR(11));
 
-    editor = newwin(CONTENT_HEIGHT, cols/2 - 2, TITLE_HEIGHT, 2);
+    editor = newwin(CONTENT_HEIGHT, cols / 2 - 2, TITLE_HEIGHT, 2);
     wbkgd(editor, COLOR_PAIR(11));
 
-    separator = newwin(CONTENT_HEIGHT, 1, TITLE_HEIGHT, cols/2);
+    separator = newwin(CONTENT_HEIGHT, 1, TITLE_HEIGHT, cols / 2);
     wbkgd(separator, COLOR_PAIR(12));
-    mvwvline(separator, TITLE_HEIGHT-1, 0, ACS_VLINE, CONTENT_HEIGHT);
+    mvwvline(separator, TITLE_HEIGHT - 1, 0, ACS_VLINE, CONTENT_HEIGHT);
     wrefresh(separator);
 
-    regView = newwin(CONTENT_HEIGHT, (cols - 1)/2, TITLE_HEIGHT, cols/2 + 1);
+    regView = newwin(CONTENT_HEIGHT, (cols - 1) / 2, TITLE_HEIGHT, cols / 2 + 1);
     wrefresh(regView);
 
     // Set [editor] to be the only window which receives key presses.
@@ -158,7 +157,7 @@ static void updateUI(void) {
     if (maxWidth + 1 != currWidth) {
         wresize(lineNumbers, CONTENT_HEIGHT, maxWidth + 1);
         mvwin(lineNumbers, TITLE_HEIGHT, 0);
-        wresize(editor, CONTENT_HEIGHT, cols/2 - maxWidth - 1);
+        wresize(editor, CONTENT_HEIGHT, cols / 2 - maxWidth - 1);
         mvwin(editor, TITLE_HEIGHT, maxWidth + 1);
     }
 
@@ -171,7 +170,7 @@ static void updateUI(void) {
     asprintf(&buffer[2], "PATH: [%s]", file->path ? file->path : "<UNKNOWN>");
     // TODO: Change after status is properly defined.
     asprintf(&buffer[3], "STATUS: %s", "UNSAVED");
-    asprintf(&buffer[4], "line %d, char %d", file->lineNumber + 1, file->cursor + 1);
+    asprintf(&buffer[4], "[%d, %d]", file->lineNumber + 1, file->cursor + 1);
     wclear(title);
     printSpaced(title, 0, 5, buffer);
 
@@ -232,7 +231,7 @@ static void updateLine(Line *line, int index) {
         wattroff(lineNumbers, COLOR_PAIR(13));
 
         // Print the error message in the secondary window.
-        mvwaddnstr(regView, index - file->windowY, 0, fatalError, (cols - 1)/2);
+        mvwaddnstr(regView, index - file->windowY, 0, fatalError, (cols - 1) / 2);
         wclrtoeol(regView);
     } else {
         // Fatal error not encountered (line not assembled yet).
@@ -284,17 +283,17 @@ static void resizeUI(void) {
     wresize(lineNumbers, CONTENT_HEIGHT, 2);
     wrefresh(lineNumbers);
 
-    wresize(editor, CONTENT_HEIGHT, cols/2 - 2);
+    wresize(editor, CONTENT_HEIGHT, cols / 2 - 2);
     wrefresh(editor);
 
-    wresize(regView, CONTENT_HEIGHT, (cols - 1)/2);
-    mvwin(regView, TITLE_HEIGHT, cols/2 + 1);
+    wresize(regView, CONTENT_HEIGHT, (cols - 1) / 2);
+    mvwin(regView, TITLE_HEIGHT, cols / 2 + 1);
     wclrtoeol(regView);
     wrefresh(regView);
 
     wresize(separator, CONTENT_HEIGHT, 1);
-    mvwin(separator, TITLE_HEIGHT, cols/2);
-    mvwvline(separator, TITLE_HEIGHT-1, 0, ACS_VLINE, CONTENT_HEIGHT);
+    mvwin(separator, TITLE_HEIGHT, cols / 2);
+    mvwvline(separator, TITLE_HEIGHT - 1, 0, ACS_VLINE, CONTENT_HEIGHT);
     wrefresh(separator);
 
     wclear(help);
