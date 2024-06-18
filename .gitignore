@@ -49,3 +49,4 @@ testsuite
 
 # === macOS Files ===
 .DS_Store
+.vscode/settings.json

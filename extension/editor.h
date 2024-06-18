@@ -49,11 +49,11 @@
 #define CONTENT_HEIGHT    ((int) rows - TITLE_HEIGHT - MENU_HEIGHT)
 
 static const char *commands[5] = {
-    "[^Q] - QUIT_KEY",
-    "[^S] - SAVE_KEY",
-    "[^R] - RUN_KEY",
-    "[^D] - DEBUG_KEY",
-    "[^B] - BINARY_KEY",
+    "[^Q] - QUIT",
+    "[^S] - SAVE",
+    "[^R] - RUN",
+    "[^D] - DEBUG",
+    "[^B] - BINARY",
 };
 
 //static const char *debugCommands[] = {

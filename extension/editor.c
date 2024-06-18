@@ -171,7 +171,8 @@ static void updateUI(void) {
     asprintf(&buffer[2], "PATH: [%s]", file->path ? file->path : "<UNKNOWN>");
     // TODO: Change after status is properly defined.
     asprintf(&buffer[3], "STATUS: %s", "UNSAVED");
-    asprintf(&buffer[4], "line %d, col %d", file->lineNumber + 1, file->cursor + 1);
+    asprintf(&buffer[4], "line %d, char %d", file->lineNumber + 1, file->cursor + 1);
+    wclear(title);
     printSpaced(title, 0, 5, buffer);
 
     wrefresh(title);
@@ -180,6 +181,7 @@ static void updateUI(void) {
 
     // Update bottom help bar.
     wattron(help, A_BOLD);
+    wclear(help);
     printSpaced(help, 0, 5, (char **) commands);
     wrefresh(help);
     wattroff(help, A_BOLD);
