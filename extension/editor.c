@@ -75,12 +75,16 @@ int main(int argc, char *argv[]) {
 
     // Cleanup
     freeFile(file);
+    free(fatalError);
     endwin();
 
     return 0;
 }
 
 static void initialise(const char *path) {
+    // fatalError is "realloc"ed elsewhere.
+    fatalError = malloc(0);
+
     // Initialise <ncurses>.
     initscr();       // ncurses setup.
     raw();           // Pass raw input to our code.
@@ -92,6 +96,7 @@ static void initialise(const char *path) {
     init_pair(10, 15, 127);
     init_pair(11, 15, 16);
     init_pair(12, 127, 16);
+    init_pair(13, 1, 16);
 
     title = newwin(TITLE_HEIGHT, cols, 0, 0);
     help = newwin(MENU_HEIGHT, cols, rows - MENU_HEIGHT, 0);
@@ -109,7 +114,7 @@ static void initialise(const char *path) {
     mvwvline(separator, TITLE_HEIGHT-1, 0, ACS_VLINE, CONTENT_HEIGHT);
     wrefresh(separator);
 
-    regView = newwin(CONTENT_HEIGHT, cols/2 - 1, TITLE_HEIGHT, cols/2 + 1);
+    regView = newwin(CONTENT_HEIGHT, (cols - 1)/2, TITLE_HEIGHT, cols/2 + 1);
     wrefresh(regView);
 
     // Set [editor] to be the only window which receives key presses.
@@ -202,7 +207,47 @@ static void updateLine(Line *line, int index) {
     int padding = getmaxx(lineNumbers) - countDigits(index + 1) - 1;
     wmove(lineNumbers, index - file->windowY, 0);
     wclrtoeol(lineNumbers);
-    mvwprintw(lineNumbers, index - file->windowY, padding, "%d", index + 1);
+
+    // Move to the correct line in the secondary window and clear the line.
+    wmove(regView, index - file->windowY, 0);
+    wclrtoeol(regView);
+
+    AssemblerState state = createState();
+
+    // Initialise fatalError to an empty string.
+    fatalError[0] = '\0';
+
+    // If a fatal error is encountered in the code, fatalError will be set and
+    // the code will jump to here.
+    setjmp(fatalBuffer);
+
+    if (fatalError[0] != '\0') {
+        // Fatal error was encountered during assembly of the line.
+
+        // Print the line number in red.
+        wattron(lineNumbers, COLOR_PAIR(13));
+        mvwprintw(lineNumbers, index - file->windowY, padding, "%d", index + 1);
+        wattroff(lineNumbers, COLOR_PAIR(13));
+
+        // Print the error message in the secondary window.
+        mvwaddnstr(regView, index - file->windowY, 0, fatalError, (cols - 1)/2);
+        wclrtoeol(regView);
+    } else {
+        // Fatal error not encountered (line not assembled yet).
+        // Attempt to assemble the line.
+        handleAssembly(getLine(line), &state);
+
+        // This point will only be reached if no fatal error is encountered in
+        // the line assembly.
+        // Print the line number normally.
+        mvwprintw(lineNumbers, index - file->windowY, padding, "%d", index + 1);
+    }
+
+    destroyState(state);
+
+    // Clear the rest of the secondary window error message line.
+    wclrtoeol(regView);
+    wrefresh(regView);
 
     // Print the line contents, then clear rest of line.
     wmove(editor, index - file->windowY, 0);
@@ -240,8 +285,9 @@ static void resizeUI(void) {
     wresize(editor, CONTENT_HEIGHT, cols/2 - 2);
     wrefresh(editor);
 
-    wresize(regView, CONTENT_HEIGHT, cols/2 - 1);
+    wresize(regView, CONTENT_HEIGHT, (cols - 1)/2);
     mvwin(regView, TITLE_HEIGHT, cols/2 + 1);
+    wclrtoeol(regView);
     wrefresh(regView);
 
     wresize(separator, CONTENT_HEIGHT, 1);

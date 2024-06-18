@@ -18,6 +18,7 @@
 #include "line.h"
 #include "error.h"
 #include "handleAssembly.h"
+#include "state.h"
 // #include "emulate.h"
 
 /// The key-code for CTRL plus some other key.

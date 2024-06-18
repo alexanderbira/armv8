@@ -8,6 +8,7 @@
 #include "highlight.h"
 
 #define COLOR_TRUE_BLACK 16
+#define COLOR_LIGHTGRAY 248
 
 /// Mnemonics of all instructions.
 static const char *mnemonics[] = {
@@ -43,7 +44,7 @@ void initialiseHighlight(void) {
     init_pair(H_LABEL, COLOR_CYAN, COLOR_TRUE_BLACK);
     init_pair(H_DIRECTIVE, COLOR_BLUE, COLOR_TRUE_BLACK);
     init_pair(H_LITERAL, COLOR_RED, COLOR_TRUE_BLACK);
-    init_pair(H_COMMENT, COLOR_BLACK, COLOR_TRUE_BLACK);
+    init_pair(H_COMMENT, COLOR_LIGHTGRAY, COLOR_TRUE_BLACK);
     init_pair(H_REGISTER, COLOR_YELLOW, COLOR_TRUE_BLACK);
 }
 

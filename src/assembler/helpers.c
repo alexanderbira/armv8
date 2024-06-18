@@ -19,7 +19,7 @@ char *trim(char *str, const char *except) {
 
     // Trim trailing space.
     char *end = str + strlen(str) - 1;
-    for (; end > str && strchr(except, *end) != NULL; end--);
+    for (; end > start && strchr(except, *end) != NULL; end--);
 
     // (Possibly) shift, terminate and return string.
     // Calculate the new length of the trimmed string.
