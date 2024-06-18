@@ -135,8 +135,8 @@ void destroyTokenisedLine(TokenisedLine *line) {
 Literal parseLiteral(const char *literal) {
     if (strchr(literal, '#')) {
         uint32_t result;
-        assertFatal(sscanf(literal, "#0x%" SCNx32, &result) == 1,
-                    "Unable to parse immediate!");
+        assertFatalWithArgs(sscanf(literal, "#0x%" SCNx32, &result) == 1,
+                            "Unable to parse immediate <%s>!", literal);
         return (Literal) { .isLabel = false, .data.immediate = result };
     } else {
         char *label = strdup(literal);
@@ -155,17 +155,18 @@ uint8_t parseRegisterStr(const char *name, bool *sf) {
     char prefix = 0;
 
     int success = sscanf(name, "%c%" SCNu8, &prefix, &result);
-    assertFatal(success > 0, "Unable to parse register!");
+    assertFatalWithArgs(success > 0, "Unable to parse register named <%s>!", name);
 
     if (sf != NULL) {
         *sf = (prefix == 'x');
     }
 
     if (success > 1) {
+        assertFatalWithArgs(result < 32, "Register <%d> out of bounds!", result);
         return result;
     } else {
-        assertFatal(!strcmp(name + 1, "sp") || !strcmp(name + 1, "zr"),
-                    "Invalid register name!");
+        assertFatalWithArgs(!strcmp(name + 1, "sp") || !strcmp(name + 1, "zr"),
+                            "Invalid register named <%s>!", name + 1);
         return 0x1F;
     }
 }
@@ -191,7 +192,7 @@ uint64_t parseImmediateStr(const char *operand) {
 void parseOffset(union LiteralData *data, AssemblerState *state) {
     // Calculate offset, then divide by 4 to encode.
     BitData *immediate = getMapping(state, data->label);
-    assertFatalNotNull(immediate, "No mapping for label!");
+    assertFatalNotNullWithArgs(immediate, "No mapping for label named <%s>!", data->label);
 
     data->immediate = *immediate;
     data->immediate -= state->address;

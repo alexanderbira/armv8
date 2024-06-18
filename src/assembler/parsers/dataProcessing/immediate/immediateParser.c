@@ -13,8 +13,6 @@
 /// @returns The [IR] form of the data processing (immediate) instruction.
 /// @pre The [line]'s mnemonic is that of a data processing (immediate) instruction.
 IR parseImmediate(TokenisedLine *line, unused AssemblerState *state) {
-    assertFatal(line->operandCount >= 2 && line->operandCount <= 4,
-                "Incorrect number of operands!");
     Immediate_IR immediateIR;
 
     bool sf;
@@ -64,11 +62,11 @@ IR parseImmediate(TokenisedLine *line, unused AssemblerState *state) {
         }
 
         immediateIR = (Immediate_IR) {
-                .sf = sf,
-                .opc.wideMoveType = type,
-                .opi = IMMEDIATE_WIDE_MOVE,
-                .operand.wideMove = wideMove,
-                .rd = reg
+            .sf = sf,
+            .opc.wideMoveType = type,
+            .opi = IMMEDIATE_WIDE_MOVE,
+            .operand.wideMove = wideMove,
+            .rd = reg
         };
     } else {
         // Must be arithmetic instruction: see precondition.
@@ -101,11 +99,11 @@ IR parseImmediate(TokenisedLine *line, unused AssemblerState *state) {
         }
 
         immediateIR = (Immediate_IR) {
-                .sf = sf,
-                .opc.arithmeticType = type,
-                .opi = IMMEDIATE_ARITHMETIC,
-                .operand.arithmetic = arithmetic,
-                .rd = reg
+            .sf = sf,
+            .opc.arithmeticType = type,
+            .opi = IMMEDIATE_ARITHMETIC,
+            .operand.arithmetic = arithmetic,
+            .rd = reg
         };
     }
 

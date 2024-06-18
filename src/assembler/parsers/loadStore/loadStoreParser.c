@@ -14,7 +14,7 @@
 /// @pre The [line]'s mnemonic is that of a load/store instruction.
 IR parseLoadStore(TokenisedLine *line, unused AssemblerState *state) {
     assertFatal(line->operandCount == 2 || line->operandCount == 3,
-                "[parseLoadStore] Incorrect number of operands!");
+                "Incorrect number of operands; load-store instructions need 2 or 3!");
     LoadStore_IR loadStoreIR;
 
     bool sf;
@@ -66,16 +66,16 @@ IR parseLoadStore(TokenisedLine *line, unused AssemblerState *state) {
         }
 
         loadStoreIR = (LoadStore_IR) {
-                .sf = sf,
-                .type = SINGLE_DATA_TRANSFER,
-                .data.sdt = {
-                        .u = u,
-                        .l = !strcmp(line->mnemonic, "ldr"),
-                        .addressingMode = mode,
-                        .offset = offset,
-                        .xn = xn
-                },
-                .rt = reg
+            .sf = sf,
+            .type = SINGLE_DATA_TRANSFER,
+            .data.sdt = {
+                .u = u,
+                .l = !strcmp(line->mnemonic, "ldr"),
+                .addressingMode = mode,
+                .offset = offset,
+                .xn = xn
+            },
+            .rt = reg
         };
     } else {
         // Load literal

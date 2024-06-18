@@ -13,7 +13,8 @@
 /// @returns The [IR] form of the directive.
 /// @pre The [line] has [mnemonic] == NULL and [subMnemonic] present.
 IR parseDirective(TokenisedLine *tokenisedLine, unused AssemblerState *state) {
-    assertFatal(tokenisedLine->operandCount == 1, "Invalid number of arguments!");
+    assertFatal(tokenisedLine->operandCount == 1,
+                "Incorrect number of operands; directives instructions need 1!");
 
     if (!strcmp(tokenisedLine->subMnemonic, "int")) {
         // Reserve space for line, null terminator, and prepended '#'.

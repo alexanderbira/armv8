@@ -105,7 +105,7 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
     if (line->operandCount == 4 && registerIR.group != MULTIPLY) {
         int numMatched;
         char **shiftAndValue = split(line->operands[3], " ", &numMatched);
-        assertFatal(numMatched == 2, "Incomplete shift parameter!");
+        assertFatalWithArgs(numMatched == 2, "Incomplete shift parameter <%s>!", line->operands[3]);
 
         enum ShiftType shift;
         switch (shiftAndValue[0][0]) {
@@ -122,7 +122,7 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
                 break;
 
             default:
-                throwFatal("Shift supplied was not a shift.");
+                throwFatalWithArgs("Given shift <%s> was not a shift!", shiftAndValue[0]);
         }
 
         uint8_t imm6 = parseImmediateStr(shiftAndValue[1]);

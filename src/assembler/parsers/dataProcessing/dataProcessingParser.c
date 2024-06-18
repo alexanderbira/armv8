@@ -9,9 +9,9 @@
 
 /// Mnemonics of all alias instructions.
 static const char *aliasMnemonics[] = {
-        "cmn", "cmp", "mneg",
-        "mov", "mul", "mvn",
-        "neg", "negs", "tst",
+    "cmn", "cmp", "mneg",
+    "mov", "mul", "mvn",
+    "neg", "negs", "tst",
 };
 
 /// Number of mnemonics of all alias instructions.
@@ -19,7 +19,7 @@ static const size_t numAliasMnemonics = sizeof(aliasMnemonics) / sizeof(char *);
 
 /// Mnemonics of all wide move instructions.
 static const char *wideMoveMnemonics[] = {
-        "movk", "movn", "movz"
+    "movk", "movn", "movz"
 };
 
 /// Number of mnemonics of all wide move instructions.
@@ -27,7 +27,7 @@ static const size_t numWideMoveMnemonics = sizeof(wideMoveMnemonics) / sizeof(ch
 
 /// Mnemonics of all arithmetic instructions.
 static const char *arithmeticMnemonics[] = {
-        "add", "adds", "sub", "subs"
+    "add", "adds", "sub", "subs"
 };
 
 /// Number of mnemonics of all arithmetic instructions.
@@ -42,7 +42,7 @@ static void setLine(TokenisedLine *line, const char *newMnemonic, int newOperand
 /// @pre The [line]'s mnemonic is that of a data processing instruction.
 IR parseDataProcessing(TokenisedLine *line, AssemblerState *state) {
     assertFatal(line->operandCount >= 2 && line->operandCount <= 4,
-                "Incorrect number of operands!");
+                "Incorrect number of operands; data processing instructions need 2, 3, or 4!");
 
     // If [line] is an aliased instruction, convert it first.
     bool isAlias = bsearch(&line->mnemonic, aliasMnemonics, numAliasMnemonics,
@@ -114,7 +114,7 @@ IR parseDataProcessing(TokenisedLine *line, AssemblerState *state) {
                 break;
 
             default:
-                throwFatal("Instruction mnemonic is invalid!");
+                throwFatalWithArgs("Instruction mnemonic <%s> is invalid!", oldMnemonic);
         }
 
         // Zero register was not freed by [setLine].

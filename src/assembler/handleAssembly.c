@@ -22,7 +22,7 @@ void handleAssembly(char *line, AssemblerState *state) {
             return;
         };
 
-        throwFatal("Found invalid label!");
+        throwFatalWithArgs("Invalid label named <%s>!", line);
     }
 
     // By default, handle either directive or instructions.

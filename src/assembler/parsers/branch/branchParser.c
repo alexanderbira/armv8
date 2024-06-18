@@ -9,13 +9,13 @@
 
 /// The mappings between condition strings and condition codes.
 static const BranchEntry mappings[] = {
-        { "al", AL },
-        { "eq", EQ },
-        { "ge", GE },
-        { "gt", GT },
-        { "le", LE },
-        { "lt", LT },
-        { "ne", NE },
+    { "al", AL },
+    { "eq", EQ },
+    { "ge", GE },
+    { "gt", GT },
+    { "le", LE },
+    { "lt", LT },
+    { "ne", NE },
 };
 
 /// Performs [strcmp] on the [mnemonic]s of [BranchEntry]s, but takes in [void *]s.
@@ -34,7 +34,7 @@ static int branchCmp(const void *v1, const void *v2) {
 /// @returns The [IR] form of the branch instruction.
 /// @pre The [line]'s mnemonic is that of a branch instruction.
 IR parseBranch(TokenisedLine *line, unused AssemblerState *state) {
-    assertFatal(line->operandCount == 1, "Incorrect number of operands!");
+    assertFatal(line->operandCount == 1, "Incorrect number of operands; branch instructions need 1!");
     Branch_IR branchIR;
 
     if (!strcmp(line->mnemonic, "b")) {
@@ -49,11 +49,11 @@ IR parseBranch(TokenisedLine *line, unused AssemblerState *state) {
             BranchEntry target = (BranchEntry) { line->subMnemonic, .code = -1 }; // Throwaway target.
             BranchEntry *condition = bsearch(&target, mappings,
                                              sizeof(mappings) / sizeof(BranchEntry), sizeof(BranchEntry), branchCmp);
-            assertFatalNotNull(condition, "Invalid condition code!");
+            assertFatalNotNullWithArgs(condition, "Invalid condition code <%s>!", line->subMnemonic);
 
             branchIR = (Branch_IR) {
-                    .type = BRANCH_CONDITIONAL,
-                    .data.conditional = { .simm19 = simm, .condition = condition->code }
+                .type = BRANCH_CONDITIONAL,
+                .data.conditional = { .simm19 = simm, .condition = condition->code }
             };
         }
     } else if (!strcmp(line->mnemonic, "br")) {
@@ -61,7 +61,7 @@ IR parseBranch(TokenisedLine *line, unused AssemblerState *state) {
         uint8_t xn = parseRegisterStr(line->operands[0], NULL);
         branchIR = (Branch_IR) { .type = BRANCH_REGISTER, .data.xn = xn };
     } else {
-        throwFatal("Received invalid branch instruction!");
+        throwFatalWithArgs("Received invalid branch instruction <%s>!", line->mnemonic);
     }
 
     return (IR) { .type = BRANCH, .ir.branchIR = branchIR };
