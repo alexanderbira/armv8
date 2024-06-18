@@ -13,7 +13,7 @@ WINDOW *title, *lineNumbers, *editor, *help, *separator, *regView;
 
 WINDOW *termSizeOverlay;
 
-static File *file;
+static File *file, *binaryFile;
 
 static EditorMode mode;
 
@@ -39,6 +39,7 @@ int main(int argc, char *argv[]) {
         switch (key) {
             case SAVE_KEY:
                 // TODO: save file, prompt if no path.
+                // TODO: Save with '.s' if in edit mode, and '.bin' if in binary mode.
                 break;
 
             case RUN_KEY: {
@@ -58,6 +59,21 @@ int main(int argc, char *argv[]) {
                 break;
 
             case BINARY_KEY:
+                if (binaryFile == NULL) {
+                    // When in edit mode, store file in [binaryFile].
+                    binaryFile = file;
+
+                    // Create new file, and assemble to binary.
+                    file = initialiseFile(NULL);
+
+                    // TODO: Iterate over assembly lines and assemble to binary
+                    // TODO: Format resulting binary and add them as lines to the file.
+                } else {
+                    // When in binary mode, destroy binary file and go back to edit.
+                    freeFile(file);
+                    file = binaryFile;
+                }
+
                 // TODO: Enter binary mode.
                 break;
 
