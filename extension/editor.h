@@ -61,9 +61,8 @@ static const char *commands[5] = {
 //static const char *debugCommands[] = {
 //    "[ENTER] - STEP",
 //    "[^D] - EDIT"
-//    "[^B] - BREAKPOINT"
 //};
-//
+
 //static const char *binaryCommands[] = {
 //    "[^B] - EDIT"
 //};
@@ -76,7 +75,7 @@ typedef enum {
 } EditorMode;
 
 /// The human-readable titles of [Mode].
-static const char *modes[] = { "EDIT", "DEBUG_KEY", "BINARY_KEY" };
+static const char *modes[] = { "EDIT", "DEBUG", "BINARY" };
 
 bool JUMP_ON_ERROR = true;
 jmp_buf fatalBuffer;
