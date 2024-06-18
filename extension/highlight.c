@@ -32,7 +32,7 @@ static const char *mnemonics[] = {
 /// @param s2 The pointer to the second string.
 /// @return The comparison of the strings pointed to by s1 and s2.
 static int strPtrCmp(char **ptr1, char **ptr2) {
-    return strcasecmp(*ptr1, *ptr2);
+    return strcmp(*ptr1, *ptr2);
 }
 
 /// Initialise the colouring for the syntax highlighting.
