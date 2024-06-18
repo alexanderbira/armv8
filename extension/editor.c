@@ -19,6 +19,8 @@ static EditorMode mode;
 
 static void initialise(const char *path);
 
+static void updateBars(void);
+
 static void updateUI(void);
 
 static void updateLine(Line *line, int index);
@@ -53,9 +55,11 @@ int main(int argc, char *argv[]) {
 
             case DEBUG_KEY:
                 // TODO: Enter debug mode.
+                break;
 
             case BINARY_KEY:
                 // TODO: Enter binary mode.
+                break;
 
             default:
                 handleFileAction(file, key);
@@ -115,8 +119,36 @@ static void initialise(const char *path) {
 
     // Initialise syntax highlighting.
     initialiseHighlight();
-
+    updateBars();
     updateUI();
+}
+
+static void updateBars(void) {
+    // Update top title bar.
+    char **buffer = (char **) malloc(5 * sizeof(char *));
+    wattron(title, A_BOLD);
+
+    asprintf(&buffer[0], "[GRIM]");
+    asprintf(&buffer[1], "MODE: %s", modes[mode]);
+    asprintf(&buffer[2], "%s", file->path ? file->path : "unknown.c");
+    // TODO: Change after status is properly defined.
+    asprintf(&buffer[3], "STATUS: %s", "UNSAVED");
+    asprintf(&buffer[4], "[%d, %d]", file->lineNumber + 1, file->cursor + 1);
+    printSpaced(title, 0, 5, buffer);
+
+    wattroff(title, A_BOLD);
+    for (int i = 1; i < 5; i++) free(buffer[i]);
+    wrefresh(title);
+
+    // Update bottom help bar.
+    wattron(help, A_BOLD);
+    printSpaced(help, 0, 5, (char **) commands);
+    wattroff(help, A_BOLD);
+    wrefresh(help);
+
+    // Update separator.
+    mvwvline(separator, TITLE_HEIGHT - 1, 0, ACS_VLINE, CONTENT_HEIGHT);
+    wrefresh(separator);
 }
 
 /// Updates UI, including line numbers window, scrolling.
@@ -129,35 +161,20 @@ static void updateUI(void) {
 
     // Resize all windows if size has changed.
     if (oldRows != rows || oldCols != cols) {
-        // Rerender top title bar.
+        // Rerender menu bars and separator.
         werase(title);
         wresize(title, TITLE_HEIGHT, cols);
         mvwin(title, 0, 0);
 
-        char **buffer = (char **) malloc(5 * sizeof(char *));
-        wattron(title, A_BOLD);
-
-        asprintf(&buffer[0], "[GRIM]");
-        asprintf(&buffer[1], "MODE: %s", modes[mode]);
-        asprintf(&buffer[2], "%s", file->path ? file->path : "unknown.c");
-        // TODO: Change after status is properly defined.
-        asprintf(&buffer[3], "STATUS: %s", "UNSAVED");
-        asprintf(&buffer[4], "[%d, %d]", file->lineNumber + 1, file->cursor + 1);
-        printSpaced(title, 0, 5, buffer);
-
-        wattroff(title, A_BOLD);
-        for (int i = 1; i < 5; i++) free(buffer[i]);
-        wrefresh(title);
-
-        // Rerender bottom help bar.
         werase(help);
         wresize(help, MENU_HEIGHT, cols);
         mvwin(help, rows - MENU_HEIGHT, 0);
 
-        wattron(help, A_BOLD);
-        printSpaced(help, 0, 5, (char **) commands);
-        wattroff(help, A_BOLD);
-        wrefresh(help);
+        werase(separator);
+        wresize(separator, CONTENT_HEIGHT, 1);
+        mvwin(separator, TITLE_HEIGHT, cols / 2);
+
+        updateBars();
 
         // Resize everything else.
         werase(lineNumbers);
@@ -171,27 +188,6 @@ static void updateUI(void) {
         werase(regView);
         wresize(regView, CONTENT_HEIGHT, (cols - 1) / 2);
         mvwin(regView, TITLE_HEIGHT, cols / 2 + 1);
-
-        werase(separator);
-        wresize(separator, CONTENT_HEIGHT, 1);
-        mvwin(separator, TITLE_HEIGHT, cols / 2);
-        mvwvline(separator, TITLE_HEIGHT - 1, 0, ACS_VLINE, CONTENT_HEIGHT);
-        wrefresh(separator);
-    }
-
-    // The largest line number is either the bottom of the screen, or
-    // the last line of the file.
-    int currWidth = getmaxx(lineNumbers);
-    int maxLineNumber = file->windowY + CONTENT_HEIGHT + 1;
-    maxLineNumber = (file->size < maxLineNumber) ? file->size : maxLineNumber;
-    int maxWidth = countDigits(maxLineNumber);
-
-    // Resize line number window if widest line number has changed.
-    if (maxWidth + 1 != currWidth) {
-        wresize(lineNumbers, CONTENT_HEIGHT, maxWidth + 1);
-        mvwin(lineNumbers, TITLE_HEIGHT, 0);
-        wresize(editor, CONTENT_HEIGHT, cols / 2 - maxWidth - 1);
-        mvwin(editor, TITLE_HEIGHT, maxWidth + 1);
     }
 
     // Scroll if out of bounds in any direction.
@@ -207,6 +203,21 @@ static void updateUI(void) {
     // Scroll if last line could be at bottom of screen but is not.
     if (CONTENT_HEIGHT - file->lineNumber < 2) {
         file->windowY = file->lineNumber - CONTENT_HEIGHT + 1;
+    }
+
+    // The largest line number is either the bottom of the screen, or
+    // the last line of the file.
+    int currWidth = getmaxx(lineNumbers);
+    int maxLineNumber = file->windowY + CONTENT_HEIGHT + 1;
+    maxLineNumber = (file->size < maxLineNumber) ? file->size : maxLineNumber;
+    int maxWidth = countDigits(maxLineNumber);
+
+    // Resize line number window if widest line number has changed.
+    if (maxWidth + 1 != currWidth) {
+        wresize(lineNumbers, CONTENT_HEIGHT, maxWidth + 1);
+        mvwin(lineNumbers, TITLE_HEIGHT, 0);
+        wresize(editor, CONTENT_HEIGHT, cols / 2 - maxWidth - 1);
+        mvwin(editor, TITLE_HEIGHT, maxWidth + 1);
     }
 
     // Print out all lines in current window.
