@@ -103,7 +103,6 @@ static void initialise(const char *path) {
 
     separator = newwin(CONTENT_HEIGHT, 1, TITLE_HEIGHT, cols / 2);
     wbkgd(separator, COLOR_PAIR(12));
-    mvwvline(separator, TITLE_HEIGHT - 1, 0, ACS_VLINE, CONTENT_HEIGHT);
 
     regView = newwin(CONTENT_HEIGHT, (cols - 1) / 2, TITLE_HEIGHT, cols / 2 + 1);
     wbkgd(regView, COLOR_PAIR(13));
@@ -117,12 +116,7 @@ static void initialise(const char *path) {
     // Initialise syntax highlighting.
     initialiseHighlight();
 
-    wrefresh(title);
-    wrefresh(help);
-    wrefresh(lineNumbers);
-    wrefresh(editor);
-    wrefresh(separator);
-    wrefresh(regView);
+    updateUI();
 }
 
 /// Updates UI, including line numbers window, scrolling.
@@ -227,7 +221,7 @@ static void updateUI(void) {
 
     // Move cursor to new position.
     wmove(editor, file->lineNumber - file->windowY, file->cursor);
-    wrefresh(editor);   
+    wrefresh(editor);
 }
 
 /// Updates the contents of one line, with corresponding line number.

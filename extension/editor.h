@@ -8,16 +8,18 @@
 #ifndef EXTENSION_EDITOR_H
 #define EXTENSION_EDITOR_H
 
+#include <libgen.h>
 #include <ncurses.h>
 #include <setjmp.h>
 #include <stdio.h>
 
 #include "const.h"
+// #include "emulate.h"
+#include "error.h"
 #include "file.h"
+#include "handleAssembly.h"
 #include "highlight.h"
 #include "line.h"
-#include "error.h"
-#include "handleAssembly.h"
 #include "state.h"
 #include "termSizeOverlay.h"
 

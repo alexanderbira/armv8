@@ -33,7 +33,7 @@ File *initialiseFile(const char *path) {
 
         while ((read = getline(&text, &textLength, handler)) != -1) {
             if (text[read - 1] == '\n') text[--read] = '\0';
-            addLine(file, text, file->size++ - 1);
+            addLine(file, text, file->size - 1);
         }
 
         free(text);
