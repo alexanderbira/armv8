@@ -17,6 +17,7 @@ void updateTermSizeOverlay(bool active) {
         if (termSizeOverlay != NULL) {
             delwin(termSizeOverlay);
             termSizeOverlay = NULL;
+            curs_set(true);
         }
         return;
     };
@@ -24,6 +25,8 @@ void updateTermSizeOverlay(bool active) {
     // Create the overlay if it does not exist.
     if (termSizeOverlay == NULL) {
         termSizeOverlay = newwin(0, 0, 0, 0);
+        wbkgd(termSizeOverlay, COLOR_PAIR(10));
+        curs_set(false);
 
         wclear(title);
         wclear(help);
