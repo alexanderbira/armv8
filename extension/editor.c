@@ -94,8 +94,9 @@ static void initialise(const char *path) {
     start_color();
     init_pair(10, 15, 127);
     init_pair(11, 15, 16);
-    init_pair(12, 127, 16);
+    init_pair(12, 15, 16);
     init_pair(13, 1, 16);
+    init_pair(14, COLOR_RED, 16);
 
     title = newwin(TITLE_HEIGHT, cols, 0, 0);
     help = newwin(MENU_HEIGHT, cols, rows - MENU_HEIGHT, 0);
@@ -114,6 +115,7 @@ static void initialise(const char *path) {
     wrefresh(separator);
 
     regView = newwin(CONTENT_HEIGHT, (cols - 1) / 2, TITLE_HEIGHT, cols / 2 + 1);
+    wbkgd(regView, COLOR_PAIR(14));
     wrefresh(regView);
 
     // Set [editor] to be the only window which receives key presses.
