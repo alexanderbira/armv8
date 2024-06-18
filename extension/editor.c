@@ -168,9 +168,9 @@ static void updateUI(void) {
 
     asprintf(&buffer[0], "[GRIM]");
     asprintf(&buffer[1], "MODE: %s", modes[mode]);
-    asprintf(&buffer[2], "%s", file->path ? file->path : "unknown.c");
+    asprintf(&buffer[2], "%s", file->path ? basename(file->path) : "untitled.c");
     // TODO: Change after status is properly defined.
-    asprintf(&buffer[3], "STATUS: %s", "UNSAVED");
+    asprintf(&buffer[3], "STATUS: %s", "SAVED");
     asprintf(&buffer[4], "[%d, %d]", file->lineNumber + 1, file->cursor + 1);
     wclear(title);
     printSpaced(title, 0, 5, buffer);
