@@ -34,6 +34,8 @@ int main(int argc, char *argv[]) {
 
         // Get and handle input.
         key = wgetch(editor);
+        if (termSizeOverlay != NULL) continue;
+
         switch (key) {
             case SAVE_KEY:
                 // TODO: save file, prompt if no path.
