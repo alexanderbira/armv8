@@ -161,6 +161,19 @@ static void updateUI(void) {
 
     // Resize all windows if size has changed.
     if (oldRows != rows || oldCols != cols) {
+        // Resize content.
+        werase(lineNumbers);
+        wresize(lineNumbers, CONTENT_HEIGHT, getmaxx(lineNumbers));
+        mvwin(lineNumbers, TITLE_HEIGHT, 0);
+
+        werase(editor);
+        wresize(editor, CONTENT_HEIGHT, cols / 2 - 2);
+        mvwin(editor, TITLE_HEIGHT, getmaxx(lineNumbers));
+
+        werase(regView);
+        wresize(regView, CONTENT_HEIGHT, (cols - 1) / 2);
+        mvwin(regView, TITLE_HEIGHT, cols / 2 + 1);
+
         // Rerender menu bars and separator.
         werase(title);
         wresize(title, TITLE_HEIGHT, cols);
@@ -175,19 +188,6 @@ static void updateUI(void) {
         mvwin(separator, TITLE_HEIGHT, cols / 2);
 
         updateBars();
-
-        // Resize everything else.
-        werase(lineNumbers);
-        wresize(lineNumbers, CONTENT_HEIGHT, getmaxx(lineNumbers));
-        mvwin(lineNumbers, TITLE_HEIGHT, 0);
-
-        werase(editor);
-        wresize(editor, CONTENT_HEIGHT, cols / 2 - 2);
-        mvwin(editor, TITLE_HEIGHT, getmaxx(lineNumbers));
-
-        werase(regView);
-        wresize(regView, CONTENT_HEIGHT, (cols - 1) / 2);
-        mvwin(regView, TITLE_HEIGHT, cols / 2 + 1);
     }
 
     // Scroll if out of bounds in any direction.
