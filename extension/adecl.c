@@ -1,6 +1,6 @@
 ///
 /// adecl.c
-/// Translates an assembly instructoin into a human readable description
+/// Translates an assembly instruction into a human readable description
 ///
 /// Created by Jack Wong on 19/06/24.
 ///
@@ -8,6 +8,12 @@
 #include "adecl.h"
 
 static char *adeclImmediate(Immediate_IR immediateIR);
+
+static char*adeclRegister(Register_IR registerIr);
+
+static char*adeclLoadStore(LoadStore_IR loadStoreIr);
+
+static char*adeclBranch(Branch_IR branchIr);
 
 /// Translates [irObject] to its human readable description.
 /// @param irObject The instruction to interpret.
@@ -19,8 +25,7 @@ char *adecl(IR *irObject) {
             return adeclImmediate(irObject->ir.immediateIR);
         }
         case REGISTER: {
-            // TODO
-            break;
+            return adeclRegister(irObject->ir.registerIR);
         }
         case LOAD_STORE: {
             // TODO
@@ -35,6 +40,7 @@ char *adecl(IR *irObject) {
             break;
         }
     }
+    return "";
 }
 
 static char *adeclImmediate(Immediate_IR immediateIR) {
@@ -106,4 +112,8 @@ static char *adeclImmediate(Immediate_IR immediateIR) {
         }
     }
     return str;
+}
+
+static char*adeclRegister(Register_IR registerIr) {
+
 }
