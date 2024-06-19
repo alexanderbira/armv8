@@ -115,30 +115,30 @@ static void initialise(const char *path) {
     getmaxyx(stdscr, rows, cols);
 
     start_color();
-    init_pair(10, 15, 127);
-    init_pair(11, 15, 16);
-    init_pair(12, 15, 16);
-    init_pair(13, 196, 16);
-    init_pair(14, 2, 16);
-    init_pair(15, 16, 196);
-    init_pair(16, 16, 15);
+    init_pair(MENU_SCHEME, 15, 127);
+    init_pair(DEFAULT_SCHEME, 15, 16);
+    init_pair(I_DEFAULT_SCHEME, 16, 15);
+    init_pair(SELECTED_SCHEME, 2, 16);
+    init_pair(ERROR_SCHEME, 196, 16);
+    init_pair(I_ERROR_SCHEME, 16, 196);
 
     title = newwin(TITLE_HEIGHT, cols, 0, 0);
-    help = newwin(MENU_HEIGHT, cols, rows - MENU_HEIGHT, 0);
-    wbkgd(help, COLOR_PAIR(10));
-    wbkgd(title, COLOR_PAIR(10));
+    wbkgd(title, COLOR_PAIR(MENU_SCHEME));
 
     lineNumbers = newwin(CONTENT_HEIGHT, 2, TITLE_HEIGHT, 0);
-    wbkgd(lineNumbers, COLOR_PAIR(11));
+    wbkgd(lineNumbers, COLOR_PAIR(DEFAULT_SCHEME));
 
     editor = newwin(CONTENT_HEIGHT, cols / 2 - 2, TITLE_HEIGHT, 2);
-    wbkgd(editor, COLOR_PAIR(11));
+    wbkgd(editor, COLOR_PAIR(DEFAULT_SCHEME));
 
     separator = newwin(CONTENT_HEIGHT, 1, TITLE_HEIGHT, cols / 2);
-    wbkgd(separator, COLOR_PAIR(12));
+    wbkgd(separator, COLOR_PAIR(DEFAULT_SCHEME));
 
     regView = newwin(CONTENT_HEIGHT, (cols - 1) / 2, TITLE_HEIGHT, cols / 2 + 1);
-    wbkgd(regView, COLOR_PAIR(13));
+    wbkgd(regView, COLOR_PAIR(DEFAULT_SCHEME));
+
+    help = newwin(MENU_HEIGHT, cols, rows - MENU_HEIGHT, 0);
+    wbkgd(help, COLOR_PAIR(MENU_SCHEME));
 
     // Set [editor] to be the only window which receives key presses.
     keypad(editor, true);
@@ -370,16 +370,16 @@ static void updateLine(Line *line, int index) {
                     lineError = true;
                     // Display the error
                     if (file->lineNumber == index) {
-                        wattron(regView, COLOR_PAIR(15));
+                        wattron(regView, COLOR_PAIR(I_ERROR_SCHEME));
                         mvwaddnstr(regView, index - file->windowY, 0,
                                    lineInfo[index].data.error, (cols - 1) / 2);
-                        wattroff(regView, COLOR_PAIR(15));
+                        wattroff(regView, COLOR_PAIR(I_ERROR_SCHEME));
                     }
                     else {
-                        wattron(regView, COLOR_PAIR(13));
+                        wattron(regView, COLOR_PAIR(ERROR_SCHEME));
                         mvwaddnstr(regView, index - file->windowY, 0,
                                    lineInfo[index].data.error, (cols - 1) / 2);
-                        wattroff(regView, COLOR_PAIR(13));
+                        wattroff(regView, COLOR_PAIR(ERROR_SCHEME));
                     }
                     break;
 
@@ -390,16 +390,16 @@ static void updateLine(Line *line, int index) {
 
                     // Display the binary string.
                     if (file->lineNumber == index) {
-                        wattron(regView, COLOR_PAIR(16));
+                        wattron(regView, COLOR_PAIR(I_DEFAULT_SCHEME));
                         mvwaddnstr(regView, index - file->windowY, 0,
                                    instrStr, (cols - 1) / 2);
-                        wattroff(regView, COLOR_PAIR(16));
+                        wattroff(regView, COLOR_PAIR(I_DEFAULT_SCHEME));
                     }
                     else {
-                        wattron(regView, COLOR_PAIR(11));
+                        wattron(regView, COLOR_PAIR(DEFAULT_SCHEME));
                         mvwaddnstr(regView, index - file->windowY, 0,
                                    instrStr, (cols - 1) / 2);
-                        wattroff(regView, COLOR_PAIR(11));
+                        wattroff(regView, COLOR_PAIR(DEFAULT_SCHEME));
                     }
 
                     break;
@@ -419,10 +419,10 @@ static void updateLine(Line *line, int index) {
             if (fatalError[0] != '\0') {
                 lineError = true;
                 if (file->lineNumber == index) {
-                    wattron(regView, COLOR_PAIR(15));
+                    wattron(regView, COLOR_PAIR(I_ERROR_SCHEME));
                     mvwaddnstr(regView, index - file->windowY, 0,
                                fatalError, (cols - 1) / 2);
-                    wattroff(regView, COLOR_PAIR(15));
+                    wattroff(regView, COLOR_PAIR(I_ERROR_SCHEME));
                 }
                 else {
                     mvwaddnstr(regView, index - file->windowY, 0,
@@ -444,9 +444,9 @@ static void updateLine(Line *line, int index) {
     if (!lineError || file->lineNumber == index) {
         // Display editor line with syntax highlighting.
         if (file->lineNumber == index) {
-            wattron(lineNumbers, COLOR_PAIR(14));
+            wattron(lineNumbers, COLOR_PAIR(SELECTED_SCHEME));
             mvwprintw(lineNumbers, index - file->windowY, padding, "%d", index + 1);
-            wattroff(lineNumbers, COLOR_PAIR(14));
+            wattroff(lineNumbers, COLOR_PAIR(SELECTED_SCHEME));
         } else {
             mvwprintw(lineNumbers, index - file->windowY, padding, "%d", index + 1);
         }
@@ -454,14 +454,14 @@ static void updateLine(Line *line, int index) {
         wPrintLine(editor, getLine(line));
     } else {
         // Print the line number in red.
-        wattron(lineNumbers, COLOR_PAIR(13));
+        wattron(lineNumbers, COLOR_PAIR(ERROR_SCHEME));
         mvwprintw(lineNumbers, index - file->windowY, padding, "%d", index + 1);
-        wattroff(lineNumbers, COLOR_PAIR(13));
+        wattroff(lineNumbers, COLOR_PAIR(ERROR_SCHEME));
 
         // Display editor line in red.
-        wattron(editor, COLOR_PAIR(13));
+        wattron(editor, COLOR_PAIR(ERROR_SCHEME));
         wprintw(editor, "%s", getLine(line));
-        wattroff(editor, COLOR_PAIR(13));
+        wattroff(editor, COLOR_PAIR(ERROR_SCHEME));
     }
 
     wclrtoeol(editor);

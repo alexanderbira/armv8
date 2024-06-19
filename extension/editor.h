@@ -118,4 +118,12 @@ typedef struct {
     } data;
 } LineInfo;
 
+#define MENU_SCHEME      7
+#define DEFAULT_SCHEME   8
+#define I_DEFAULT_SCHEME 9
+#define SELECTED_SCHEME  10
+#define ERROR_SCHEME     11
+#define I_ERROR_SCHEME   12
+
+
 #endif // EXTENSION_EDITOR_H
