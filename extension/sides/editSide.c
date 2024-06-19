@@ -38,8 +38,10 @@ static void updateEditLine(Line *line, int index) {
         // Write the natural language version.
         if (state.irCount == 1) {
             char *lineDescription = adecl(state.irList);
+            wattron(side, (file->lineNumber == index) ? COLOR_PAIR(I_DEFAULT_SCHEME) : COLOR_PAIR(DEFAULT_SCHEME));
             mvwaddnstr(side, index - file->windowY, 0,
                        lineDescription, (cols - 1) / 2);
+            wattroff(side, (file->lineNumber == index) ? COLOR_PAIR(I_DEFAULT_SCHEME) : COLOR_PAIR(DEFAULT_SCHEME));
         }
     }
 
