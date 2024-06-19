@@ -8,7 +8,12 @@
 #include "highlight.h"
 
 #define COLOR_TRUE_BLACK 16
-#define COLOR_LIGHTGRAY 248
+#define COLOR_LIGHT_GRAY 248
+#define COLOR_PINK 207
+#define COLOR_TURTLE_BLUE 73
+#define COLOR_LIGHT_BLUE 27
+#define COLOR_ORANGE 202
+#define COLOR_DARK_YELLOW 220
 
 /// Mnemonics of all instructions.
 static const char *mnemonics[] = {
@@ -40,12 +45,12 @@ void initialiseHighlight(void) {
     start_color();
 
     init_pair(H_NONE, COLOR_WHITE, COLOR_TRUE_BLACK);
-    init_pair(H_MNEMONIC, COLOR_MAGENTA, COLOR_TRUE_BLACK);
-    init_pair(H_LABEL, COLOR_CYAN, COLOR_TRUE_BLACK);
-    init_pair(H_DIRECTIVE, COLOR_BLUE, COLOR_TRUE_BLACK);
-    init_pair(H_LITERAL, COLOR_RED, COLOR_TRUE_BLACK);
-    init_pair(H_COMMENT, COLOR_LIGHTGRAY, COLOR_TRUE_BLACK);
-    init_pair(H_REGISTER, COLOR_YELLOW, COLOR_TRUE_BLACK);
+    init_pair(H_MNEMONIC, COLOR_PINK, COLOR_TRUE_BLACK);
+    init_pair(H_LABEL, COLOR_TURTLE_BLUE, COLOR_TRUE_BLACK);
+    init_pair(H_DIRECTIVE, COLOR_LIGHT_BLUE, COLOR_TRUE_BLACK);
+    init_pair(H_LITERAL, COLOR_ORANGE, COLOR_TRUE_BLACK);
+    init_pair(H_COMMENT, COLOR_LIGHT_GRAY, COLOR_TRUE_BLACK);
+    init_pair(H_REGISTER, COLOR_DARK_YELLOW, COLOR_TRUE_BLACK);
 }
 
 /// Print a line with syntax-highlighting at the current cursor position.
