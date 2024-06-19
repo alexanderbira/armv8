@@ -49,7 +49,6 @@ Decoder getDecodeFunction(const Instruction instruction) {
 
 /// Executes [instruction] given context.
 /// @param instruction The binary instruction to execute.
-/// @param pcVal The address stored in the Program Counter.
 /// @param registers The current virtual registers.
 /// @param memory The address of the virtual memory.
 void execute(Instruction *instruction, Registers registers, Memory memory) {
