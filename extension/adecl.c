@@ -41,9 +41,12 @@ char *adecl(IR *irObject) {
             return str;
         }
     }
+    return "";
 }
 
 static char *applyShiftFormat(char *str, enum ShiftType shift, int shiftVal);
+
+static char *getBranchCondition(enum BranchCondition);
 
 static char *adeclImmediate(Immediate_IR immediateIR) {
     char *str;
@@ -315,22 +318,32 @@ static char *adeclLoadStore(LoadStore_IR loadStoreIr) {
 
 static char *adeclBranch(Branch_IR branchIr) {
     char *str;
-    char *format;
 
     switch (branchIr.type) {
 
         // PC := PC + offset
         case BRANCH_UNCONDITIONAL:
+            asprintf(&str,
+                     "Jump %d lines",
+                     branchIr.data.simm26.data.immediate);
             break;
 
         // PC := Xn
         case BRANCH_REGISTER:
+            asprintf(&str,
+                     "Jump to address in R%d",
+                     branchIr.data.xn);
             break;
 
         // If cond, PC := PC + offset
         case BRANCH_CONDITIONAL:
+            asprintf(&str,
+                     "If %s, jump %d lines",
+                     getBranchCondition(branchIr.data.conditional.condition),
+                     branchIr.data.conditional.simm19.data.immediate);
             break;
     }
+    return str;
 }
 
 static char *applyShiftFormat(char *str, enum ShiftType shift, int shiftVal) {
@@ -375,4 +388,46 @@ static char *applyShiftFormat(char *str, enum ShiftType shift, int shiftVal) {
     }
     free(str);
     return newStr;
+}
+
+static char *getBranchCondition(enum BranchCondition condition) {
+
+    switch (condition) {
+
+        // Equal to.
+        // Z == 1
+        case EQ:
+            return "==";
+
+        // Not equal to.
+        // Z == 0
+        case NE:
+            return "!=";
+
+        // Signed greater or equal to.
+        // N == V
+        case GE:
+            return "signed >=";
+
+        // Signed less than.
+        // N != V
+        case LT:
+            return "signed <";
+
+        // Signed greater than.
+        // Z == 0 && N == V
+        case GT:
+            return "signed >";
+
+        // Signed less than or equal to.
+        // !(Z == 0 && N == V)
+        case LE:
+            return "signed <=";
+
+        // Always branches (no condition).
+        // Any [PState] flags.
+        case AL:
+            return "always";
+    }
+    return "";
 }
