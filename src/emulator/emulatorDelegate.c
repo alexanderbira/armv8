@@ -8,7 +8,7 @@
 #include "emulatorDelegate.h"
 
 /// Get the corresponding [IRExecutor] for this [irObject].
-/// @param ir The intermediate representation of the instruction
+/// @param instruction The binary representation of the instruction.
 /// @returns The corresponding [IRExecutor].
 Executor getExecuteFunction(IR *irObject) {
     switch (irObject->type) {
@@ -30,7 +30,7 @@ Executor getExecuteFunction(IR *irObject) {
 }
 
 /// Get the corresponding [BinaryParser] for this [instruction].
-/// @param ir The intermediate representation of the instruction
+/// @param instruction The binary representation of the instruction.
 /// @returns The corresponding [BinaryParser].
 Decoder getDecodeFunction(const Instruction instruction) {
     Component op0 = decompose(instruction, OP0_M);
@@ -47,6 +47,11 @@ Decoder getDecodeFunction(const Instruction instruction) {
     throwFatal("Invalid binary instruction!");
 }
 
+/// Get the corresponding [BinaryParser] for this [instruction].
+/// @param instruction The binary representation of the instruction.
+/// @param pcVal The address stored in the PC.
+/// @param registers The current virtual registers.
+/// @param memory The address of the virtual memory.
 void execute(Instruction *instruction, BitData *pcVal, Registers registers, Memory memory) {
     // Decode and execute.
     IR ir = getDecodeFunction(*instruction)(*instruction);
