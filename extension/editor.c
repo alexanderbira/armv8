@@ -16,9 +16,16 @@ static void printSpaced(WINDOW *window, int row, int count, char **content);
 int main(int argc, char *argv[]) {
     initialise((argc > 1) ? argv[1] : NULL);
 
+    // Was the last keypress ^R?
+    bool justRan = false;
+
     int key = -1;
     while (key != QUIT_KEY) {
-        updateUI();
+        // Don't update the UI if we just ran the code.
+        if (!justRan) {
+            updateUI();
+        }
+        justRan = false;
 
         // Get and handle input.
         key = wgetch(editor);
@@ -31,16 +38,55 @@ int main(int argc, char *argv[]) {
                 break;
 
             case RUN_KEY: {
+                // Run the code.
+
+                // Initialise registers, memory, and assembler state.
+                Registers_s registersStruct = createRegs();
+                Registers registers = &registersStruct;
+                Memory memory = allocMem();
                 AssemblerState state = createState();
+
+                // Initialise error string.
+                fatalError[0] = '\0';
+
                 if (!setjmp(fatalBuffer)) {
+
+                    // Perform the first assembly pass.
                     for (int currentLine = 0; currentLine < file->size; currentLine++) {
                         parse(getLine(file->lines[currentLine]), &state);
                     }
-                } else {
-                    // TODO: Send the error message where needed.
+
+                    state.address = 0x0;
+
+                    // Perform the second pass and write the instruction to memory.
+                    for (size_t i = 0; i < state.irCount; i++) {
+                        IR ir = state.irList[i];
+                        Instruction instruction = getTranslator(&ir.type)(&ir, &state);
+                        writeMem(memory, false, state.address, instruction);
+                        state.address += 0x4;
+                    }
+
+                    // Fetch first instruction.
+                    Instruction instruction = readMem(memory, false, getRegPC(registers));
+
+                    // Fetch, decode, execute cycle while the program has not terminated.
+                    while (instruction != HALT) {
+                        execute(&instruction, registers, memory);
+                    }
+
                 }
-                break;
+
+                // Display the register states.
+                updateDebug(registers);
+
+                // Free the emulator and assembler states.
+                freeMem(memory);
+                destroyState(state);
+
+                justRan = true;
             }
+
+                break;
 
             case DEBUG_KEY:
                 mode = (mode == DEBUG) ? EDIT : DEBUG;
@@ -168,7 +214,7 @@ static void updateUI(void) {
 
     asprintf(&buffer[0], "[GRIM]");
     asprintf(&buffer[1], "MODE: %s", modes[mode]);
-    asprintf(&buffer[2], "%s", file->path ? basename(file->path) : "untitled.c");
+    asprintf(&buffer[2], "%s", file->path ? basename(file->path) : "untitled.s");
     asprintf(&buffer[3], "STATUS: %s", statuses[status]);
     asprintf(&buffer[4], "[%d, %d]", file->lineNumber + 1, file->cursor + 1);
     werase(title);
@@ -229,8 +275,8 @@ static void updateUI(void) {
             break;
 
         case DEBUG:
-            Registers_s regs = createRegs();
-            updateDebug(&regs);
+//            Registers_s regs = createRegs();
+//            updateDebug(&regs);
             break;
     }
 

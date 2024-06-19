@@ -27,11 +27,11 @@ void updateDebug(Registers regs) {
     int currLine = 0;
     for (; currLine < NO_GPRS / 2; currLine++) {
         printMaybeSelected(side, getReg(regs, currLine) != getReg(&lastRegs, currLine), currLine, 0,
-                           "X%02d = %016" PRIx64, currLine, getReg(regs, currLine));
+                           "X%02d = 0x%016" PRIx64, currLine, getReg(regs, currLine));
 
         int otherLine = currLine + NO_GPRS / 2;
         printMaybeSelected(side, getReg(regs, otherLine) != getReg(&lastRegs, otherLine), 
-                           currLine, width / 2, "X%02d = %016" PRIx64, otherLine, getReg(regs, otherLine));
+                           currLine, width / 2, "X%02d = 0x%016" PRIx64, otherLine, getReg(regs, otherLine));
     }
 
     currLine++;
@@ -60,7 +60,7 @@ void updateDebug(Registers regs) {
     lastRegs = *regs;
 }
 
-/// Wrapper aronud [rerenderLine] where the line is always presumed to be correct.
+/// Wrapper around [rerenderLine] where the line is always presumed to be correct.
 /// @param line The line to rerender.
 /// @param index The index of the line in the window.
 static void rerenderLineWrapper(Line *line, int index) {

@@ -27,6 +27,9 @@
 #include "state.h"
 #include "termSizeOverlay.h"
 
+/// The halt instruction for run/debug mode.
+#define HALT 0x8a000000
+
 /// The key-code for CTRL plus some other key.
 #define CTRL(__KEY__) ((__KEY__) & 0x1F)
 
