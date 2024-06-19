@@ -13,7 +13,7 @@ static const int overlayLength = 28;
 
 void showTermSizeOverlay(void) {
     WINDOW *termSizeOverlay = newwin(0, 0, 0, 0);
-    wbkgd(termSizeOverlay, COLOR_PAIR(10));
+    wbkgd(termSizeOverlay, COLOR_PAIR(MENU_SCHEME));
     curs_set(false);
 
     // Intercept all keys, including resize events.

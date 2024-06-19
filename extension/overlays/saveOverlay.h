@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "const.h"
 #include "helpers.h"
 #include "file.h"
 

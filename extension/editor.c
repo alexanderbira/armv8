@@ -219,10 +219,10 @@ static void updateUI(void) {
         mvwin(editor, TITLE_HEIGHT, maxWidth + 1);
     }
 
+    iterateLinesInWindow(file, &updateLine);    
     switch (mode) {
         case EDIT:
-            // Print out all lines in current window.
-            iterateLinesInWindow(file, &updateLine);
+            // No more rendering required.
             break;
 
         case BINARY:
@@ -232,7 +232,7 @@ static void updateUI(void) {
         case DEBUG:
             // TODO !!!!
             break;
-    }
+    }    
 
     wclrtobot(side);
     wrefresh(side);
@@ -271,8 +271,10 @@ static void updateLine(Line *line, int index) {
     setjmp(fatalBuffer);
     if (fatalError[0] != '\0') {
         lineError = true;
+        wattron(side, (file->lineNumber == index) ? COLOR_PAIR(I_ERROR_SCHEME) : COLOR_PAIR(ERROR_SCHEME));
         mvwaddnstr(side, index - file->windowY, 0,
-                    fatalError, (cols - 1) / 2);
+                   fatalError, (cols - 1) / 2);
+        wattroff(side, (file->lineNumber == index) ? COLOR_PAIR(I_ERROR_SCHEME) : COLOR_PAIR(ERROR_SCHEME));
     } else {
         parse(getLine(line), &state);
     }

@@ -12,6 +12,8 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "const.h"
+
 /// The minimum width (in characters) of the terminal required for GRIM.
 #define MINIMUM_WIDTH  60
 

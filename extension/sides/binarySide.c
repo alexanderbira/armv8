@@ -89,10 +89,10 @@ static void updateBinary(unused Line *line, int index) {
     switch (lineInfo[index].lineStatus) {
         case ERRORED:
             // Display the error
-            wattron(side, COLOR_PAIR(13));
+            wattron(side, COLOR_PAIR((index == file->lineNumber) ? I_ERROR_SCHEME : ERROR_SCHEME));
             mvwaddnstr(side, index - file->windowY, 0,
                         lineInfo[index].data.error, (cols - 1) / 2);
-            wattroff(side, COLOR_PAIR(13));
+            wattroff(side, COLOR_PAIR((index == file->lineNumber) ? I_ERROR_SCHEME : ERROR_SCHEME));
             break;
 
         case ASSEMBLED: {
@@ -101,10 +101,10 @@ static void updateBinary(unused Line *line, int index) {
             strBinRep(instrStr, lineInfo[index].data.instruction);
 
             // Display the binary string.
-            wattron(side, COLOR_PAIR(11));
+            wattron(side, COLOR_PAIR((index == file->lineNumber) ? I_DEFAULT_SCHEME : DEFAULT_SCHEME));
             mvwaddnstr(side, index - file->windowY, 0,
                         instrStr, (cols - 1) / 2);
-            wattroff(side, COLOR_PAIR(11));
+            wattroff(side, COLOR_PAIR((index == file->lineNumber) ? I_DEFAULT_SCHEME : DEFAULT_SCHEME));
             break;
         }
 

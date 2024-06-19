@@ -24,6 +24,24 @@
 /// The encoding of the zero register.
 #define ZERO_REGISTER 31
 
+/// ID of the colour scheme for the menu window.
+#define MENU_SCHEME      7
+
+/// ID of the default colour scheme.
+#define DEFAULT_SCHEME   8
+
+/// ID of the inverted default colour scheme.
+#define I_DEFAULT_SCHEME 9
+
+/// ID of the colour scheme for selected content.
+#define SELECTED_SCHEME  10
+
+/// ID of the colour scheme for errored content.
+#define ERROR_SCHEME     11
+
+/// ID of the colour scheme for inverted errored content.
+#define I_ERROR_SCHEME   12
+
 /// Alias for a chunk of data passed to and from the virtual registers or memory.
 typedef uint64_t BitData;
 

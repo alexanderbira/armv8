@@ -18,7 +18,7 @@ static const int promptLength = 13;
 bool showSaveOverlay(File *file) {
     // Create a window for the overlay with dimensions covering the entire screen
     WINDOW *saveOverlay = newwin(0, 0, 0, 0);
-    wbkgd(saveOverlay, COLOR_PAIR(10));
+    wbkgd(saveOverlay, COLOR_PAIR(MENU_SCHEME));
     keypad(saveOverlay, TRUE);
 
     char userPath[1024] = "";
