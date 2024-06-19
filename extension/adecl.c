@@ -46,8 +46,11 @@ char *adecl(IR *irObject) {
 
 static char *applyShiftFormat(char *str, enum ShiftType shift, int shiftVal);
 
-static char *getBranchCondition(enum BranchCondition);
+static char *getBranchCondition(enum BranchCondition condition);
 
+/// Translates [immediateIR] to its human readable description.
+/// @param immediateIR The immediate instruction to interpret.
+/// @returns The human readable description.
 static char *adeclImmediate(Immediate_IR immediateIR) {
     char *str;
     char *nBits = immediateIR.sf ? "(64-bit)" : "(32-bit)";
@@ -130,6 +133,9 @@ static char *adeclImmediate(Immediate_IR immediateIR) {
     return applyShiftFormat(str, LSL, shiftVal);
 }
 
+/// Translates [registerIR] to its human readable description.
+/// @param registerIr The register instruction to interpret.
+/// @returns The human readable description.
 static char *adeclRegister(Register_IR registerIr) {
     char *str;
     char *nBits = registerIr.sf ? "(64-bit)" : "(32-bit)";
@@ -247,6 +253,9 @@ static char *adeclRegister(Register_IR registerIr) {
     return applyShiftFormat(str, registerIr.shift, registerIr.operand.imm6);
 }
 
+/// Translates [loadStoreIr] to its human readable description.
+/// @param loadStoreIr The load-store instruction to interpret.
+/// @returns The human readable description.
 static char *adeclLoadStore(LoadStore_IR loadStoreIr) {
     char *str;
     char *nBits = loadStoreIr.sf ? "(64-bit)" : "(32-bit)";
@@ -316,6 +325,9 @@ static char *adeclLoadStore(LoadStore_IR loadStoreIr) {
     return str;
 }
 
+/// Translates [branchIr] to its human readable description.
+/// @param branchIr The branch instruction to interpret.
+/// @returns The human readable description.
 static char *adeclBranch(Branch_IR branchIr) {
     char *str;
 
@@ -346,6 +358,11 @@ static char *adeclBranch(Branch_IR branchIr) {
     return str;
 }
 
+/// Adds the shift description to the human readable description.
+/// @param str The human readable description.
+/// @param shift The shift stored in the IR.
+/// @param shiftVal The amount to shift.
+/// @return The human readable description with shift description.
 static char *applyShiftFormat(char *str, enum ShiftType shift, int shiftVal) {
     char *newStr;
     char *shiftType;
@@ -390,6 +407,9 @@ static char *applyShiftFormat(char *str, enum ShiftType shift, int shiftVal) {
     return newStr;
 }
 
+/// Converts the branch condition to a human readable description.
+/// @param condition The branch condition stored in the [Branch_IR].
+/// @return The human readable description of the branch condition.
 static char *getBranchCondition(enum BranchCondition condition) {
 
     switch (condition) {
