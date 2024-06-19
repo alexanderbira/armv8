@@ -118,8 +118,10 @@ static void initialise(const char *path) {
     init_pair(10, 15, 127);
     init_pair(11, 15, 16);
     init_pair(12, 15, 16);
-    init_pair(13, 1, 16);
+    init_pair(13, 196, 16);
     init_pair(14, 2, 16);
+    init_pair(15, 16, 196);
+    init_pair(16, 16, 15);
 
     title = newwin(TITLE_HEIGHT, cols, 0, 0);
     help = newwin(MENU_HEIGHT, cols, rows - MENU_HEIGHT, 0);
@@ -366,12 +368,19 @@ static void updateLine(Line *line, int index) {
             switch (lineInfo[index].lineStatus) {
                 case ERRORED:
                     lineError = true;
-
                     // Display the error
-                    wattron(regView, COLOR_PAIR(13));
-                    mvwaddnstr(regView, index - file->windowY, 0,
-                               lineInfo[index].data.error, (cols - 1) / 2);
-                    wattroff(regView, COLOR_PAIR(13));
+                    if (file->lineNumber == index) {
+                        wattron(regView, COLOR_PAIR(15));
+                        mvwaddnstr(regView, index - file->windowY, 0,
+                                   lineInfo[index].data.error, (cols - 1) / 2);
+                        wattroff(regView, COLOR_PAIR(15));
+                    }
+                    else {
+                        wattron(regView, COLOR_PAIR(13));
+                        mvwaddnstr(regView, index - file->windowY, 0,
+                                   lineInfo[index].data.error, (cols - 1) / 2);
+                        wattroff(regView, COLOR_PAIR(13));
+                    }
                     break;
 
                 case ASSEMBLED: {
@@ -380,10 +389,19 @@ static void updateLine(Line *line, int index) {
                     strBinRep(instrStr, lineInfo[index].data.instruction);
 
                     // Display the binary string.
-                    wattron(regView, COLOR_PAIR(11));
-                    mvwaddnstr(regView, index - file->windowY, 0,
-                               instrStr, (cols - 1) / 2);
-                    wattroff(regView, COLOR_PAIR(11));
+                    if (file->lineNumber == index) {
+                        wattron(regView, COLOR_PAIR(16));
+                        mvwaddnstr(regView, index - file->windowY, 0,
+                                   instrStr, (cols - 1) / 2);
+                        wattroff(regView, COLOR_PAIR(16));
+                    }
+                    else {
+                        wattron(regView, COLOR_PAIR(11));
+                        mvwaddnstr(regView, index - file->windowY, 0,
+                                   instrStr, (cols - 1) / 2);
+                        wattroff(regView, COLOR_PAIR(11));
+                    }
+
                     break;
                 }
 
@@ -400,8 +418,17 @@ static void updateLine(Line *line, int index) {
             setjmp(fatalBuffer);
             if (fatalError[0] != '\0') {
                 lineError = true;
-                mvwaddnstr(regView, index - file->windowY, 0,
-                           fatalError, (cols - 1) / 2);
+                if (file->lineNumber == index) {
+                    wattron(regView, COLOR_PAIR(15));
+                    mvwaddnstr(regView, index - file->windowY, 0,
+                               fatalError, (cols - 1) / 2);
+                    wattroff(regView, COLOR_PAIR(15));
+                }
+                else {
+                    mvwaddnstr(regView, index - file->windowY, 0,
+                               fatalError, (cols - 1) / 2);
+                }
+
             } else {
                 parse(getLine(line), &state);
             }
