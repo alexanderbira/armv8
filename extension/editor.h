@@ -15,6 +15,7 @@
 
 #include "assemblerDelegate.h"
 #include "binarySide.h"
+#include "debugSide.h"
 #include "const.h"
 #include "editSide.h"
 #include "emulatorDelegate.h"

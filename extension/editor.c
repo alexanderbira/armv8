@@ -28,7 +28,6 @@ int main(int argc, char *argv[]) {
                 status = (file->path)
                          ? (saveFile(file) ? SAVED : status)
                          : (showSaveOverlay(file) ? SAVED : status);
-                updateUI();
                 break;
 
             case RUN_KEY: {
@@ -44,7 +43,8 @@ int main(int argc, char *argv[]) {
             }
 
             case DEBUG_KEY:
-                // TODO: Enter debug mode.
+                mode = (mode == DEBUG) ? EDIT : DEBUG;
+                status = (mode == DEBUG) ? READ_ONLY : UNSAVED;
                 break;
 
             case BINARY_KEY:
@@ -227,7 +227,8 @@ static void updateUI(void) {
             break;
 
         case DEBUG:
-            // TODO !!!!
+            Registers_s regs = createRegs();
+            updateDebug(&regs);
             break;
     }
 
