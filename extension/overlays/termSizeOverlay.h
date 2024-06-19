@@ -5,6 +5,9 @@
 /// Created by Lancelot Liu on 18/06/2024.
 ///
 
+#ifndef EXTENSION_TERM_SIZE_OVERLAY_H
+#define EXTENSION_TERM_SIZE_OVERLAY_H
+
 #include <ncurses.h>
 #include <string.h>
 #include <stdio.h>
@@ -22,3 +25,5 @@ extern WINDOW *title, *lineNumbers, *editor, *help, *separator, *regView;
 extern WINDOW *termSizeOverlay;
 
 void updateTermSizeOverlay(bool active);
+
+#endif // EXTENSION_TERM_SIZE_OVERLAY_H

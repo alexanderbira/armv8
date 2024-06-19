@@ -11,11 +11,13 @@ int rows = 0, cols = 0;
 
 WINDOW *title, *lineNumbers, *editor, *help, *separator, *regView;
 
-WINDOW *termSizeOverlay;
+WINDOW *termSizeOverlay, *saveOverlay;
 
 static File *file, *binaryFile;
 
 static EditorMode mode;
+
+static EditorStatus status;
 
 static void initialise(const char *path);
 
@@ -38,8 +40,10 @@ int main(int argc, char *argv[]) {
 
         switch (key) {
             case SAVE_KEY:
-                // TODO: save file, prompt if no path.
-                // TODO: Save with '.s' if in edit mode, and '.bin' if in binary mode.
+                status = (file->path)
+                         ? (saveFile(file) ? SAVED : status)
+                         : (showSaveOverlay(file) ? SAVED : status);
+                updateUI();
                 break;
 
             case RUN_KEY: {
@@ -78,7 +82,8 @@ int main(int argc, char *argv[]) {
                 break;
 
             default:
-                handleFileAction(file, key);
+                if (status == READ_ONLY) break;
+                status = handleFileAction(file, key) ? UNSAVED : status;
                 break;
         }
     }
@@ -133,6 +138,10 @@ static void initialise(const char *path) {
     // Initialise [File] object.
     file = initialiseFile(path);
 
+    // Set mode and state.
+    mode = EDIT;
+    status = SAVED; // TODO: Dynamically change to read only if loaded file is read-only.
+
     // Initialise syntax highlighting.
     initialiseHighlight();
     updateUI();
@@ -183,7 +192,7 @@ static void updateUI(void) {
     asprintf(&buffer[1], "MODE: %s", modes[mode]);
     asprintf(&buffer[2], "%s", file->path ? file->path : "unknown.c");
     // TODO: Change after status is properly defined.
-    asprintf(&buffer[3], "STATUS: %s", "UNSAVED");
+    asprintf(&buffer[3], "STATUS: %s", statuses[status]);
     asprintf(&buffer[4], "[%d, %d]", file->lineNumber + 1, file->cursor + 1);
     werase(title);
     printSpaced(title, 0, 5, buffer);

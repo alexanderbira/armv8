@@ -53,6 +53,8 @@ void iterateLines(File *file, LineCallback callback);
 
 void iterateLinesInWindow(File *file, LineCallback callback);
 
-void handleFileAction(File *file, int key);
+bool handleFileAction(File *file, int key);
+
+bool saveFile(File *file);
 
 #endif // EXTENSION_FILE_H

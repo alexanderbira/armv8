@@ -116,10 +116,11 @@ void iterateLinesInWindow(File *file, LineCallback callback) {
 /// Performs some action of [file] given some [key].
 /// @param file The [File] to modify.
 /// @param key The key code in question.
-void handleFileAction(File *file, int key) {
+/// @returns Whether a modification was made to the file.
+bool handleFileAction(File *file, int key) {
     switch (key) {
         case KEY_UP:
-            if (file->lineNumber == 0) return;
+            if (file->lineNumber == 0) return false;
             file->lineNumber--;
             if (file->cursor >= lineLength(file->lines[file->lineNumber])) {
                 file->cursor = lineLength(file->lines[file->lineNumber]);
@@ -131,11 +132,11 @@ void handleFileAction(File *file, int key) {
             // the down arrow on the last line of the file.
             if (file->lineNumber + 1 == file->size) {
                 // But if they are already on a trailing empty line, return.
-                if (!lineLength(file->lines[file->lineNumber])) return;
+                if (!lineLength(file->lines[file->lineNumber])) return false;
 
                 addLine(file, NULL, file->lineNumber++);
                 file->cursor = 0;
-                return;
+                return true;
             }
 
             // Otherwise, go to the next line and coerce cursor x location.
@@ -149,7 +150,7 @@ void handleFileAction(File *file, int key) {
         case KEY_LEFT:
             if (file->cursor == 0) {
                 // Go to end of previous line if it exists.
-                if (file->lineNumber == 0) return;
+                if (file->lineNumber == 0) return false;
 
                 file->lineNumber--;
                 file->cursor = lineLength(file->lines[file->lineNumber]);
@@ -161,7 +162,7 @@ void handleFileAction(File *file, int key) {
         case KEY_RIGHT:
             if (file->cursor >= lineLength(file->lines[file->lineNumber])) {
                 // Go to end of previous line if it exists.
-                if (file->lineNumber + 1 == file->size) return;
+                if (file->lineNumber + 1 == file->size) return false;
 
                 file->lineNumber++;
                 file->cursor = 0;
@@ -180,7 +181,7 @@ void handleFileAction(File *file, int key) {
             addLine(file, currentText + file->cursor, file->lineNumber++);
             file->cursor = 0;
             free(currentText);
-            break;
+            return true;
         }
 
         case KEY_BACKSPACE:
@@ -189,6 +190,7 @@ void handleFileAction(File *file, int key) {
                 // Remove the character at the cursor position
                 removeStrAt(file->lines[file->lineNumber], file->cursor - 1, file->cursor);
                 file->cursor--;
+                return true;
             } else if (file->cursor == 0 && file->lineNumber > 0) {
                 // Current line will be removed, but we copy over text.
                 Line *currentLine = file->lines[file->lineNumber];
@@ -205,18 +207,34 @@ void handleFileAction(File *file, int key) {
                 deleteLine(file, file->lineNumber);
                 file->lineNumber--;
                 file->cursor = previousLineLength;
+                return true;
             }
-            break;
+            return false;
 
         case '\t':
             insertStrAt(file->lines[file->lineNumber], "  ", file->cursor);
             file->cursor += 2;
-            break;
+            return true;
 
         default:
-            if (!isprint(key)) return;
+            if (!isprint(key)) return false;
             insertCharAt(file->lines[file->lineNumber], key, file->cursor);
             file->cursor++;
-            break;
+            return true;
     }
+
+    return false;
+}
+
+bool saveFile(File *file) {
+    FILE *f = fopen(file->path, "w");
+    if (f == NULL) return false;
+
+    for (int i = 0; i < file->size; ++i) {
+        char *lineText = getLine(file->lines[i]);
+        fprintf(f, "%s\n", lineText);
+    }
+
+    fclose(f);
+    return true;
 }

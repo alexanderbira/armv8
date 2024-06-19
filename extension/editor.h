@@ -20,6 +20,7 @@
 #include "handleAssembly.h"
 #include "highlight.h"
 #include "line.h"
+#include "saveOverlay.h"
 #include "state.h"
 #include "termSizeOverlay.h"
 
@@ -74,8 +75,18 @@ typedef enum {
     BINARY, ///< Read-only view of compiled binary.
 } EditorMode;
 
-/// The human-readable titles of [Mode].
+/// The status of the editor.
+typedef enum {
+    READ_ONLY, ///< File is read-only.
+    UNSAVED,   ///< File has unsaved changes.
+    SAVED      ///< File has no pending changes.
+} EditorStatus;
+
+/// The human-readable titles of [EditorMode].
 static const char *modes[] = { "EDIT", "DEBUG", "BINARY" };
+
+/// The human-readable titles of [EditorStatus].
+static const char *statuses[] = { "READ ONLY", "UNSAVED", "SAVED" };
 
 bool JUMP_ON_ERROR = true;
 jmp_buf fatalBuffer;
