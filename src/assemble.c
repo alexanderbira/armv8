@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
     char line[256];
 
     while (fgets(line, sizeof(line), fileIn)) {
-        handleAssembly(line, &state);
+        parse(line, &state);
     }
 
     fclose(fileIn);

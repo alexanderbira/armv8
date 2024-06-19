@@ -8,14 +8,19 @@
 #ifndef ASSEMBLER_DELEGATE_H
 #define ASSEMBLER_DELEGATE_H
 
+#include <ctype.h>
+#include <stdlib.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "branchParser.h"
 #include "branchTranslator.h"
 #include "dataProcessingParser.h"
 #include "directiveParser.h"
 #include "directiveTranslator.h"
+#include "helpers.h"
 #include "immediateParser.h"
 #include "immediateTranslator.h"
 #include "ir.h"
@@ -52,5 +57,7 @@ typedef struct {
 Parser getParser(const char *mnemonic);
 
 Translator getTranslator(const IRType *type);
+
+void parse(char *line, AssemblerState *state);
 
 #endif // ASSEMBLER_DELEGATE_H
