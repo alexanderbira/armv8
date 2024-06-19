@@ -13,7 +13,7 @@ static char*adeclRegister(Register_IR registerIr);
 
 static char*adeclLoadStore(LoadStore_IR loadStoreIr);
 
-//static char*adeclBranch(Branch_IR branchIr);
+static char*adeclBranch(Branch_IR branchIr);
 
 /// Translates [irObject] to its human readable description.
 /// @param irObject The instruction to interpret.
@@ -31,62 +31,19 @@ char *adecl(IR *irObject) {
             return adeclLoadStore(irObject->ir.loadStoreIR);
         }
         case BRANCH: {
-//            return adeclBranch(irObject->ir.branchIR);
+            return adeclBranch(irObject->ir.branchIR);
         }
         case DIRECTIVE: {
             char *str;
             asprintf(&str,
-                     "Load %lu.",
+                     "Load %lu",
                      irObject->ir.memoryData);
             return str;
         }
     }
-    return "";
 }
 
-static char *applyShiftFormat(char *str, enum ShiftType shift, int shiftVal) {
-    char *newStr;
-    char *shiftType;
-
-    // No shift.
-    if (shiftVal == 0) return str;
-
-    switch (shift) {
-
-        case LSL:
-            shiftType = "LSL";
-            break;
-
-        case LSR:
-            shiftType = "LSR";
-            break;
-
-        case ASR:
-            shiftType = "ASR";
-            break;
-
-        case ROR:
-            shiftType = "ROR";
-            break;
-    }
-
-    // Check if "/w" already in string and act accordingly.
-    if (strstr(str, "w/") != NULL) {
-        asprintf(&newStr,
-                 "%s, %s %d",
-                 str,
-                 shiftType,
-                 shiftVal);
-    } else {
-        asprintf(&newStr,
-                 "%s w/ %s %d",
-                 str,
-                 shiftType,
-                 shiftVal);
-    }
-    free(str);
-    return newStr;
-}
+static char *applyShiftFormat(char *str, enum ShiftType shift, int shiftVal);
 
 static char *adeclImmediate(Immediate_IR immediateIR) {
     char *str;
@@ -170,7 +127,7 @@ static char *adeclImmediate(Immediate_IR immediateIR) {
     return applyShiftFormat(str, LSL, shiftVal);
 }
 
-static char*adeclRegister(Register_IR registerIr) {
+static char *adeclRegister(Register_IR registerIr) {
     char *str;
     char *nBits = registerIr.sf ? "(64-bit)" : "(32-bit)";
     char *format;
@@ -287,7 +244,7 @@ static char*adeclRegister(Register_IR registerIr) {
     return applyShiftFormat(str, registerIr.shift, registerIr.operand.imm6);
 }
 
-static char*adeclLoadStore(LoadStore_IR loadStoreIr) {
+static char *adeclLoadStore(LoadStore_IR loadStoreIr) {
     char *str;
     char *nBits = loadStoreIr.sf ? "(64-bit)" : "(32-bit)";
 
@@ -355,7 +312,67 @@ static char*adeclLoadStore(LoadStore_IR loadStoreIr) {
     }
     return str;
 }
-//
-//static char*adeclBranch(Branch_IR branchIr) {
-//
-//}
+
+static char *adeclBranch(Branch_IR branchIr) {
+    char *str;
+    char *format;
+
+    switch (branchIr.type) {
+
+        // PC := PC + offset
+        case BRANCH_UNCONDITIONAL:
+            break;
+
+        // PC := Xn
+        case BRANCH_REGISTER:
+            break;
+
+        // If cond, PC := PC + offset
+        case BRANCH_CONDITIONAL:
+            break;
+    }
+}
+
+static char *applyShiftFormat(char *str, enum ShiftType shift, int shiftVal) {
+    char *newStr;
+    char *shiftType;
+
+    // No shift.
+    if (shiftVal == 0) return str;
+
+    switch (shift) {
+
+        case LSL:
+            shiftType = "LSL";
+            break;
+
+        case LSR:
+            shiftType = "LSR";
+            break;
+
+        case ASR:
+            shiftType = "ASR";
+            break;
+
+        case ROR:
+            shiftType = "ROR";
+            break;
+    }
+
+    // Check if "/w" already in string and act accordingly.
+    if (strstr(str, "w/") != NULL) {
+        asprintf(&newStr,
+                 "%s, %s %d",
+                 str,
+                 shiftType,
+                 shiftVal);
+    } else {
+        asprintf(&newStr,
+                 "%s w/ %s %d",
+                 str,
+                 shiftType,
+                 shiftVal);
+    }
+    free(str);
+    return newStr;
+}
