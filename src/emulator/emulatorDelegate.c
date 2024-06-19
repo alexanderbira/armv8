@@ -49,18 +49,19 @@ Decoder getDecodeFunction(const Instruction instruction) {
 
 /// Executes [instruction] given context.
 /// @param instruction The binary instruction to execute.
-/// @param pcVal The address stored in the Program Counter.
 /// @param registers The current virtual registers.
 /// @param memory The address of the virtual memory.
-void execute(Instruction *instruction, BitData *pcVal, Registers registers, Memory memory) {
+void execute(Instruction *instruction, Registers registers, Memory memory) {
+    // Store the address in the PC before execution.
+    BitData pcVal = getRegPC(registers);
+
     // Decode and execute.
     IR ir = getDecodeFunction(*instruction)(*instruction);
     getExecuteFunction(&ir)(&ir, registers, memory);
 
     // Increment PC only when no branch or jump instructions applied.
-    if (*pcVal == getRegPC(registers)) incRegPC(registers);
+    if (pcVal == getRegPC(registers)) incRegPC(registers);
 
     // Fetch next instruction
-    *pcVal = getRegPC(registers);
-    *instruction = readMem(memory, false, *pcVal);
+    *instruction = readMem(memory, false, getRegPC(registers));
 }

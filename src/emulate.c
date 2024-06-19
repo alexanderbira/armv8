@@ -18,12 +18,11 @@ int main(int argc, char **argv) {
     Memory memory = allocMemFromFile(argv[1]);
 
     // Fetch first instruction
-    BitData pcVal = getRegPC(registers);
-    Instruction instruction = readMem(memory, false, pcVal);
+    Instruction instruction = readMem(memory, false, getRegPC(registers));
 
     // Fetch, decode, execute cycle while the program has not terminated
     while (instruction != HALT) {
-        execute(&instruction, &pcVal, registers, memory);
+        execute(&instruction, registers, memory);
     }
 
     // Dump contents of register and memory, then free memory.
