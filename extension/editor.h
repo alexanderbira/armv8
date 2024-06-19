@@ -52,6 +52,24 @@
 /// The height (in characters) of the main content.
 #define CONTENT_HEIGHT    ((int) rows - TITLE_HEIGHT - MENU_HEIGHT)
 
+/// ID of the colour scheme for the menu window.
+#define MENU_SCHEME      7
+
+/// ID of the default colour scheme.
+#define DEFAULT_SCHEME   8
+
+/// ID of the inverted default colour scheme.
+#define I_DEFAULT_SCHEME 9
+
+/// ID of the colour scheme for selected content.
+#define SELECTED_SCHEME  10
+
+/// ID of the colour scheme for errored content.
+#define ERROR_SCHEME     11
+
+/// ID of the colour scheme for inverted errored content.
+#define I_ERROR_SCHEME   12
+
 static const char *commands[6] = {
     "[^Q] - QUIT",
     "[^S] - SAVE",
