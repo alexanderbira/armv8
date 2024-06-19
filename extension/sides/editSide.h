@@ -18,6 +18,7 @@
 #include "ir.h"
 #include "line.h"
 #include "state.h"
+#include "adecl.h"
 
 extern int rows, cols;
 

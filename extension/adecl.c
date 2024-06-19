@@ -9,11 +9,11 @@
 
 static char *adeclImmediate(Immediate_IR immediateIR);
 
-static char*adeclRegister(Register_IR registerIr);
+static char *adeclRegister(Register_IR registerIr);
 
-static char*adeclLoadStore(LoadStore_IR loadStoreIr);
+static char *adeclLoadStore(LoadStore_IR loadStoreIr);
 
-static char*adeclBranch(Branch_IR branchIr);
+static char *adeclBranch(Branch_IR branchIr);
 
 /// Translates [irObject] to its human readable description.
 /// @param irObject The instruction to interpret.
@@ -36,7 +36,7 @@ char *adecl(IR *irObject) {
         case DIRECTIVE: {
             char *str;
             asprintf(&str,
-                     "Load %lu",
+                     "Load %llu",
                      irObject->ir.memoryData);
             return str;
         }

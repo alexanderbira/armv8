@@ -34,6 +34,13 @@ static void updateEditLine(Line *line, int index) {
         wattroff(side, (file->lineNumber == index) ? COLOR_PAIR(I_ERROR_SCHEME) : COLOR_PAIR(ERROR_SCHEME));
     } else {
         parse(getLine(line), &state);
+
+        // Write the natural language version.
+        if (state.irCount == 1) {
+            char *lineDescription = adecl(state.irList);
+            mvwaddnstr(side, index - file->windowY, 0,
+                       lineDescription, (cols - 1) / 2);
+        }
     }
 
     destroyState(state);
