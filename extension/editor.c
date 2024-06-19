@@ -79,6 +79,8 @@ int main(int argc, char *argv[]) {
                 // Display the register states.
                 updateDebug(registers);
 
+                wmove(editor, file->lineNumber, file->cursor);
+
                 // Free the emulator and assembler states.
                 freeMem(memory);
                 destroyState(state);
