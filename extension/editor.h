@@ -13,11 +13,10 @@
 #include <setjmp.h>
 #include <stdio.h>
 
+#include "assemblerDelegate.h"
 #include "const.h"
-// #include "emulate.h"
 #include "error.h"
 #include "file.h"
-#include "handleAssembly.h"
 #include "highlight.h"
 #include "line.h"
 #include "saveOverlay.h"

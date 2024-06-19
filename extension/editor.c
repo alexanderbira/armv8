@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
                 AssemblerState state = createState();
                 if (!setjmp(fatalBuffer)) {
                     for (int currentLine = 0; currentLine < file->size; currentLine++) {
-                        handleAssembly(getLine(file->lines[currentLine]), &state);
+                        parse(getLine(file->lines[currentLine]), &state);
                     }
                 } else {
                     // TODO: Send the error message where needed.
@@ -278,7 +278,7 @@ static void updateUI(void) {
 
                 } else {
                     // Attempt the first pass of the line.
-                    handleAssembly(getLine(file->lines[i]), &state);
+                    parse(getLine(file->lines[i]), &state);
 
                     // If no error in assembly of line and irCount unchanged,
                     // the instruction was ignored, so has no binary or error.
@@ -389,7 +389,6 @@ static void updateLine(Line *line, int index) {
 
     // Print different things in the regView window depending on the mode.
     switch (mode) {
-
         case BINARY:
             switch (lineInfo[index].lineStatus) {
                 case ERRORED:
@@ -422,14 +421,11 @@ static void updateLine(Line *line, int index) {
                         (cols - 1) / 2
                     );
                     wattroff(regView, COLOR_PAIR(11));
+                    break;
                 }
-                    break;
 
-                default:
-                    // Do nothing
-                    break;
+                default: break;
             }
-
             break;
 
         default: {
@@ -454,13 +450,12 @@ static void updateLine(Line *line, int index) {
             } else {
                 // Attempt to assemble the line. This will jump to above if
                 // an error is thrown.
-                handleAssembly(getLine(line), &state);
+                parse(getLine(line), &state);
             }
 
             destroyState(state);
-        }
-
             break;
+        }
     }
 
     wclrtoeol(regView);

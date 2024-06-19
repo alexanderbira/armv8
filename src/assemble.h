@@ -15,7 +15,6 @@
 
 #include "assemblerDelegate.h"
 #include "helpers.h"
-#include "handleAssembly.h"
 
 int main(int argc, char **argv);
 
