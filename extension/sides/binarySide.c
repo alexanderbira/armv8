@@ -112,8 +112,12 @@ static void updateBinaryLine(unused Line *line, int index) {
             break;
         }
 
-        default: break;
+        default:
+            wmove(side, index - file->windowY, 0);
+            break;
     }
+
+    wclrtoeol(side);
 
     rerenderLine(line, index, lineErrored);
 }
