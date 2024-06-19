@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
     char line[256];
 
     while (fgets(line, sizeof(line), fileIn)) {
-        parse(line, &state);
+        handleAssembly(line, &state);
     }
 
     fclose(fileIn);
@@ -37,7 +37,9 @@ int main(int argc, char **argv) {
     state.address = 0x0;
 
     for (size_t i = 0; i < state.irCount; i++) {
-        Instruction instruction = translate(&state.irList[i], &state);
+        IR ir = state.irList[i];
+        Instruction instruction = getTranslator(&ir.type)(&ir, &state);
+        state.address += 0x4;
         fwrite(&instruction, sizeof(Instruction), 1, fileOut);
     }
 
