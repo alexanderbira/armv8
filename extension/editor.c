@@ -69,6 +69,8 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
+/// Initialises the editor.
+/// @param path The path to the file to open, or NULL if no file is to be opened.
 static void initialise(const char *path) {
     // fatalError is "realloc"ed elsewhere.
     fatalError = malloc(0);

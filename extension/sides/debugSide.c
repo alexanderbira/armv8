@@ -7,22 +7,15 @@
 
 #include "debugSide.h"
 
+/// The last state of the registers.
 static Registers_s lastRegs;
 
-static void rerenderLineWrapper(Line *line, int index) {
-    rerenderLine(line, index, false);
-}
+static void rerenderLineWrapper(Line *line, int index);
 
-static void printMaybeSelected(WINDOW *win, bool selected, int row, int col, const char *fmt, ...) {
-    va_list args;
-    va_start(args, fmt);
-    wattron(win, selected ? COLOR_PAIR(SELECTED_SCHEME) : A_NORMAL);
-    wmove(win, row, col);
-    vw_printw(win, fmt, args);
-    wattroff(win, selected ? COLOR_PAIR(SELECTED_SCHEME) : A_NORMAL);
-    va_end(args);
-}
+static void printMaybeSelected(WINDOW *win, bool selected, int row, int col, const char *fmt, ...);
 
+/// Updates the debug side panel with the current state of the registers.
+/// @param regs The current state of the registers to be displayed.
 void updateDebug(Registers regs) {
     // Print out all lines in current window.
     iterateLinesInWindow(file, &rerenderLineWrapper);
@@ -65,4 +58,28 @@ void updateDebug(Registers regs) {
 
     wrefresh(side);
     lastRegs = *regs;
+}
+
+/// Wrapper aronud [rerenderLine] where the line is always presumed to be correct.
+/// @param line The line to rerender.
+/// @param index The index of the line in the window.
+static void rerenderLineWrapper(Line *line, int index) {
+    rerenderLine(line, index, false);
+}
+
+/// Prints the given formatted string to the window, highlighting if the value has changed.
+/// @param win The window to print to.
+/// @param selected Whether the value has changed.
+/// @param row The row to print to.
+/// @param col The column to print to.
+/// @param fmt The format string to print.
+/// @param ... The arguments to the format string.
+static void printMaybeSelected(WINDOW *win, bool selected, int row, int col, const char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    wattron(win, selected ? COLOR_PAIR(SELECTED_SCHEME) : A_NORMAL);
+    wmove(win, row, col);
+    vw_printw(win, fmt, args);
+    wattroff(win, selected ? COLOR_PAIR(SELECTED_SCHEME) : A_NORMAL);
+    va_end(args);
 }

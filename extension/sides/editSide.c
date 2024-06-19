@@ -9,11 +9,15 @@
 
 static void updateEditLine(unused Line *line, int index);
 
+/// Updates the edit side panel with the current state of the assembly code.
 void updateEdit(void) {
     // Print out all lines in current window.
     iterateLinesInWindow(file, &updateEditLine);
 }
 
+/// Updates the edit side panel with the current state of the assembly code.
+/// @param line The line to rerender.
+/// @param index The index of the line in the window.
 static void updateEditLine(Line *line, int index) {
     wmove(side, index - file->windowY, 0);
 

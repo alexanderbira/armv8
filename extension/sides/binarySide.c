@@ -12,6 +12,7 @@ static void updateBinaryLine(unused Line *line, int index);
 
 static void strBinRep(char *str, Instruction instruction);
 
+/// Updates the binary side panel with the current binary representations of the assembly code.
 void updateBinary(void) {
     // Allocate memory for the lineInfo array.
     lineInfo = malloc(file->size * sizeof(LineInfo));
@@ -85,6 +86,9 @@ void updateBinary(void) {
     free(lineInfo);
 }
 
+/// Updates the binary side panel with the current state of the binary representation of the assembly code.
+/// @param line The line to rerender.
+/// @param index The index of the line in the window.
 static void updateBinaryLine(unused Line *line, int index) {
     bool lineErrored = false;
 
