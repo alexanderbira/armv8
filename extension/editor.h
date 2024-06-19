@@ -23,6 +23,7 @@
 #include "saveOverlay.h"
 #include "state.h"
 #include "termSizeOverlay.h"
+#include "adecl.h"
 
 /// The key-code for CTRL plus some other key.
 #define CTRL(__KEY__) ((__KEY__) & 0x1F)
