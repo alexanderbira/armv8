@@ -119,6 +119,7 @@ static void initialise(const char *path) {
     init_pair(11, 15, 16);
     init_pair(12, 15, 16);
     init_pair(13, 1, 16);
+    init_pair(14, 2, 16);
 
     title = newwin(TITLE_HEIGHT, cols, 0, 0);
     help = newwin(MENU_HEIGHT, cols, rows - MENU_HEIGHT, 0);
@@ -468,7 +469,14 @@ static void updateLine(Line *line, int index) {
 
     if (!lineError || file->lineNumber == index) {
         // Display editor line with syntax highlighting.
-        mvwprintw(lineNumbers, index - file->windowY, padding, "%d", index + 1);
+        if (file->lineNumber == index) {
+            wattron(lineNumbers, COLOR_PAIR(14));
+            mvwprintw(lineNumbers, index - file->windowY, padding, "%d", index + 1);
+            wattroff(lineNumbers, COLOR_PAIR(14));
+        } else {
+            mvwprintw(lineNumbers, index - file->windowY, padding, "%d", index + 1);
+        }
+
         wPrintLine(editor, getLine(line));
     } else {
         // Print the line number in red.
