@@ -13,6 +13,20 @@
 char *adecl(IR *irObject) {
 
     switch (irObject->type) {
-
+        case IMMEDIATE: {
+            // TODO
+        }
+        case REGISTER: {
+            // TODO
+        }
+        case LOAD_STORE: {
+            // TODO
+        }
+        case BRANCH: {
+            // TODO
+        }
+        case DIRECTIVE: {
+            // TODO
+        }
     }
 }

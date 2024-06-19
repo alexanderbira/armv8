@@ -9,7 +9,7 @@
 #define EXTENSION_ADECL_H
 
 #include <string.h>
-#include "ir.h"
+#include "../src/common/ir/ir.h"
 
 char *adecl(IR *irObject);
 
