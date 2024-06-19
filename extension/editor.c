@@ -105,7 +105,10 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    // TODO: save 'n stuff, prompt if no path.
+    // Automatically save the file if it is unsaved.
+    status = (file->path)
+        ? (saveFile(file) ? SAVED : status)
+        : (showSaveOverlay(file) ? SAVED : status);
 
     // Cleanup
     freeFile(file);
@@ -162,7 +165,7 @@ static void initialise(const char *path) {
 
     // Set mode and state.
     mode = EDIT;
-    status = file->path ? SAVED : UNSAVED; // TODO: Dynamically change to read only if loaded file is read-only.
+    status = file->path ? SAVED : UNSAVED;
 
     // Initialise syntax highlighting.
     initialiseHighlight();
