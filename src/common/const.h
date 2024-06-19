@@ -13,16 +13,16 @@
 #include <stdint.h>
 
 /// The virtual memory size of the emulated machine.
-#define MEMORY_SIZE (2 << 20)
+#define MEMORY_SIZE      (2 << 20)
 
 /// All considered whitespace characters.
-#define WHITESPACE  " \n\t\r"
+#define WHITESPACE       " \n\t\r"
 
 /// The number of general purpose registers in the virtual machine.
-#define NO_GPRS 31
+#define NO_GPRS          31
 
 /// The encoding of the zero register.
-#define ZERO_REGISTER 31
+#define ZERO_REGISTER    31
 
 /// ID of the colour scheme for the menu window.
 #define MENU_SCHEME      7
@@ -41,6 +41,15 @@
 
 /// ID of the colour scheme for inverted errored content.
 #define I_ERROR_SCHEME   12
+
+/// The height (in characters) of GRIM's title.
+#define TITLE_HEIGHT      1
+
+/// The height (in characters) of GRIM's help menu.
+#define MENU_HEIGHT       1
+
+/// The height (in characters) of the main content.
+#define CONTENT_HEIGHT    ((int) rows - TITLE_HEIGHT - MENU_HEIGHT)
 
 /// Alias for a chunk of data passed to and from the virtual registers or memory.
 typedef uint64_t BitData;

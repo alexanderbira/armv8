@@ -14,14 +14,15 @@
 #include <stdio.h>
 
 #include "assemblerDelegate.h"
+#include "binarySide.h"
 #include "const.h"
+#include "editSide.h"
 #include "emulatorDelegate.h"
 #include "error.h"
 #include "file.h"
 #include "highlight.h"
 #include "line.h"
 #include "saveOverlay.h"
-#include "binarySide.h"
 #include "state.h"
 #include "termSizeOverlay.h"
 
@@ -42,15 +43,6 @@
 
 /// The key code to view the compiled assembly.
 #define BINARY_KEY        CTRL('b')
-
-/// The height (in characters) of the program title.
-#define TITLE_HEIGHT      1
-
-/// The height (in characters) of the program help menu.
-#define MENU_HEIGHT       1
-
-/// The height (in characters) of the main content.
-#define CONTENT_HEIGHT    ((int) rows - TITLE_HEIGHT - MENU_HEIGHT)
 
 static const char *commands[6] = {
     "[^Q] - QUIT",
@@ -75,6 +67,9 @@ EditorStatus status;
 
 /// Info about the lines after attempt to assemble.
 LineInfo *lineInfo;
+
+/// The flag signifying whether the current line has errored.
+bool lineErrored = false;
 
 /// The flag signifying to [error.h] to not exit the program when an error occurs.
 bool JUMP_ON_ERROR = true;

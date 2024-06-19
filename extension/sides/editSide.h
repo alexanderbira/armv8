@@ -1,12 +1,12 @@
 ///
-/// binarySide.h
-/// The side panel for the binary representation of the assembly code.
+/// editSide.h
+/// The side panel for the editing of the assembly code.
 ///
 /// Created by Lancelot Liu on 19/06/2024.
 ///
 
-#ifndef EXTENSION_BINARY_SIDE_H
-#define EXTENSION_BINARY_SIDE_H
+#ifndef EXTENSION_EDIT_SIDE_H
+#define EXTENSION_EDIT_SIDE_H
 
 #include <ncurses.h>
 #include <setjmp.h>
@@ -33,6 +33,6 @@ extern jmp_buf fatalBuffer;
 
 extern char *fatalError;
 
-void updateBinary(void);
+void updateEdit(void);
 
-#endif // EXTENSION_BINARY_SIDE_H
+#endif // EXTENSION_EDIT_SIDE_H

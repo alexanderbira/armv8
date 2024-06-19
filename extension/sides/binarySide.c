@@ -8,11 +8,11 @@
 
 #include "binarySide.h"
 
-static void updateBinary(unused Line *line, int index);
+static void updateBinaryLine(unused Line *line, int index);
 
 static void strBinRep(char *str, Instruction instruction);
 
-void updateSide(void) {
+void updateBinary(void) {
     // Allocate memory for the lineInfo array.
     lineInfo = malloc(file->size * sizeof(LineInfo));
 
@@ -72,7 +72,7 @@ void updateSide(void) {
     }
 
     // Print out all lines in current window.
-    iterateLinesInWindow(file, &updateBinary);
+    iterateLinesInWindow(file, &updateBinaryLine);
 
     // Free the line info
     destroyState(state);
@@ -85,7 +85,9 @@ void updateSide(void) {
     free(lineInfo);
 }
 
-static void updateBinary(unused Line *line, int index) {
+static void updateBinaryLine(unused Line *line, int index) {
+    bool lineErrored = false;
+
     switch (lineInfo[index].lineStatus) {
         case ERRORED:
             // Display the error
@@ -93,6 +95,8 @@ static void updateBinary(unused Line *line, int index) {
             mvwaddnstr(side, index - file->windowY, 0,
                         lineInfo[index].data.error, (cols - 1) / 2);
             wattroff(side, COLOR_PAIR((index == file->lineNumber) ? I_ERROR_SCHEME : ERROR_SCHEME));
+
+            lineErrored = true;
             break;
 
         case ASSEMBLED: {
@@ -110,6 +114,8 @@ static void updateBinary(unused Line *line, int index) {
 
         default: break;
     }
+
+    rerenderLine(line, index, lineErrored);
 }
 
 /// Convert an instruction to a binary string representation.

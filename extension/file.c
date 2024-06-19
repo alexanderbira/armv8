@@ -238,3 +238,46 @@ bool saveFile(File *file) {
     fclose(f);
     return true;
 }
+
+/// Updates the contents of one line, with corresponding line number.
+/// @param line The [Line] to be updated on screen.
+/// @param index The 0-based index of the line to update.
+void rerenderLine(Line *line, int index, bool errored) {
+    // Don't render line below screen.
+    if (index >= file->windowY + CONTENT_HEIGHT) return;
+
+    // Print the line number, then clear rest of line.
+    int padding = getmaxx(lineNumbers) - countDigits(index + 1) - 1;
+
+    // Reset the cursors.
+    wmove(editor, index - file->windowY, 0);
+    wmove(lineNumbers, index - file->windowY, 0);
+    
+    wclrtoeol(lineNumbers);
+
+    if (!errored || file->lineNumber == index) {
+        // Display editor line with syntax highlighting.
+        if (file->lineNumber == index) {
+            wattron(lineNumbers, COLOR_PAIR(SELECTED_SCHEME));
+            mvwprintw(lineNumbers, index - file->windowY, padding, "%d", index + 1);
+            wattroff(lineNumbers, COLOR_PAIR(SELECTED_SCHEME));
+        } else {
+            mvwprintw(lineNumbers, index - file->windowY, padding, "%d", index + 1);
+        }
+
+        wPrintLine(editor, getLine(line));
+    } else {
+        // Print the line number in red.
+        wattron(lineNumbers, COLOR_PAIR(ERROR_SCHEME));
+        mvwprintw(lineNumbers, index - file->windowY, padding, "%d", index + 1);
+        wattroff(lineNumbers, COLOR_PAIR(ERROR_SCHEME));
+
+        // Display editor line in red.
+        wattron(editor, COLOR_PAIR(ERROR_SCHEME));
+        wprintw(editor, "%s", getLine(line));
+        wattroff(editor, COLOR_PAIR(ERROR_SCHEME));
+    }
+
+    wclrtoeol(editor);
+    wclrtoeol(lineNumbers);
+}

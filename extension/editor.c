@@ -11,8 +11,6 @@ static void initialise(const char *path);
 
 static void updateUI(void);
 
-static void updateLine(Line *line, int index);
-
 static void printSpaced(WINDOW *window, int row, int count, char **content);
 
 int main(int argc, char *argv[]) {
@@ -219,20 +217,19 @@ static void updateUI(void) {
         mvwin(editor, TITLE_HEIGHT, maxWidth + 1);
     }
 
-    iterateLinesInWindow(file, &updateLine);    
     switch (mode) {
         case EDIT:
-            // No more rendering required.
+            updateEdit();
             break;
 
         case BINARY:
-            updateSide();
+            updateBinary();
             break;
 
         case DEBUG:
             // TODO !!!!
             break;
-    }    
+    }
 
     wclrtobot(side);
     wrefresh(side);
@@ -245,70 +242,6 @@ static void updateUI(void) {
     // Move cursor to new position.
     wmove(editor, file->lineNumber - file->windowY, file->cursor);
     wrefresh(editor);
-}
-
-/// Updates the contents of one line, with corresponding line number.
-/// @param line The [Line] to be updated on screen.
-/// @param index The 0-based index of the line to update.
-static void updateLine(Line *line, int index) {
-    // Don't render line below screen.
-    if (index >= file->windowY + CONTENT_HEIGHT) return;
-
-    // Print the line number, then clear rest of line.
-    int padding = getmaxx(lineNumbers) - countDigits(index + 1) - 1;
-
-    // Reset the cursors.
-    wmove(editor, index - file->windowY, 0);
-    wmove(lineNumbers, index - file->windowY, 0);
-    wmove(side, index - file->windowY, 0);
-
-    // Whether a fatal error was encountered when parsing the line.
-    bool lineError = false;
-
-    AssemblerState state = createState();
-    fatalError[0] = '\0';
-
-    setjmp(fatalBuffer);
-    if (fatalError[0] != '\0') {
-        lineError = true;
-        wattron(side, (file->lineNumber == index) ? COLOR_PAIR(I_ERROR_SCHEME) : COLOR_PAIR(ERROR_SCHEME));
-        mvwaddnstr(side, index - file->windowY, 0,
-                   fatalError, (cols - 1) / 2);
-        wattroff(side, (file->lineNumber == index) ? COLOR_PAIR(I_ERROR_SCHEME) : COLOR_PAIR(ERROR_SCHEME));
-    } else {
-        parse(getLine(line), &state);
-    }
-
-    destroyState(state);
-
-    wclrtoeol(side);
-    wclrtoeol(lineNumbers);
-
-    if (!lineError || file->lineNumber == index) {
-        // Display editor line with syntax highlighting.
-        if (file->lineNumber == index) {
-            wattron(lineNumbers, COLOR_PAIR(SELECTED_SCHEME));
-            mvwprintw(lineNumbers, index - file->windowY, padding, "%d", index + 1);
-            wattroff(lineNumbers, COLOR_PAIR(SELECTED_SCHEME));
-        } else {
-            mvwprintw(lineNumbers, index - file->windowY, padding, "%d", index + 1);
-        }
-
-        wPrintLine(editor, getLine(line));
-    } else {
-        // Print the line number in red.
-        wattron(lineNumbers, COLOR_PAIR(ERROR_SCHEME));
-        mvwprintw(lineNumbers, index - file->windowY, padding, "%d", index + 1);
-        wattroff(lineNumbers, COLOR_PAIR(ERROR_SCHEME));
-
-        // Display editor line in red.
-        wattron(editor, COLOR_PAIR(ERROR_SCHEME));
-        wprintw(editor, "%s", getLine(line));
-        wattroff(editor, COLOR_PAIR(ERROR_SCHEME));
-    }
-
-    wclrtoeol(editor);
-    wclrtoeol(lineNumbers);
 }
 
 /// Prints the given [...] strings equally spaced.

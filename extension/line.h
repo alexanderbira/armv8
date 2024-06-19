@@ -46,4 +46,6 @@ int lineLength(Line *line);
 
 char *getLine(Line *line);
 
+void updateLine(Line *line, int index);
+
 #endif //EXTENSION_LINE_H

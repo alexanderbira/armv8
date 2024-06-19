@@ -11,10 +11,11 @@
 #include <ctype.h>
 #include <ncurses.h>
 
+#include "const.h"
 #include "line.h"
+#include "highlight.h"
 
 #define INITIAL_FILE_SIZE 8
-
 /// Overall representation of a text file.
 typedef struct {
     /// Path to the file.
@@ -41,6 +42,12 @@ typedef struct {
 
 typedef void (*LineCallback)(Line *line, int index);
 
+extern int rows;
+
+extern WINDOW *lineNumbers, *editor;
+
+extern File *file;
+
 File *initialiseFile(const char *path);
 
 void freeFile(File *file);
@@ -56,5 +63,7 @@ void iterateLinesInWindow(File *file, LineCallback callback);
 bool handleFileAction(File *file, int key);
 
 bool saveFile(File *file);
+
+void rerenderLine(Line *line, int index, bool errored);
 
 #endif // EXTENSION_FILE_H
