@@ -47,9 +47,9 @@ Decoder getDecodeFunction(const Instruction instruction) {
     throwFatal("Invalid binary instruction!");
 }
 
-/// Get the corresponding [BinaryParser] for this [instruction].
-/// @param instruction The binary representation of the instruction.
-/// @param pcVal The address stored in the PC.
+/// Executes [instruction] given context.
+/// @param instruction The binary instruction to execute.
+/// @param pcVal The address stored in the Program Counter.
 /// @param registers The current virtual registers.
 /// @param memory The address of the virtual memory.
 void execute(Instruction *instruction, BitData *pcVal, Registers registers, Memory memory) {
