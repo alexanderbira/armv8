@@ -118,6 +118,92 @@ static char*adeclRegister(Register_IR registerIr) {
     char *str;
     char *nBits = registerIr.sf ? "(64-bit)" : "(32-bit)";
     char *format;
+    switch (registerIr.group) {
+        case ARITHMETIC:
+            switch (registerIr.opc.arithmetic) {
+                // TODO Put correct format.
+                // Rd := Rn + Op2
+                case ADD:
+                    format = "%s R%d = R%d + %d.";
+                    break;
+
+                    // Rd := Rn + Op2 (update flags)
+                case ADDS:
+                    format = "%s R%d = R%d + %d with flags.";
+                    break;
+
+                    // Rd := Rn - Op2
+                case SUB:
+                    format = "%s R%d = R%d - %d.";
+                    break;
+
+                    // Rd := Rn - Op2 (update flags)
+                case SUBS:
+                    format = "%s R%d = R%d - %d with flags.";
+                    break;
+            }
+            break;
+
+        case BIT_LOGIC:
+            if (registerIr.negated) {
+                switch (registerIr.opc.logic.negated) {
+                    // Rd := Rn & ∼Op2
+                    case BIC:
+                        // TODO
+                        break;
+
+                    // Rd := Rn | ∼Op2
+                    case ORN:
+                        // TODO
+                        break;
+
+                    // Rd := Rn ∧ ∼Op2
+                    case EON:
+                        // TODO
+                        break;
+
+                    // Rd := Rn & ∼Op2 (update condition flags)
+                    case BICS:
+                        // TODO
+                        break;
+                }
+            } else {
+                switch (registerIr.opc.logic.standard) {
+                    // Rd := Rn & Op2
+                    case AND:
+                        // TODO
+                        break;
+
+                    // Rd := Rn | Op2
+                    case ORR:
+                        // TODO
+                        break;
+
+                    // Rd := Rn ∧ Op2
+                    case EOR:
+                        // TODO
+                        break;
+
+                    // Rd := Rn & Op2 (update condition flags)
+                    case ANDS:
+                        // TODO
+                        break;
+                }
+            }
+            break;
+
+        case MULTIPLY:
+            switch (registerIr.opc.multiply) {
+                case MADD:
+                    // TODO
+                    break;
+
+                case MSUB:
+                    // TODO
+                    break;
+            }
+            break;
+    }
 }
 
 static char*adeclLoadStore(LoadStore_IR loadStoreIr) {
