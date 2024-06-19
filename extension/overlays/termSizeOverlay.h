@@ -13,10 +13,10 @@
 #include <stdio.h>
 
 /// The minimum width (in characters) of the terminal required for GRIM.
-#define MINIMUM_WIDTH 80
+#define MINIMUM_WIDTH  60
 
 /// The minimum height (in characters) of the terminal required for GRIM.
-#define MINIMUM_HEIGHT 20
+#define MINIMUM_HEIGHT 25
 
 extern int rows, cols;
 

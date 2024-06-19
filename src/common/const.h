@@ -36,6 +36,53 @@ typedef uint32_t Mask;
 /// Alias for a sub-component of an [Instruction].
 typedef uint32_t Component;
 
+/// The mode that GRIM is in.
+typedef enum {
+    EDIT,   ///< Standard editing mode.
+    DEBUG,  ///< Read-only, debugging.
+    BINARY, ///< Read-only view of compiled binary.
+} EditorMode;
+
+/// The status of the editor.
+typedef enum {
+    READ_ONLY, ///< File is read-only.
+    UNSAVED,   ///< File has unsaved changes.
+    SAVED      ///< File has no pending changes.
+} EditorStatus;
+
+/// The human-readable titles of [EditorMode].
+static const char *modes[] = { "EDIT", "DEBUG", "BINARY" };
+
+/// The human-readable titles of [EditorStatus].
+static const char *statuses[] = { "READ ONLY", "UNSAVED", "SAVED" };
+
+/// The status of the line after going through the assembler.
+typedef enum {
+    /// If the line was successfully assembled.
+    ASSEMBLED,
+
+    /// If an error was encountered during the line assembly.
+    ERRORED,
+
+    /// If the line didn't need to be assembled (e.g. comments, labels, ...).
+    NONE,
+} LineStatus;
+
+/// Contains data about the line after it goes through the assembler.
+typedef struct {
+    /// The status of the line after going through the assembler.
+    LineStatus lineStatus;
+
+    /// Data about the line after it goes through the assembler.
+    union {
+        /// The assembled instruction.
+        Instruction instruction;
+
+        /// A string containing the error message.
+        char *error;
+    } data;
+} LineInfo;
+
 /// Shorthand to mark an input parameter is unused. This is usually because a type signature
 /// has to be followed for a group of functions.
 #define unused __attribute__((unused))

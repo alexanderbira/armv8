@@ -7,21 +7,6 @@
 
 #include "editor.h"
 
-int rows = 0, cols = 0;
-
-WINDOW *title, *lineNumbers, *editor, *help, *separator, *regView;
-
-static File *file;
-
-/// The current editor mode.
-static EditorMode mode;
-
-/// The current editor status.
-static EditorStatus status;
-
-/// Info about the lines after attempt to assemble.
-static LineInfo *lineInfo;
-
 static void initialise(const char *path);
 
 static void updateUI(void);
@@ -86,23 +71,6 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-/// Convert an instruction to a binary string representation.
-/// @param str A pointer to the char array to overwrite with the binary repr.
-/// @param instruction The instruction to convert.
-static void strBinRep(char *str, Instruction instruction) {
-    int i = sizeof(instruction) * 8 + 7;
-
-    str[i] = '\0';
-
-    while (--i >= 0) {
-        str[i] = '0' + (instruction & 1);
-        if (i % 5 == 0) {
-            str[--i] = ' ';
-        }
-        instruction >>= 1;
-    }
-}
-
 static void initialise(const char *path) {
     // fatalError is "realloc"ed elsewhere.
     fatalError = malloc(0);
@@ -135,8 +103,8 @@ static void initialise(const char *path) {
     separator = newwin(CONTENT_HEIGHT, 1, TITLE_HEIGHT, cols / 2);
     wbkgd(separator, COLOR_PAIR(12));
 
-    regView = newwin(CONTENT_HEIGHT, (cols - 1) / 2, TITLE_HEIGHT, cols / 2 + 1);
-    wbkgd(regView, COLOR_PAIR(13));
+    side = newwin(CONTENT_HEIGHT, (cols - 1) / 2, TITLE_HEIGHT, cols / 2 + 1);
+    wbkgd(side, COLOR_PAIR(13));
 
     // Set [editor] to be the only window which receives key presses.
     keypad(editor, true);
@@ -171,12 +139,12 @@ static void updateUI(void) {
         mvwin(lineNumbers, TITLE_HEIGHT, 0);
 
         werase(editor);
-        wresize(editor, CONTENT_HEIGHT, cols / 2 - 2);
+        wresize(editor, CONTENT_HEIGHT, cols / 2 - getmaxx(lineNumbers));
         mvwin(editor, TITLE_HEIGHT, getmaxx(lineNumbers));
 
-        werase(regView);
-        wresize(regView, CONTENT_HEIGHT, (cols - 1) / 2);
-        mvwin(regView, TITLE_HEIGHT, cols / 2 + 1);
+        werase(side);
+        wresize(side, CONTENT_HEIGHT, (cols - 1) / 2);
+        mvwin(side, TITLE_HEIGHT, cols / 2 + 1);
 
         // Rerender menu bars and separator.
         werase(title);
@@ -199,7 +167,6 @@ static void updateUI(void) {
     asprintf(&buffer[0], "[GRIM]");
     asprintf(&buffer[1], "MODE: %s", modes[mode]);
     asprintf(&buffer[2], "%s", file->path ? file->path : "unknown.c");
-    // TODO: Change after status is properly defined.
     asprintf(&buffer[3], "STATUS: %s", statuses[status]);
     asprintf(&buffer[4], "[%d, %d]", file->lineNumber + 1, file->cursor + 1);
     werase(title);
@@ -251,88 +218,24 @@ static void updateUI(void) {
     }
 
     switch (mode) {
-        case BINARY:
-            // Allocate memory for the lineInfo array.
-            lineInfo = malloc(file->size * sizeof(LineInfo));
-
-            AssemblerState state = createState();
-
-            // Perform the first pass of the assembler.
-            for (int i = 0; i < file->size; i++) {
-                size_t irCount = state.irCount;
-
-                LineInfo currLineInfo;
-                fatalError[0] = '\0';
-
-                setjmp(fatalBuffer);
-                if (fatalError[0] != '\0') {
-                    // An error has occured.
-                    currLineInfo.lineStatus = ERRORED;
-                    currLineInfo.data.error = strdup(fatalError);
-                } else {
-                    parse(getLine(file->lines[i]), &state);
-
-                    // At this point, the parsing was successful.
-                    currLineInfo.lineStatus = (state.irCount == irCount) ? NONE : ASSEMBLED;
-                    currLineInfo.data.error = NULL;
-                }
-
-                lineInfo[i] = currLineInfo;
-            }
-
-            // Keep track of which line we're doing a second pass on, and reset counter.
-            int currLineNum = 0;
-            state.address = 0x0;
-
-            // Perform the second pass of the assembler.
-            for (size_t i = 0; i < state.irCount; i++) {
-                // Skip lines which do not require a second pass.
-                while (lineInfo[currLineNum].lineStatus != ASSEMBLED) currLineNum++;
-
-                IR ir = state.irList[i];
-                fatalError[0] = '\0';
-
-                setjmp(fatalBuffer);
-                if (fatalError[0] != '\0') {
-                    // Fatal error was encountered during second assembly pass.
-                    free(lineInfo[currLineNum].data.error);
-                    lineInfo[currLineNum].lineStatus = ERRORED;
-                    lineInfo[currLineNum].data.error = strdup(fatalError);
-                } else {
-                    Instruction instruction = getTranslator(&ir.type)(&ir, &state);
-
-                    // If this code is reached, the line was assembled.
-                    lineInfo[currLineNum].lineStatus = ASSEMBLED;
-                    lineInfo[currLineNum].data.instruction = instruction;
-                }
-
-                state.address += 0x4;
-                currLineNum++;
-            }
-
+        case EDIT:
             // Print out all lines in current window.
             iterateLinesInWindow(file, &updateLine);
-
-            // Free the line info
-            destroyState(state);
-            for (int i = 0; i < file->size; i++) {
-                // Free all error strings
-                if (lineInfo[i].lineStatus == ERRORED) {
-                    free(lineInfo[i].data.error);
-                }
-            }
-            free(lineInfo);
             break;
 
-        default:
-            // Print out all lines in current window.
-            iterateLinesInWindow(file, &updateLine);
+        case BINARY:
+            updateSide();
+            break;
+
+        case DEBUG:
+            // TODO !!!!
             break;
     }
 
+    wclrtobot(side);
+    wrefresh(side);
+
     // Clear all unoccupied space in line number and editor windows.
-    wclrtobot(regView);
-    wrefresh(regView);
     wclrtobot(lineNumbers);
     wrefresh(lineNumbers);
     wclrtobot(editor);
@@ -355,63 +258,26 @@ static void updateLine(Line *line, int index) {
     // Reset the cursors.
     wmove(editor, index - file->windowY, 0);
     wmove(lineNumbers, index - file->windowY, 0);
-    wmove(regView, index - file->windowY, 0);
+    wmove(side, index - file->windowY, 0);
 
     // Whether a fatal error was encountered when parsing the line.
     bool lineError = false;
 
-    // Print different things in the regView window depending on the mode.
-    switch (mode) {
-        case BINARY:
-            switch (lineInfo[index].lineStatus) {
-                case ERRORED:
-                    lineError = true;
+    AssemblerState state = createState();
+    fatalError[0] = '\0';
 
-                    // Display the error
-                    wattron(regView, COLOR_PAIR(13));
-                    mvwaddnstr(regView, index - file->windowY, 0,
-                               lineInfo[index].data.error, (cols - 1) / 2);
-                    wattroff(regView, COLOR_PAIR(13));
-                    break;
-
-                case ASSEMBLED: {
-                    // Convert the instruction to a string.
-                    char instrStr[8 * sizeof(Instruction) + 8];
-                    strBinRep(instrStr, lineInfo[index].data.instruction);
-
-                    // Display the binary string.
-                    wattron(regView, COLOR_PAIR(11));
-                    mvwaddnstr(regView, index - file->windowY, 0,
-                               instrStr, (cols - 1) / 2);
-                    wattroff(regView, COLOR_PAIR(11));
-                    break;
-                }
-
-                default:
-                    break;
-            }
-
-            break;
-
-        default: {
-            AssemblerState state = createState();
-            fatalError[0] = '\0';
-
-            setjmp(fatalBuffer);
-            if (fatalError[0] != '\0') {
-                lineError = true;
-                mvwaddnstr(regView, index - file->windowY, 0,
-                           fatalError, (cols - 1) / 2);
-            } else {
-                parse(getLine(line), &state);
-            }
-
-            destroyState(state);
-            break;
-        }
+    setjmp(fatalBuffer);
+    if (fatalError[0] != '\0') {
+        lineError = true;
+        mvwaddnstr(side, index - file->windowY, 0,
+                    fatalError, (cols - 1) / 2);
+    } else {
+        parse(getLine(line), &state);
     }
 
-    wclrtoeol(regView);
+    destroyState(state);
+
+    wclrtoeol(side);
     wclrtoeol(lineNumbers);
 
     if (!lineError || file->lineNumber == index) {

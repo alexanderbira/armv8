@@ -15,12 +15,13 @@
 
 #include "assemblerDelegate.h"
 #include "const.h"
-// #include "emulate.h"
+#include "emulatorDelegate.h"
 #include "error.h"
 #include "file.h"
 #include "highlight.h"
 #include "line.h"
 #include "saveOverlay.h"
+#include "side.h"
 #include "state.h"
 #include "termSizeOverlay.h"
 
@@ -60,25 +61,20 @@ static const char *commands[6] = {
     "[ENTER] - STEP",
 };
 
-/// The mode that GRIM is in.
-typedef enum {
-    EDIT,   ///< Standard editing mode.
-    DEBUG,  ///< Read-only, debugging.
-    BINARY, ///< Read-only view of compiled binary.
-} EditorMode;
+int rows = 0, cols = 0;
 
-/// The status of the editor.
-typedef enum {
-    READ_ONLY, ///< File is read-only.
-    UNSAVED,   ///< File has unsaved changes.
-    SAVED      ///< File has no pending changes.
-} EditorStatus;
+WINDOW *title, *lineNumbers, *editor, *help, *separator, *side;
 
-/// The human-readable titles of [EditorMode].
-static const char *modes[] = { "EDIT", "DEBUG", "BINARY" };
+File *file;
 
-/// The human-readable titles of [EditorStatus].
-static const char *statuses[] = { "READ ONLY", "UNSAVED", "SAVED" };
+/// The current editor mode.
+EditorMode mode;
+
+/// The current editor status.
+EditorStatus status;
+
+/// Info about the lines after attempt to assemble.
+LineInfo *lineInfo;
 
 /// The flag signifying to [error.h] to not exit the program when an error occurs.
 bool JUMP_ON_ERROR = true;
@@ -90,32 +86,5 @@ jmp_buf fatalBuffer;
 char *fatalError;
 
 int main(int argc, char *argv[]);
-
-/// The status of the line after going through the assembler.
-typedef enum {
-    /// If the line was successfully assembled.
-    ASSEMBLED,
-
-    /// If an error was encountered during the line assembly.
-    ERRORED,
-
-    /// If the line didn't need to be assembled (e.g. comments, labels, ...).
-    NONE,
-} LineStatus;
-
-/// Contains data about the line after it goes through the assembler.
-typedef struct {
-    /// The status of the line after going through the assembler.
-    LineStatus lineStatus;
-
-    /// Data about the line after it goes through the assembler.
-    union {
-        /// The assembled instruction.
-        Instruction instruction;
-
-        /// A string containing the error message.
-        char *error;
-    } data;
-} LineInfo;
 
 #endif // EXTENSION_EDITOR_H
