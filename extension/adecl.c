@@ -11,9 +11,9 @@ static char *adeclImmediate(Immediate_IR immediateIR);
 
 static char*adeclRegister(Register_IR registerIr);
 
-static char*adeclLoadStore(LoadStore_IR loadStoreIr);
+//static char*adeclLoadStore(LoadStore_IR loadStoreIr);
 
-static char*adeclBranch(Branch_IR branchIr);
+//static char*adeclBranch(Branch_IR branchIr);
 
 /// Translates [irObject] to its human readable description.
 /// @param irObject The instruction to interpret.
@@ -28,10 +28,10 @@ char *adecl(IR *irObject) {
             return adeclRegister(irObject->ir.registerIR);
         }
         case LOAD_STORE: {
-            return adeclLoadStore(irObject->ir.loadStoreIR);
+//            return adeclLoadStore(irObject->ir.loadStoreIR);
         }
         case BRANCH: {
-            return adeclBranch(irObject->ir.branchIR);
+//            return adeclBranch(irObject->ir.branchIR);
         }
         case DIRECTIVE: {
             char *str;
@@ -41,33 +41,81 @@ char *adecl(IR *irObject) {
             return str;
         }
     }
+    return "";
+}
+
+static char *applyShiftFormat(char *str, enum ShiftType shift, int shiftVal) {
+    char *newStr;
+    char *shiftType;
+
+    // No shift.
+    if (shiftVal == 0) return str;
+
+    switch (shift) {
+
+        case LSL:
+            shiftType = "LSL";
+            break;
+
+        case LSR:
+            shiftType = "LSR";
+            break;
+
+        case ASR:
+            shiftType = "ASR";
+            break;
+
+        case ROR:
+            shiftType = "ROR";
+            break;
+    }
+
+    // Check if "/w" already in string and act accordingly.
+    if (strstr(str, "w/") != NULL) {
+        asprintf(&newStr,
+                 "%s, %s %d",
+                 str,
+                 shiftType,
+                 shiftVal);
+    } else {
+        asprintf(&newStr,
+                 "%s w/ %s %d",
+                 str,
+                 shiftType,
+                 shiftVal);
+    }
+    free(str);
+    return newStr;
 }
 
 static char *adeclImmediate(Immediate_IR immediateIR) {
     char *str;
     char *nBits = immediateIR.sf ? "(64-bit)" : "(32-bit)";
     char *format;
+
+    // TODO Edit shifts, just describe
     switch (immediateIR.opi) {
         case IMMEDIATE_ARITHMETIC: {
+
             switch (immediateIR.opc.arithmeticType) {
                 // Rd := Rn + Op2
                 case ADD:
-                    format = "%s R%d = R%d + %d.";
+                    format = "%s R%d = R%d + %d";
                     break;
 
                     // Rd := Rn + Op2 (update flags)
                 case ADDS:
-                    format = "%s R%d = R%d + %d with flags.";
+                    format = "%s R%d = R%d + %d w/ flags";
                     break;
 
                     // Rd := Rn - Op2
                 case SUB:
-                    format = "%s R%d = R%d - %d.";
+                    format = "%s R%d = R%d - %d";
                     break;
 
                     // Rd := Rn - Op2 (update flags)
                 case SUBS:
-                    format = "%s R%d = R%d - %d with flags.";
+                    format = "%s R%d = R%d - %d w/ flags";
                     break;
             }
             asprintf(&str,
@@ -79,22 +127,23 @@ static char *adeclImmediate(Immediate_IR immediateIR) {
             break;
         }
         case IMMEDIATE_WIDE_MOVE: {
+
             switch (immediateIR.opc.wideMoveType) {
                 // Rd := ~Op
                 case MOVN:
-                    format = "%s R%d = ~%d.";
+                    format = "%s R%d = ~%d";
                     break;
 
                 // Rd := Op
                 case MOVZ:
-                    format = "%s R%d = %d.";
+                    format = "%s R%d = %d";
                     break;
 
                 // Rd[shift + 15:shift] := imm16
                 case MOVK: {
                     int shift = 16 * immediateIR.operand.wideMove.hw;
                     asprintf(&str,
-                             "%s R%d[%d:%d] = %d.",
+                             "%s R%d[%d:%d] = %d",
                              nBits,
                              immediateIR.rd,
                              shift + 15,
@@ -118,98 +167,136 @@ static char*adeclRegister(Register_IR registerIr) {
     char *str;
     char *nBits = registerIr.sf ? "(64-bit)" : "(32-bit)";
     char *format;
+
     switch (registerIr.group) {
         case ARITHMETIC:
+
             switch (registerIr.opc.arithmetic) {
-                // TODO Put correct format.
                 // Rd := Rn + Op2
                 case ADD:
-                    format = "%s R%d = R%d + %d.";
+                    format = "%s R%d = R%d + R%d";
                     break;
 
-                    // Rd := Rn + Op2 (update flags)
+                // Rd := Rn + Op2 (update flags)
                 case ADDS:
-                    format = "%s R%d = R%d + %d with flags.";
+                    format = "%s R%d = R%d + R%d w/ flags";
                     break;
 
-                    // Rd := Rn - Op2
+                // Rd := Rn - Op2
                 case SUB:
-                    format = "%s R%d = R%d - %d.";
+                    format = "%s R%d = R%d - R%d";
                     break;
 
-                    // Rd := Rn - Op2 (update flags)
+                // Rd := Rn - Op2 (update flags)
                 case SUBS:
-                    format = "%s R%d = R%d - %d with flags.";
+                    format = "%s R%d = R%d - R%d w/ flags";
                     break;
             }
             break;
 
         case BIT_LOGIC:
+
             if (registerIr.negated) {
                 switch (registerIr.opc.logic.negated) {
                     // Rd := Rn & ∼Op2
                     case BIC:
-                        // TODO
+                        format = "%s R%d = R%d & ~R%d";
                         break;
 
                     // Rd := Rn | ∼Op2
                     case ORN:
-                        // TODO
+                        format = "%s R%d = R%d | ~R%d";
                         break;
 
                     // Rd := Rn ∧ ∼Op2
                     case EON:
-                        // TODO
+                        format = "%s R%d = R%d ∧ ∼R%d";
                         break;
 
                     // Rd := Rn & ∼Op2 (update condition flags)
                     case BICS:
-                        // TODO
+                        format = "%s R%d = R%d & ∼R%d w/ flags";
                         break;
                 }
             } else {
                 switch (registerIr.opc.logic.standard) {
                     // Rd := Rn & Op2
                     case AND:
-                        // TODO
+                        format = "%s R%d = R%d & R%d";
                         break;
 
                     // Rd := Rn | Op2
                     case ORR:
-                        // TODO
+                        format = "%s R%d = R%d | R%d";
                         break;
 
                     // Rd := Rn ∧ Op2
                     case EOR:
-                        // TODO
+                        format = "%s R%d = R%d ∧ R%d";
                         break;
 
                     // Rd := Rn & Op2 (update condition flags)
                     case ANDS:
-                        // TODO
+                        format = "%s R%d = R%d & R%d w/ flags";
                         break;
                 }
             }
             break;
 
         case MULTIPLY:
+
             switch (registerIr.opc.multiply) {
+                // Rd := Ra + (Rn ∗ Rm)
                 case MADD:
-                    // TODO
+                    format = "%s R%d = R%d + (R%d * R%d)";
                     break;
 
+                // Rd := Ra − (Rn ∗ Rm)
                 case MSUB:
-                    // TODO
+                    format = "%s R%d = R%d - (R%d * R%d)";
                     break;
             }
-            break;
+
+            asprintf(&str,
+                     format,
+                     nBits,
+                     registerIr.rd,
+                     registerIr.operand.multiply.ra,
+                     registerIr.rn,
+                     registerIr.rm);
+
+            return str;
     }
+    // Arithmetic or Big-logic.
+    // Create the base string without shift.
+    asprintf(&str,
+             format,
+             nBits,
+             registerIr.rd,
+             registerIr.rn,
+             registerIr.rm);
+
+    // Add in shift if applicable.
+    return applyShiftFormat(str, registerIr.shift, registerIr.operand.imm6);
 }
 
-static char*adeclLoadStore(LoadStore_IR loadStoreIr) {
-
-}
-
-static char*adeclBranch(Branch_IR branchIr) {
-
-}
+//static char*adeclLoadStore(LoadStore_IR loadStoreIr) {
+//    char *str;
+//    char *nBits = loadStoreIr.sf ? "(64-bit)" : "(32-bit)";
+//    char *format;
+//
+//    switch (loadStoreIr.type) {
+//
+//        case SINGLE_DATA_TRANSFER:
+//            // TODO
+//            break;
+//
+//        case LOAD_LITERAL:
+//            // TODO
+//            break;
+//    }
+//}
+//
+//static char*adeclBranch(Branch_IR branchIr) {
+//
+//}
