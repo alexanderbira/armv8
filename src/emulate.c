@@ -23,18 +23,7 @@ int main(int argc, char **argv) {
 
     // Fetch, decode, execute cycle while the program has not terminated
     while (instruction != HALT) {
-
-        // Decode and execute.
-        IR ir = getDecodeFunction(instruction)(instruction);
-        getExecuteFunction(&ir)(&ir, registers, memory);
-
-        // Increment PC only when no branch or jump instructions applied.
-        if (pcVal == getRegPC(registers)) incRegPC(registers);
-
-        // Fetch next instruction
-        pcVal = getRegPC(registers);
-        instruction = readMem(memory, false, pcVal);
-
+        execute(&instruction, &pcVal, registers, memory);
     }
 
     // Dump contents of register and memory, then free memory.
