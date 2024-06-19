@@ -13,6 +13,14 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+#define COLOR_TRUE_BLACK 16
+#define COLOR_LIGHT_GRAY 248
+#define COLOR_PINK 207
+#define COLOR_TURTLE_BLUE 73
+#define COLOR_LIGHT_BLUE 27
+#define COLOR_ORANGE 202
+#define COLOR_DARK_YELLOW 220
+
 /// The numeric code for the highlighting colour pair.
 typedef enum {
     /// No syntax highlighting.
