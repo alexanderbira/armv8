@@ -11,7 +11,7 @@ int rows = 0, cols = 0;
 
 WINDOW *title, *lineNumbers, *editor, *help, *separator, *regView;
 
-static File *file, *binaryFile;
+static File *file;
 
 /// The current editor mode.
 static EditorMode mode;
@@ -142,7 +142,7 @@ static void initialise(const char *path) {
 
     // Set mode and state.
     mode = EDIT;
-    status = SAVED; // TODO: Dynamically change to read only if loaded file is read-only.
+    status = file->path ? SAVED : UNSAVED; // TODO: Dynamically change to read only if loaded file is read-only.
 
     // Initialise syntax highlighting.
     initialiseHighlight();
@@ -404,23 +404,22 @@ static void updateLine(Line *line, int index) {
                     wattroff(regView, COLOR_PAIR(13));
                     break;
 
-                case ASSEMBLED:
-                    {
-                        // Convert the instruction to a string.
-                        char instrStr[8 * sizeof(Instruction) + 1];
-                        strBinRep(instrStr, lineInfo[index].data.instruction);
+                case ASSEMBLED: {
+                    // Convert the instruction to a string.
+                    char instrStr[8 * sizeof(Instruction) + 1];
+                    strBinRep(instrStr, lineInfo[index].data.instruction);
 
-                        // Display the binary string.
-                        wattron(regView, COLOR_PAIR(11));
-                        mvwaddnstr(
-                            regView,
-                            index - file->windowY,
-                            0,
-                            instrStr,
-                            (cols - 1) / 2
-                        );
-                        wattroff(regView, COLOR_PAIR(11));
-                    }
+                    // Display the binary string.
+                    wattron(regView, COLOR_PAIR(11));
+                    mvwaddnstr(
+                        regView,
+                        index - file->windowY,
+                        0,
+                        instrStr,
+                        (cols - 1) / 2
+                    );
+                    wattroff(regView, COLOR_PAIR(11));
+                }
                     break;
 
                 default:
@@ -430,34 +429,33 @@ static void updateLine(Line *line, int index) {
 
             break;
 
-        default:
-            {
-                // Initialise fatalError to an empty string.
-                fatalError[0] = '\0';
+        default: {
+            // Initialise fatalError to an empty string.
+            fatalError[0] = '\0';
 
-                // If a fatal error is encountered in the code, fatalError will
-                // be set and the code will jump to here.
-                setjmp(fatalBuffer);
+            // If a fatal error is encountered in the code, fatalError will
+            // be set and the code will jump to here.
+            setjmp(fatalBuffer);
 
-                AssemblerState state = createState();
+            AssemblerState state = createState();
 
-                if (fatalError[0] != '\0') {
-                    lineError = true;
-                    mvwaddnstr(
-                        regView,
-                        index - file->windowY,
-                        0,
-                        fatalError,
-                        (cols - 1) / 2
-                    );
-                } else {
-                    // Attempt to assemble the line. This will jump to above if
-                    // an error is thrown.
-                    handleAssembly(getLine(line), &state);
-                }
-
-                destroyState(state);
+            if (fatalError[0] != '\0') {
+                lineError = true;
+                mvwaddnstr(
+                    regView,
+                    index - file->windowY,
+                    0,
+                    fatalError,
+                    (cols - 1) / 2
+                );
+            } else {
+                // Attempt to assemble the line. This will jump to above if
+                // an error is thrown.
+                handleAssembly(getLine(line), &state);
             }
+
+            destroyState(state);
+        }
 
             break;
     }

@@ -46,8 +46,10 @@ bool showSaveOverlay(File *file) {
                     endwin();
                     return true;
                 } else {
-                    mvwprintw(saveOverlay, rows / 2 + 2, (cols - overlayLength) / 2, overlayText);
+                    mvwaddstr(saveOverlay, rows / 2 + 2, (cols - overlayLength) / 2, overlayText);
                     wrefresh(saveOverlay);
+                    free(file->path);
+                    file->path = NULL;
                 }
                 break;
             }
