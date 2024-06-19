@@ -36,8 +36,8 @@ char *adecl(IR *irObject) {
         case DIRECTIVE: {
             char *str;
             asprintf(&str,
-                     "Load %llu",
-                     irObject->ir.memoryData);
+                     "Load %u",
+                     (uint32_t) irObject->ir.memoryData);
             return str;
         }
     }
