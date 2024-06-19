@@ -92,6 +92,7 @@ static char *adeclImmediate(Immediate_IR immediateIR) {
     char *str;
     char *nBits = immediateIR.sf ? "(64-bit)" : "(32-bit)";
     char *format;
+    int shiftVal;
 
     // TODO Edit shifts, just describe
     switch (immediateIR.opi) {
@@ -118,12 +119,15 @@ static char *adeclImmediate(Immediate_IR immediateIR) {
                     format = "%s R%d = R%d - %d w/ flags";
                     break;
             }
+
             asprintf(&str,
                      format,
                      nBits,
                      immediateIR.rd,
                      immediateIR.operand.arithmetic.rn,
-                     immediateIR.operand.arithmetic.imm12 << 12 * immediateIR.operand.arithmetic.sh);
+                     immediateIR.operand.arithmetic.imm12);
+
+            shiftVal = 12 * immediateIR.operand.arithmetic.sh;
             break;
         }
         case IMMEDIATE_WIDE_MOVE: {
@@ -152,15 +156,18 @@ static char *adeclImmediate(Immediate_IR immediateIR) {
                     return str;
                 }
             }
+
             asprintf(&str,
                      format,
                      nBits,
                      immediateIR.rd,
-                     immediateIR.operand.wideMove.imm16 << (16 * immediateIR.operand.wideMove.hw));
+                     immediateIR.operand.wideMove.imm16);
+
+            shiftVal = 16 * immediateIR.operand.wideMove.hw;
             break;
         }
     }
-    return str;
+    return applyShiftFormat(str, LSL, shiftVal);
 }
 
 static char*adeclRegister(Register_IR registerIr) {
