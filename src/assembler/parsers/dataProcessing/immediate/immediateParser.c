@@ -13,6 +13,8 @@
 /// @returns The [IR] form of the data processing (immediate) instruction.
 /// @pre The [line]'s mnemonic is that of a data processing (immediate) instruction.
 IR parseImmediate(TokenisedLine *line, unused AssemblerState *state) {
+    assertFatal(line->operandCount >= 2 && line->operandCount <= 4,
+                "Incorrect number of operands; data processing (immediate) instructions need 2, 3, or 4!");
     Immediate_IR immediateIR;
 
     bool sf;

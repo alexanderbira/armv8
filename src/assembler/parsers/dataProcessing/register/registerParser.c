@@ -13,6 +13,8 @@
 /// @returns The [IR] form of the data processing (register) instruction.
 /// @pre The [line]'s mnemonic is that of a data processing (register) instruction.
 IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
+    assertFatal(line->operandCount >= 2 && line->operandCount <= 4,
+                "Incorrect number of operands; data processing (register) instructions need 2, 3, or 4!");
     Register_IR registerIR;
 
     // Populate all fields except [opc], [M], [opr].
