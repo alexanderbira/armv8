@@ -51,22 +51,14 @@
 /// The height (in characters) of the main content.
 #define CONTENT_HEIGHT    ((int) rows - TITLE_HEIGHT - MENU_HEIGHT)
 
-static const char *commands[5] = {
+static const char *commands[6] = {
     "[^Q] - QUIT",
     "[^S] - SAVE",
     "[^R] - RUN",
     "[^D] - DEBUG",
     "[^B] - BINARY",
+    "[ENTER] - STEP",
 };
-
-//static const char *debugCommands[] = {
-//    "[ENTER] - STEP",
-//    "[^D] - EDIT"
-//};
-
-//static const char *binaryCommands[] = {
-//    "[^B] - EDIT"
-//};
 
 /// The mode that GRIM is in.
 typedef enum {
@@ -88,8 +80,13 @@ static const char *modes[] = { "EDIT", "DEBUG", "BINARY" };
 /// The human-readable titles of [EditorStatus].
 static const char *statuses[] = { "READ ONLY", "UNSAVED", "SAVED" };
 
+/// The flag signifying to [error.h] to not exit the program when an error occurs.
 bool JUMP_ON_ERROR = true;
+
+/// The jump buffer signifying whether an emulate or assemble operation was correct.
 jmp_buf fatalBuffer;
+
+/// The human-readable description of an error, if there was one.
 char *fatalError;
 
 int main(int argc, char *argv[]);
@@ -98,25 +95,27 @@ int main(int argc, char *argv[]);
 typedef enum {
     /// If the line was successfully assembled.
     ASSEMBLED,
+
     /// If an error was encountered during the line assembly.
     ERRORED,
+
     /// If the line didn't need to be assembled (e.g. comments, labels, ...).
-    NONE
+    NONE,
 } LineStatus;
 
 /// Contains data about the line after it goes through the assembler.
-struct LineInfo {
+typedef struct {
     /// The status of the line after going through the assembler.
     LineStatus lineStatus;
-    /// data about the line after it goes through the assembler.
+
+    /// Data about the line after it goes through the assembler.
     union {
         /// The assembled instruction.
         Instruction instruction;
+
         /// A string containing the error message.
         char *error;
     } data;
-};
-
-typedef struct LineInfo LineInfo;
+} LineInfo;
 
 #endif // EXTENSION_EDITOR_H
