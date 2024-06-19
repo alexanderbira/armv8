@@ -53,6 +53,12 @@ static const char *commands[6] = {
     "[ENTER] - STEP",
 };
 
+/// The human-readable titles of [EditorMode].
+static const char *modes[] = { "EDIT", "DEBUG", "BINARY" };
+
+/// The human-readable titles of [EditorStatus].
+static const char *statuses[] = { "READ ONLY", "UNSAVED", "SAVED" };
+
 int rows = 0, cols = 0;
 
 WINDOW *title, *lineNumbers, *editor, *help, *separator, *side;

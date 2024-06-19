@@ -77,12 +77,6 @@ typedef enum {
     SAVED      ///< File has no pending changes.
 } EditorStatus;
 
-/// The human-readable titles of [EditorMode].
-static const char *modes[] = { "EDIT", "DEBUG", "BINARY" };
-
-/// The human-readable titles of [EditorStatus].
-static const char *statuses[] = { "READ ONLY", "UNSAVED", "SAVED" };
-
 /// The status of the line after going through the assembler.
 typedef enum {
     /// If the line was successfully assembled.
