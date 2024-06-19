@@ -94,4 +94,29 @@ char *fatalError;
 
 int main(int argc, char *argv[]);
 
+/// The status of the line after going through the assembler.
+typedef enum {
+    /// If the line was successfully assembled.
+    ASSEMBLED,
+    /// If an error was encountered during the line assembly.
+    ERRORED,
+    /// If the line didn't need to be assembled (e.g. comments, labels, ...).
+    NONE
+} LineStatus;
+
+/// Contains data about the line after it goes through the assembler.
+struct LineInfo {
+    /// The status of the line after going through the assembler.
+    LineStatus lineStatus;
+    /// data about the line after it goes through the assembler.
+    union {
+        /// The assembled instruction.
+        Instruction instruction;
+        /// A string containing the error message.
+        char *error;
+    } data;
+};
+
+typedef struct LineInfo LineInfo;
+
 #endif // EXTENSION_EDITOR_H

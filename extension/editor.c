@@ -13,9 +13,14 @@ WINDOW *title, *lineNumbers, *editor, *help, *separator, *regView;
 
 static File *file, *binaryFile;
 
+/// The current editor mode.
 static EditorMode mode;
 
+/// The current editor status.
 static EditorStatus status;
+
+/// Info about the lines after attempt to assemble.
+static LineInfo *lineInfo;
 
 static void initialise(const char *path);
 
@@ -60,22 +65,8 @@ int main(int argc, char *argv[]) {
                 break;
 
             case BINARY_KEY:
-                if (binaryFile == NULL) {
-                    // When in edit mode, store file in [binaryFile].
-                    binaryFile = file;
-
-                    // Create new file, and assemble to binary.
-                    file = initialiseFile(NULL);
-
-                    // TODO: Iterate over assembly lines and assemble to binary
-                    // TODO: Format resulting binary and add them as lines to the file.
-                } else {
-                    // When in binary mode, destroy binary file and go back to edit.
-                    freeFile(file);
-                    file = binaryFile;
-                }
-
-                // TODO: Enter binary mode.
+                // Toggle binary mode.
+                mode = (mode == BINARY) ? EDIT : BINARY;
                 break;
 
             default:
@@ -93,6 +84,20 @@ int main(int argc, char *argv[]) {
     endwin();
 
     return 0;
+}
+
+/// Convert an instruction to a binary string representation.
+/// @param str A pointer to the char array to overwrite with the binary repr.
+/// @param instruction The instruction to convert.
+static void strBinRep(char *str, Instruction instruction) {
+    int i = sizeof(instruction) * 8;
+
+    str[i] = '\0';
+
+    while (--i >= 0) {
+        str[i] = '0' + (instruction & 1);
+        instruction >>= 1;
+    }
 }
 
 static void initialise(const char *path) {
@@ -149,8 +154,10 @@ static void updateUI(void) {
     // Check if the terminal size has changed.
     int oldRows = rows, oldCols = cols;
     getmaxyx(stdscr, rows, cols);
-    if (rows < MINIMUM_HEIGHT || cols < MINIMUM_WIDTH) showTermSizeOverlay();
-    if (rows < MINIMUM_HEIGHT || cols < MINIMUM_WIDTH) return;
+    if (rows < MINIMUM_HEIGHT || cols < MINIMUM_WIDTH) {
+        showTermSizeOverlay();
+        return;
+    }
 
     // Resize all windows if size has changed.
     if (oldRows != rows || oldCols != cols) {
@@ -239,8 +246,113 @@ static void updateUI(void) {
         mvwin(editor, TITLE_HEIGHT, maxWidth + 1);
     }
 
-    // Print out all lines in current window.
-    iterateLinesInWindow(file, &updateLine);
+    switch (mode) {
+        case BINARY:
+            // Allocate memory for the lineInfo array.
+            lineInfo = malloc(file->size * sizeof(LineInfo));
+
+            AssemblerState state = createState();
+
+            // Perform the first pass of the assembler.
+            for (int i = 0; i < file->size; i++) {
+                size_t irCount = state.irCount;
+
+                // Create the current line info.
+                LineInfo currLineInfo;
+
+                // Initialise fatalError to an empty string.
+                fatalError[0] = '\0';
+
+                // If a fatal error is encountered in the code, fatalError will
+                // be set and the code will jump to here.
+                setjmp(fatalBuffer);
+
+                if (fatalError[0] != '\0') {
+                    // A fatal error was encountered in the assembly first
+                    // pass.
+                    currLineInfo.lineStatus = ERRORED;
+                    currLineInfo.data.error = strdup(fatalError);
+
+                } else {
+                    // Attempt the first pass of the line.
+                    handleAssembly(getLine(file->lines[i]), &state);
+
+                    // If no error in assembly of line and irCount unchanged,
+                    // the instruction was ignored, so has no binary or error.
+                    if (state.irCount == irCount) {
+                        currLineInfo.lineStatus = NONE;
+                    } else {
+                        currLineInfo.lineStatus = ASSEMBLED;
+                    }
+                }
+
+                lineInfo[i] = currLineInfo;
+            }
+
+            // Keep track of which line we're doing a second pass on.
+            int currLineNum = 0;
+
+            state.address = 0x0;
+
+            // Perform the second pass of the assembler.
+            for (size_t i = 0; i < state.irCount; i++) {
+                // Skip to the next line that can be assembled.
+                // I.e., the next line which isn't ignored or an error.
+                while (lineInfo[currLineNum].lineStatus != ASSEMBLED) {
+                    currLineNum++;
+                }
+
+                IR ir = state.irList[i];
+
+                // Initialise fatalError to an empty string.
+                fatalError[0] = '\0';
+
+                // If a fatal error is encountered in the code, fatalError will
+                // be set and the code will jump to here.
+                setjmp(fatalBuffer);
+
+                if (fatalError[0] != '\0') {
+                    // Fatal error was encountered during second assembly pass.
+                    lineInfo[currLineNum].lineStatus = ERRORED;
+                    lineInfo[currLineNum].data.error = strdup(fatalError);
+
+                } else {
+                    // Attempt to perform the second pass on the line.
+                    Instruction instruction =
+                        getTranslator(&ir.type)(&ir, &state);
+
+                    // If this code is reached, the line was assembled.
+                    lineInfo[currLineNum].lineStatus = ASSEMBLED;
+                    lineInfo[currLineNum].data.instruction = instruction;
+                }
+
+                state.address += 0x4;
+
+                currLineNum++;
+            }
+
+            // Free the state struct.
+            destroyState(state);
+
+            // Print out all lines in current window.
+            iterateLinesInWindow(file, &updateLine);
+
+            // Free the line info
+            for (int i = 0; i < file->size; i++) {
+                // Free all error strings
+                if (lineInfo[i].lineStatus == ERRORED) {
+                    free(lineInfo[i].data.error);
+                }
+            }
+            free(lineInfo);
+
+            break;
+
+        default:
+            // Print out all lines in current window.
+            iterateLinesInWindow(file, &updateLine);
+            break;
+    }
 
     // Clear all unoccupied space in line number and editor windows.
     wclrtobot(regView);
@@ -256,6 +368,7 @@ static void updateUI(void) {
 
 /// Updates the contents of one line, with corresponding line number.
 /// @param line The [Line] to be updated on screen.
+/// @param index The 0-based index of the line to update.
 static void updateLine(Line *line, int index) {
     // Don't render line below screen.
     if (index >= file->windowY + CONTENT_HEIGHT) return;
@@ -268,24 +381,85 @@ static void updateLine(Line *line, int index) {
     wmove(lineNumbers, index - file->windowY, 0);
     wmove(regView, index - file->windowY, 0);
 
-    // Initialise fatalError to an empty string.
-    fatalError[0] = '\0';
-
-    // If a fatal error is encountered in the code, fatalError will be set and
-    // the code will jump to here.
-    setjmp(fatalBuffer);
-
     // Whether a fatal error was encountered when parsing the line.
     bool lineError = false;
 
-    if (fatalError[0] != '\0') {
-        lineError = true;
-        mvwaddnstr(regView, index - file->windowY, 0, fatalError, (cols - 1) / 2);
-    } else {
-        // Attempt to assemble the line. This will jump to above if an error is thrown.
-        AssemblerState state = createState();
-        handleAssembly(getLine(line), &state);
-        destroyState(state);
+    // Print different things in the regView window depending on the mode.
+    switch (mode) {
+
+        case BINARY:
+            switch (lineInfo[index].lineStatus) {
+                case ERRORED:
+                    lineError = true;
+
+                    // Display the error
+                    wattron(regView, COLOR_PAIR(13));
+                    mvwaddnstr(
+                        regView,
+                        index - file->windowY,
+                        0,
+                        lineInfo[index].data.error,
+                        (cols - 1) / 2
+                    );
+                    wattroff(regView, COLOR_PAIR(13));
+                    break;
+
+                case ASSEMBLED:
+                    {
+                        // Convert the instruction to a string.
+                        char instrStr[8 * sizeof(Instruction) + 1];
+                        strBinRep(instrStr, lineInfo[index].data.instruction);
+
+                        // Display the binary string.
+                        wattron(regView, COLOR_PAIR(11));
+                        mvwaddnstr(
+                            regView,
+                            index - file->windowY,
+                            0,
+                            instrStr,
+                            (cols - 1) / 2
+                        );
+                        wattroff(regView, COLOR_PAIR(11));
+                    }
+                    break;
+
+                default:
+                    // Do nothing
+                    break;
+            }
+
+            break;
+
+        default:
+            {
+                // Initialise fatalError to an empty string.
+                fatalError[0] = '\0';
+
+                // If a fatal error is encountered in the code, fatalError will
+                // be set and the code will jump to here.
+                setjmp(fatalBuffer);
+
+                AssemblerState state = createState();
+
+                if (fatalError[0] != '\0') {
+                    lineError = true;
+                    mvwaddnstr(
+                        regView,
+                        index - file->windowY,
+                        0,
+                        fatalError,
+                        (cols - 1) / 2
+                    );
+                } else {
+                    // Attempt to assemble the line. This will jump to above if
+                    // an error is thrown.
+                    handleAssembly(getLine(line), &state);
+                }
+
+                destroyState(state);
+            }
+
+            break;
     }
 
     wclrtoeol(regView);
