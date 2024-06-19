@@ -28,6 +28,7 @@ char *adecl(IR *irObject) {
                                      immediateIR.rd,
                                      immediateIR.operand.arithmetic.rn,
                                      immediateIR.operand.arithmetic.imm12 << 12 * immediateIR.operand.arithmetic.sh);
+                            break;
                         }
                         // Rd := Rn + Op2 (update flags)
                         case ADDS: {
@@ -37,6 +38,7 @@ char *adecl(IR *irObject) {
                                      immediateIR.rd,
                                      immediateIR.operand.arithmetic.rn,
                                      immediateIR.operand.arithmetic.imm12 << 12 * immediateIR.operand.arithmetic.sh);
+                            break;
                         }
                         // Rd := Rn - Op2
                         case SUB: {
@@ -46,6 +48,7 @@ char *adecl(IR *irObject) {
                                      immediateIR.rd,
                                      immediateIR.operand.arithmetic.rn,
                                      immediateIR.operand.arithmetic.imm12 << 12 * immediateIR.operand.arithmetic.sh);
+                            break;
                         }
                         // Rd := Rn - Op2 (update flags)
                         case SUBS: {
@@ -54,28 +57,65 @@ char *adecl(IR *irObject) {
                                      nBits,
                                      immediateIR.rd,
                                      immediateIR.operand.arithmetic.rn,
-                                     immediateIR.operand.arithmetic.imm12 << 12 * immediateIR.operand.arithmetic.sh);
+                                     immediateIR.operand.arithmetic.imm12 << (12 * immediateIR.operand.arithmetic.sh));
+                            break;
                         }
                     }
+                    break;
                 }
                 case IMMEDIATE_WIDE_MOVE: {
                     switch (immediateIR.opc.wideMoveType) {
-                        // TODO
+                        // Rd := ~Op
+                        case MOVN: {
+                            asprintf(&str,
+                                     "%s R%d = ~%d.",
+                                     nBits,
+                                     immediateIR.rd,
+                                     immediateIR.operand.wideMove.imm16 << (16 * immediateIR.operand.wideMove.hw));
+                            break;
+                        }
+                        // Rd := Op
+                        case MOVZ: {
+                            asprintf(&str,
+                                     "%s R%d = %d.",
+                                     nBits,
+                                     immediateIR.rd,
+                                     immediateIR.operand.wideMove.imm16 << (16 * immediateIR.operand.wideMove.hw));
+                            break;
+                        }
+                        // Rd[shift + 15:shift] := imm16
+                        case MOVK: {
+                            int shift = 16 * immediateIR.operand.wideMove.hw;
+                            asprintf(&str,
+                                     "%s R%d[%d:%d] = %d.",
+                                     nBits,
+                                     immediateIR.rd,
+                                     shift + 15,
+                                     shift,
+                                     immediateIR.operand.wideMove.imm16);
+                            break;
+                        }
                     }
+                    break;
                 }
             }
+            break;
         }
         case REGISTER: {
             // TODO
+            break;
         }
         case LOAD_STORE: {
             // TODO
+            break;
         }
         case BRANCH: {
             // TODO
+            break;
         }
         case DIRECTIVE: {
             // TODO
+            break;
         }
     }
     return str;
