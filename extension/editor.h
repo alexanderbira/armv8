@@ -26,6 +26,7 @@
 #include "saveOverlay.h"
 #include "state.h"
 #include "termSizeOverlay.h"
+#include "adecl.h"
 
 /// The halt instruction for run/debug mode.
 #define HALT 0x8a000000
