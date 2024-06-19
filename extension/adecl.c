@@ -11,7 +11,7 @@ static char *adeclImmediate(Immediate_IR immediateIR);
 
 static char*adeclRegister(Register_IR registerIr);
 
-//static char*adeclLoadStore(LoadStore_IR loadStoreIr);
+static char*adeclLoadStore(LoadStore_IR loadStoreIr);
 
 //static char*adeclBranch(Branch_IR branchIr);
 
@@ -28,7 +28,7 @@ char *adecl(IR *irObject) {
             return adeclRegister(irObject->ir.registerIR);
         }
         case LOAD_STORE: {
-//            return adeclLoadStore(irObject->ir.loadStoreIR);
+            return adeclLoadStore(irObject->ir.loadStoreIR);
         }
         case BRANCH: {
 //            return adeclBranch(irObject->ir.branchIR);
@@ -287,22 +287,74 @@ static char*adeclRegister(Register_IR registerIr) {
     return applyShiftFormat(str, registerIr.shift, registerIr.operand.imm6);
 }
 
-//static char*adeclLoadStore(LoadStore_IR loadStoreIr) {
-//    char *str;
-//    char *nBits = loadStoreIr.sf ? "(64-bit)" : "(32-bit)";
-//    char *format;
-//
-//    switch (loadStoreIr.type) {
-//
-//        case SINGLE_DATA_TRANSFER:
-//            // TODO
-//            break;
-//
-//        case LOAD_LITERAL:
-//            // TODO
-//            break;
-//    }
-//}
+static char*adeclLoadStore(LoadStore_IR loadStoreIr) {
+    char *str;
+    char *nBits = loadStoreIr.sf ? "(64-bit)" : "(32-bit)";
+
+    switch (loadStoreIr.type) {
+
+        case SINGLE_DATA_TRANSFER:
+
+            switch (loadStoreIr.data.sdt.addressingMode) {
+
+                // Transfer Address: Xn + uoffset
+                case UNSIGNED_OFFSET:
+                    asprintf(&str,
+                             "%s R%d = M[R%d + %d]",
+                             nBits,
+                             loadStoreIr.rt,
+                             loadStoreIr.data.sdt.xn,
+                             loadStoreIr.data.sdt.offset.uoffset);
+                    break;
+
+                // Xn := Xn + simm9; Transfer Address: Xn + simm9
+                case PRE_INDEXED:
+                    asprintf(&str,
+                             "%s R%d = R%d + %d; R%d = M[R%d + %d]",
+                             nBits,
+                             loadStoreIr.data.sdt.xn,
+                             loadStoreIr.data.sdt.xn,
+                             loadStoreIr.data.sdt.offset.prePostIndex.simm9,
+                             loadStoreIr.rt,
+                             loadStoreIr.data.sdt.xn,
+                             loadStoreIr.data.sdt.offset.prePostIndex.simm9);
+                    break;
+
+                // Transfer Address: Xn; Xn := Xn + simm9
+                case POST_INDEXED:
+                    asprintf(&str,
+                             "%s R%d = M[R%d]; R%d = R%d + %d",
+                             nBits,
+                             loadStoreIr.rt,
+                             loadStoreIr.data.sdt.xn,
+                             loadStoreIr.data.sdt.xn,
+                             loadStoreIr.data.sdt.xn,
+                             loadStoreIr.data.sdt.offset.prePostIndex.simm9);
+                    break;
+
+                // Transfer Address: Xn + Xm
+                case REGISTER_OFFSET:
+                    asprintf(&str,
+                             "%s R%d = M[R%d + R%d]",
+                             nBits,
+                             loadStoreIr.rt,
+                             loadStoreIr.data.sdt.xn,
+                             loadStoreIr.data.sdt.offset.xm);
+                    break;
+            }
+            break;
+
+        // Transfer Address: PC + simm19 ∗ 4
+        case LOAD_LITERAL:
+            asprintf(&str,
+                     "%s R%d = M[PC + 4 * %d]",
+                     nBits,
+                     loadStoreIr.rt,
+                     loadStoreIr.data.simm19.data.immediate);
+            break;
+    }
+    return str;
+}
 //
 //static char*adeclBranch(Branch_IR branchIr) {
 //
