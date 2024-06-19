@@ -20,10 +20,6 @@
 
 extern int rows, cols;
 
-extern WINDOW *title, *lineNumbers, *editor, *help, *separator, *regView;
-
-extern WINDOW *termSizeOverlay;
-
-void updateTermSizeOverlay(bool active);
+void showTermSizeOverlay(void);
 
 #endif // EXTENSION_TERM_SIZE_OVERLAY_H

@@ -11,8 +11,6 @@ int rows = 0, cols = 0;
 
 WINDOW *title, *lineNumbers, *editor, *help, *separator, *regView;
 
-WINDOW *termSizeOverlay, *saveOverlay;
-
 static File *file, *binaryFile;
 
 static EditorMode mode;
@@ -36,7 +34,6 @@ int main(int argc, char *argv[]) {
 
         // Get and handle input.
         key = wgetch(editor);
-        if (termSizeOverlay != NULL) continue;
 
         switch (key) {
             case SAVE_KEY:
@@ -152,7 +149,7 @@ static void updateUI(void) {
     // Check if the terminal size has changed.
     int oldRows = rows, oldCols = cols;
     getmaxyx(stdscr, rows, cols);
-    updateTermSizeOverlay(rows < MINIMUM_HEIGHT || cols < MINIMUM_WIDTH);
+    if (rows < MINIMUM_HEIGHT || cols < MINIMUM_WIDTH) showTermSizeOverlay();
     if (rows < MINIMUM_HEIGHT || cols < MINIMUM_WIDTH) return;
 
     // Resize all windows if size has changed.

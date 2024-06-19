@@ -11,32 +11,23 @@ static const char *overlayText = "[ Terminal size too small! ]";
 
 static const int overlayLength = 28;
 
-void updateTermSizeOverlay(bool active) {
-    // Do not update if overlay is not active.
-    if (!active) {
-        if (termSizeOverlay != NULL) {
-            delwin(termSizeOverlay);
-            termSizeOverlay = NULL;
-            curs_set(true);
-        }
-        return;
-    };
+void showTermSizeOverlay(void) {
+    WINDOW *termSizeOverlay = newwin(0, 0, 0, 0);
+    wbkgd(termSizeOverlay, COLOR_PAIR(10));
+    curs_set(false);
 
-    // Create the overlay if it does not exist.
-    if (termSizeOverlay == NULL) {
-        termSizeOverlay = newwin(0, 0, 0, 0);
-        wbkgd(termSizeOverlay, COLOR_PAIR(10));
-        curs_set(false);
+    // Intercept all keys, including resize events.
+    while (true) {
+        getmaxyx(stdscr, rows, cols);
+        if (rows >= MINIMUM_HEIGHT && cols >= MINIMUM_WIDTH) break;
 
-        wclear(title);
-        wclear(help);
-        wclear(lineNumbers);
-        wclear(editor);
-        wclear(separator);
-        wclear(regView);
+        wclear(termSizeOverlay);
+        mvwaddstr(termSizeOverlay, rows / 2, cols / 2 - overlayLength / 2, overlayText);
+        wrefresh(termSizeOverlay);
+
+        wgetch(termSizeOverlay);
     }
 
-    wclear(termSizeOverlay);
-    mvwaddstr(termSizeOverlay, rows / 2, cols / 2 - overlayLength / 2, overlayText);
-    wrefresh(termSizeOverlay);
+    delwin(termSizeOverlay);
+    curs_set(true);
 }

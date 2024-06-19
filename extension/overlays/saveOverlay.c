@@ -17,9 +17,7 @@ static const int promptLength = 13;
 
 bool showSaveOverlay(File *file) {
     // Create a window for the overlay with dimensions covering the entire screen
-    int rows, cols;
-    getmaxyx(stdscr, rows, cols);
-    WINDOW *saveOverlay = newwin(rows, cols, 0, 0);
+    WINDOW *saveOverlay = newwin(0, 0, 0, 0);
     wbkgd(saveOverlay, COLOR_PAIR(10));
     keypad(saveOverlay, TRUE);
 
