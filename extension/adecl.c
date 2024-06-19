@@ -28,19 +28,19 @@ char *adecl(IR *irObject) {
             return adeclRegister(irObject->ir.registerIR);
         }
         case LOAD_STORE: {
-            // TODO
-            break;
+            return adeclLoadStore(irObject->ir.loadStoreIR);
         }
         case BRANCH: {
-            // TODO
-            break;
+            return adeclBranch(irObject->ir.branchIR);
         }
         case DIRECTIVE: {
-            // TODO
-            break;
+            char *str;
+            asprintf(&str,
+                     "Load %lu.",
+                     irObject->ir.memoryData);
+            return str;
         }
     }
-    return "";
 }
 
 static char *adeclImmediate(Immediate_IR immediateIR) {
@@ -115,5 +115,15 @@ static char *adeclImmediate(Immediate_IR immediateIR) {
 }
 
 static char*adeclRegister(Register_IR registerIr) {
+    char *str;
+    char *nBits = registerIr.sf ? "(64-bit)" : "(32-bit)";
+    char *format;
+}
+
+static char*adeclLoadStore(LoadStore_IR loadStoreIr) {
+
+}
+
+static char*adeclBranch(Branch_IR branchIr) {
 
 }
