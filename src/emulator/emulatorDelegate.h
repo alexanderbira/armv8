@@ -57,4 +57,6 @@ Executor getExecuteFunction(IR *irObject);
 
 Decoder getDecodeFunction(Instruction instruction);
 
+void execute(Instruction *instruction, BitData *pcVal, Registers registers, Memory memory);
+
 #endif // EMULATOR_PROCESS_H

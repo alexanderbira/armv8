@@ -46,3 +46,16 @@ Decoder getDecodeFunction(const Instruction instruction) {
 
     throwFatal("Invalid binary instruction!");
 }
+
+void execute(Instruction *instruction, BitData *pcVal, Registers registers, Memory memory) {
+    // Decode and execute.
+    IR ir = getDecodeFunction(*instruction)(*instruction);
+    getExecuteFunction(&ir)(&ir, registers, memory);
+
+    // Increment PC only when no branch or jump instructions applied.
+    if (*pcVal == getRegPC(registers)) incRegPC(registers);
+
+    // Fetch next instruction
+    *pcVal = getRegPC(registers);
+    *instruction = readMem(memory, false, *pcVal);
+}
