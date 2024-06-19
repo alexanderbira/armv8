@@ -90,12 +90,15 @@ int main(int argc, char *argv[]) {
 /// @param str A pointer to the char array to overwrite with the binary repr.
 /// @param instruction The instruction to convert.
 static void strBinRep(char *str, Instruction instruction) {
-    int i = sizeof(instruction) * 8;
+    int i = sizeof(instruction) * 8 + 7;
 
     str[i] = '\0';
 
     while (--i >= 0) {
         str[i] = '0' + (instruction & 1);
+        if (i % 5 == 0) {
+            str[--i] = ' ';
+        }
         instruction >>= 1;
     }
 }
@@ -406,7 +409,7 @@ static void updateLine(Line *line, int index) {
 
                 case ASSEMBLED: {
                     // Convert the instruction to a string.
-                    char instrStr[8 * sizeof(Instruction) + 1];
+                    char instrStr[8 * sizeof(Instruction) + 8];
                     strBinRep(instrStr, lineInfo[index].data.instruction);
 
                     // Display the binary string.
