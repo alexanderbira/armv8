@@ -135,7 +135,9 @@ void destroyTokenisedLine(TokenisedLine *line) {
 Literal parseLiteral(const char *literal) {
     if (strchr(literal, '#')) {
         uint32_t result;
-        assertFatalWithArgs(sscanf(literal, "#%" SCNu32, &result) == 1,
+        bool matched = sscanf(literal, "#0x%" SCNx32, &result) == 1;
+        if (!matched) matched = sscanf(literal, "#%" SCNu32, &result) == 1;
+        assertFatalWithArgs(matched,
                             "Unable to parse immediate <%s>!", literal);
         return (Literal) { .isLabel = false, .data.immediate = result };
     } else {
