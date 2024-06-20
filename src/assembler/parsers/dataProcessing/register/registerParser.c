@@ -127,7 +127,7 @@ IR parseRegister(TokenisedLine *line, unused AssemblerState *state) {
                 throwFatalWithArgs("Given shift <%s> was not a shift!", shiftAndValue[0]);
         }
 
-        uint8_t imm6 = parseImmediateStr(shiftAndValue[1]);
+        uint8_t imm6 = parseImmediateStr(shiftAndValue[1], REGISTER_OPERAND_IMM6_N);
         registerIR.operand.imm6 = imm6;
         registerIR.shift = shift;
     }

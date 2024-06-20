@@ -24,7 +24,7 @@ IR parseDirective(TokenisedLine *tokenisedLine, unused AssemblerState *state) {
         strcpy(immediateStr + 1, tokenisedLine->operands[0]);
 
         // Very cheesy trick to reuse [parseImmediateStr].
-        BitData immediate = parseImmediateStr(immediateStr);
+        BitData immediate = parseImmediateStr(immediateStr, 8 * sizeof(int32_t));
         free(immediateStr);
         return (IR) { .type = DIRECTIVE, .ir.memoryData = immediate };
     } else {

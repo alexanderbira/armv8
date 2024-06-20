@@ -41,7 +41,7 @@ IR parseLoadStore(TokenisedLine *line, unused AssemblerState *state) {
                     // Pre-Index
                     mode = PRE_INDEXED;
                     offset.prePostIndex.i = true;
-                    offset.prePostIndex.simm9 = parseImmediateStr(line->operands[2]);
+                    offset.prePostIndex.simm9 = parseImmediateStr(line->operands[2], LOAD_STORE_DATA_SIMM9_INDEXED_N);
                     break;
 
                 case ']':
@@ -49,7 +49,7 @@ IR parseLoadStore(TokenisedLine *line, unused AssemblerState *state) {
                         // Unsigned Offset
                         mode = UNSIGNED_OFFSET;
                         u = true;
-                        offset.uoffset = parseImmediateStr(line->operands[2]);
+                        offset.uoffset = parseImmediateStr(line->operands[2], LOAD_STORE_DATA_OFFSET_N);
                     } else {
                         //Register Offset
                         mode = REGISTER_OFFSET;
@@ -61,7 +61,7 @@ IR parseLoadStore(TokenisedLine *line, unused AssemblerState *state) {
                     // Post-Index
                     mode = POST_INDEXED;
                     offset.prePostIndex.i = false;
-                    offset.prePostIndex.simm9 = parseImmediateStr(line->operands[2]);
+                    offset.prePostIndex.simm9 = parseImmediateStr(line->operands[2], LOAD_STORE_DATA_SIMM9_INDEXED_N);
             }
         }
 

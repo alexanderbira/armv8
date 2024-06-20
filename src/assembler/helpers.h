@@ -44,7 +44,7 @@ Literal parseLiteral(const char *literal);
 
 uint8_t parseRegisterStr(const char *name, bool *sf);
 
-uint64_t parseImmediateStr(const char *operand);
+uint64_t parseImmediateStr(const char *operand, size_t width);
 
 void parseOffset(union LiteralData *data, AssemblerState *state);
 

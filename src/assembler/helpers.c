@@ -174,16 +174,21 @@ uint8_t parseRegisterStr(const char *name, bool *sf) {
 }
 
 /// Parses an immediate value from a string (0X... for hex, #... for dec) to a uint64_t
-/// @param operand The string to parse the immediate value from
-/// @returns The literal extracted from the string
-uint64_t parseImmediateStr(const char *operand) {
-    uint64_t value;
+/// @param operand The string to parse the immediate value from.
+/// @param width The maximum bit-width of the resulting value.
+/// @returns The literal extracted from the string.
+uint64_t parseImmediateStr(const char *operand, size_t width) {
+    int64_t value;
 
     // Scan for hex immediate; if failure, scan for decimal.
     bool matched = sscanf(operand, "#0x%" SCNx64, &value) == 1;
     if (!matched) matched = sscanf(operand, "#%" SCNu64, &value) == 1;
 
-    assertFatal(matched, "Invalid immediate value!");
+    assertFatalWithArgs(matched, "Invalid immediate value <%s>!", operand);
+
+    int64_t maxValue = width == 64 ? UINT64_MAX : (1LL << width) - 1;
+    assertFatalWithArgs(value <= maxValue,
+                        "Immediate value <%s> exceeds width %zu bits!", operand, width);
 
     return value;
 }
