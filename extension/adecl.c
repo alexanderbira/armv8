@@ -258,6 +258,7 @@ static char *adeclRegister(Register_IR registerIr) {
 static char *adeclLoadStore(LoadStore_IR loadStoreIr) {
     char *str;
     char *nBits = loadStoreIr.sf ? "(64-bit)" : "(32-bit)";
+    char *format;
 
     switch (loadStoreIr.type) {
 
@@ -267,8 +268,11 @@ static char *adeclLoadStore(LoadStore_IR loadStoreIr) {
 
                 // Transfer Address: Xn + uoffset
                 case UNSIGNED_OFFSET:
+                    format = loadStoreIr.data.sdt.l
+                            ? "%s R%d = M[R%d + %d]"
+                            : "%s M[R%d + %d] = R%d";
                     asprintf(&str,
-                             "%s R%d = M[R%d + %d]",
+                             format,
                              nBits,
                              loadStoreIr.rt,
                              loadStoreIr.data.sdt.xn,
@@ -277,8 +281,11 @@ static char *adeclLoadStore(LoadStore_IR loadStoreIr) {
 
                 // Xn := Xn + simm9; Transfer Address: Xn + simm9
                 case PRE_INDEXED:
+                    format = loadStoreIr.data.sdt.l
+                            ? "%s R%d = R%d + %d; R%d = M[R%d + %d]"
+                            : "%s R%d = R%d + %d; M[R%d + %d] = R%d";
                     asprintf(&str,
-                             "%s R%d = R%d + %d; R%d = M[R%d + %d]",
+                             format,
                              nBits,
                              loadStoreIr.data.sdt.xn,
                              loadStoreIr.data.sdt.xn,
@@ -290,8 +297,11 @@ static char *adeclLoadStore(LoadStore_IR loadStoreIr) {
 
                 // Transfer Address: Xn; Xn := Xn + simm9
                 case POST_INDEXED:
+                    format = loadStoreIr.data.sdt.l
+                             ? "%s R%d = M[R%d]; R%d = R%d + %d"
+                             : "%s M[R%d] = R%d; R%d = R%d + %d";
                     asprintf(&str,
-                             "%s R%d = M[R%d]; R%d = R%d + %d",
+                             format,
                              nBits,
                              loadStoreIr.rt,
                              loadStoreIr.data.sdt.xn,
@@ -302,8 +312,11 @@ static char *adeclLoadStore(LoadStore_IR loadStoreIr) {
 
                 // Transfer Address: Xn + Xm
                 case REGISTER_OFFSET:
+                    format = loadStoreIr.data.sdt.l
+                             ? "%s R%d = M[R%d + R%d]"
+                             : "%s M[R%d + R%d] = R%d";
                     asprintf(&str,
-                             "%s R%d = M[R%d + R%d]",
+                             format,
                              nBits,
                              loadStoreIr.rt,
                              loadStoreIr.data.sdt.xn,
