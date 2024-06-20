@@ -50,3 +50,7 @@ testsuite
 # === macOS Files ===
 .DS_Store
 .vscode/settings.json
+
+# === Manim Files ===
+**/__pycache__
+animation/media
