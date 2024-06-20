@@ -53,7 +53,7 @@ static char *getBranchCondition(enum BranchCondition condition);
 /// @returns The human readable description.
 static char *adeclImmediate(Immediate_IR immediateIR) {
     char *str;
-    char *nBits = immediateIR.sf ? "(64-bit)" : "(32-bit)";
+    char *nBits = immediateIR.sf ? "(64b)" : "(32b)";
     char *format;
     int shiftVal;
 
@@ -63,31 +63,31 @@ static char *adeclImmediate(Immediate_IR immediateIR) {
             switch (immediateIR.opc.arithmeticType) {
                 // Rd := Rn + Op2
                 case ADD:
-                    format = "%s R%d = R%d + %d";
+                    format = "R%d = R%d + %d %s";
                     break;
 
                     // Rd := Rn + Op2 (update flags)
                 case ADDS:
-                    format = "%s R%d = R%d + %d w/ flags";
+                    format = "R%d = R%d + %d %s w/ flags";
                     break;
 
                     // Rd := Rn - Op2
                 case SUB:
-                    format = "%s R%d = R%d - %d";
+                    format = "R%d = R%d - %d %s";
                     break;
 
                     // Rd := Rn - Op2 (update flags)
                 case SUBS:
-                    format = "%s R%d = R%d - %d w/ flags";
+                    format = "R%d = R%d - %d %s w/ flags";
                     break;
             }
 
             asprintf(&str,
                      format,
-                     nBits,
                      immediateIR.rd,
                      immediateIR.operand.arithmetic.rn,
-                     immediateIR.operand.arithmetic.imm12);
+                     immediateIR.operand.arithmetic.imm12,
+                     nBits);
 
             shiftVal = 12 * immediateIR.operand.arithmetic.sh;
             break;
@@ -97,33 +97,33 @@ static char *adeclImmediate(Immediate_IR immediateIR) {
             switch (immediateIR.opc.wideMoveType) {
                 // Rd := ~Op
                 case MOVN:
-                    format = "%s R%d = ~%d";
+                    format = "R%d = ~%d %s";
                     break;
 
                 // Rd := Op
                 case MOVZ:
-                    format = "%s R%d = %d";
+                    format = "R%d = %d %s";
                     break;
 
                 // Rd[shift + 15:shift] := imm16
                 case MOVK: {
                     int shift = 16 * immediateIR.operand.wideMove.hw;
                     asprintf(&str,
-                             "%s R%d[%d:%d] = %d",
-                             nBits,
+                             "R%d[%d:%d] = %d %s",
                              immediateIR.rd,
                              shift + 15,
                              shift,
-                             immediateIR.operand.wideMove.imm16);
+                             immediateIR.operand.wideMove.imm16,
+                             nBits);
                     return str;
                 }
             }
 
             asprintf(&str,
                      format,
-                     nBits,
                      immediateIR.rd,
-                     immediateIR.operand.wideMove.imm16);
+                     immediateIR.operand.wideMove.imm16,
+                     nBits);
 
             shiftVal = 16 * immediateIR.operand.wideMove.hw;
             break;
@@ -137,7 +137,7 @@ static char *adeclImmediate(Immediate_IR immediateIR) {
 /// @returns The human readable description.
 static char *adeclRegister(Register_IR registerIr) {
     char *str;
-    char *nBits = registerIr.sf ? "(64-bit)" : "(32-bit)";
+    char *nBits = registerIr.sf ? "(64b)" : "(32b)";
     char *format;
 
     switch (registerIr.group) {
@@ -146,22 +146,22 @@ static char *adeclRegister(Register_IR registerIr) {
             switch (registerIr.opc.arithmetic) {
                 // Rd := Rn + Op2
                 case ADD:
-                    format = "%s R%d = R%d + R%d";
+                    format = "R%d = R%d + R%d %s";
                     break;
 
                 // Rd := Rn + Op2 (update flags)
                 case ADDS:
-                    format = "%s R%d = R%d + R%d w/ flags";
+                    format = "R%d = R%d + R%d %s w/ flags";
                     break;
 
                 // Rd := Rn - Op2
                 case SUB:
-                    format = "%s R%d = R%d - R%d";
+                    format = "R%d = R%d - R%d %s";
                     break;
 
                 // Rd := Rn - Op2 (update flags)
                 case SUBS:
-                    format = "%s R%d = R%d - R%d w/ flags";
+                    format = "R%d = R%d - R%d %s w/ flags";
                     break;
             }
             break;
@@ -172,44 +172,44 @@ static char *adeclRegister(Register_IR registerIr) {
                 switch (registerIr.opc.logic.negated) {
                     // Rd := Rn & ∼Op2
                     case BIC:
-                        format = "%s R%d = R%d & ~R%d";
+                        format = "R%d = R%d & ~R%d %s";
                         break;
 
                     // Rd := Rn | ∼Op2
                     case ORN:
-                        format = "%s R%d = R%d | ~R%d";
+                        format = "R%d = R%d | ~R%d %s";
                         break;
 
                     // Rd := Rn ∧ ∼Op2
                     case EON:
-                        format = "%s R%d = R%d ∧ ∼R%d";
+                        format = "R%d = R%d ∧ ∼R%d %s";
                         break;
 
                     // Rd := Rn & ∼Op2 (update condition flags)
                     case BICS:
-                        format = "%s R%d = R%d & ∼R%d w/ flags";
+                        format = "R%d = R%d & ∼R%d %s w/ flags";
                         break;
                 }
             } else {
                 switch (registerIr.opc.logic.standard) {
                     // Rd := Rn & Op2
                     case AND:
-                        format = "%s R%d = R%d & R%d";
+                        format = "R%d = R%d & R%d %s";
                         break;
 
                     // Rd := Rn | Op2
                     case ORR:
-                        format = "%s R%d = R%d | R%d";
+                        format = "R%d = R%d | R%d %s";
                         break;
 
                     // Rd := Rn ∧ Op2
                     case EOR:
-                        format = "%s R%d = R%d ∧ R%d";
+                        format = "R%d = R%d ∧ R%d %s";
                         break;
 
                     // Rd := Rn & Op2 (update condition flags)
                     case ANDS:
-                        format = "%s R%d = R%d & R%d w/ flags";
+                        format = "R%d = R%d & R%d %s w/ flags";
                         break;
                 }
             }
@@ -220,22 +220,22 @@ static char *adeclRegister(Register_IR registerIr) {
             switch (registerIr.opc.multiply) {
                 // Rd := Ra + (Rn ∗ Rm)
                 case MADD:
-                    format = "%s R%d = R%d + (R%d * R%d)";
+                    format = "R%d = R%d + (R%d * R%d) %s";
                     break;
 
                 // Rd := Ra − (Rn ∗ Rm)
                 case MSUB:
-                    format = "%s R%d = R%d - (R%d * R%d)";
+                    format = "R%d = R%d - (R%d * R%d) %s";
                     break;
             }
 
             asprintf(&str,
                      format,
-                     nBits,
                      registerIr.rd,
                      registerIr.operand.multiply.ra,
                      registerIr.rn,
-                     registerIr.rm);
+                     registerIr.rm,
+                     nBits);
 
             return str;
     }
@@ -243,10 +243,10 @@ static char *adeclRegister(Register_IR registerIr) {
     // Create the base string without shift.
     asprintf(&str,
              format,
-             nBits,
              registerIr.rd,
              registerIr.rn,
-             registerIr.rm);
+             registerIr.rm,
+             nBits);
 
     // Add in shift if applicable.
     return applyShiftFormat(str, registerIr.shift, registerIr.operand.imm6);
@@ -257,7 +257,7 @@ static char *adeclRegister(Register_IR registerIr) {
 /// @returns The human readable description.
 static char *adeclLoadStore(LoadStore_IR loadStoreIr) {
     char *str;
-    char *nBits = loadStoreIr.sf ? "(64-bit)" : "(32-bit)";
+    char *nBits = loadStoreIr.sf ? "(64b)" : "(32b)";
     char *format;
 
     switch (loadStoreIr.type) {
@@ -269,58 +269,58 @@ static char *adeclLoadStore(LoadStore_IR loadStoreIr) {
                 // Transfer Address: Xn + uoffset
                 case UNSIGNED_OFFSET:
                     format = loadStoreIr.data.sdt.l
-                            ? "%s R%d = M[R%d + %d]"
-                            : "%s M[R%d + %d] = R%d";
+                            ? "R%d = M[R%d + %d] %s"
+                            : "M[R%d + %d] = R%d %s";
                     asprintf(&str,
                              format,
-                             nBits,
                              loadStoreIr.rt,
                              loadStoreIr.data.sdt.xn,
-                             loadStoreIr.data.sdt.offset.uoffset);
+                             loadStoreIr.data.sdt.offset.uoffset,
+                             nBits);
                     break;
 
                 // Xn := Xn + simm9; Transfer Address: Xn + simm9
                 case PRE_INDEXED:
                     format = loadStoreIr.data.sdt.l
-                            ? "%s R%d = R%d + %d; R%d = M[R%d + %d]"
-                            : "%s R%d = R%d + %d; M[R%d + %d] = R%d";
+                            ? "R%d = R%d + %d; R%d = M[R%d + %d] %s"
+                            : "R%d = R%d + %d; M[R%d + %d] = R%d %s";
                     asprintf(&str,
                              format,
-                             nBits,
                              loadStoreIr.data.sdt.xn,
                              loadStoreIr.data.sdt.xn,
                              loadStoreIr.data.sdt.offset.prePostIndex.simm9,
                              loadStoreIr.rt,
                              loadStoreIr.data.sdt.xn,
-                             loadStoreIr.data.sdt.offset.prePostIndex.simm9);
+                             loadStoreIr.data.sdt.offset.prePostIndex.simm9,
+                             nBits);
                     break;
 
                 // Transfer Address: Xn; Xn := Xn + simm9
                 case POST_INDEXED:
                     format = loadStoreIr.data.sdt.l
-                             ? "%s R%d = M[R%d]; R%d = R%d + %d"
-                             : "%s M[R%d] = R%d; R%d = R%d + %d";
+                             ? "R%d = M[R%d]; R%d = R%d + %d %s"
+                             : "M[R%d] = R%d; R%d = R%d + %d %s";
                     asprintf(&str,
                              format,
-                             nBits,
                              loadStoreIr.rt,
                              loadStoreIr.data.sdt.xn,
                              loadStoreIr.data.sdt.xn,
                              loadStoreIr.data.sdt.xn,
-                             loadStoreIr.data.sdt.offset.prePostIndex.simm9);
+                             loadStoreIr.data.sdt.offset.prePostIndex.simm9,
+                             nBits);
                     break;
 
                 // Transfer Address: Xn + Xm
                 case REGISTER_OFFSET:
                     format = loadStoreIr.data.sdt.l
-                             ? "%s R%d = M[R%d + R%d]"
-                             : "%s M[R%d + R%d] = R%d";
+                             ? "R%d = M[R%d + R%d] %s"
+                             : "M[R%d + R%d] = R%d %s";
                     asprintf(&str,
                              format,
-                             nBits,
                              loadStoreIr.rt,
                              loadStoreIr.data.sdt.xn,
-                             loadStoreIr.data.sdt.offset.xm);
+                             loadStoreIr.data.sdt.offset.xm,
+                             nBits);
                     break;
             }
             break;
@@ -329,16 +329,16 @@ static char *adeclLoadStore(LoadStore_IR loadStoreIr) {
         case LOAD_LITERAL:
             if (loadStoreIr.data.simm19.isLabel) {
                 asprintf(&str,
-                         "%s R%d = M[PC + 4 * %s]",
-                         nBits,
+                         "R%d = M[PC + 4 * %s] %s",
                          loadStoreIr.rt,
-                         loadStoreIr.data.simm19.data.label);
+                         loadStoreIr.data.simm19.data.label,
+                         nBits);
             } else {
                 asprintf(&str,
-                         "%s R%d = M[PC + 4 * %d]",
-                         nBits,
+                         "R%d = M[PC + 4 * %d] %s",
                          loadStoreIr.rt,
-                         loadStoreIr.data.simm19.data.immediate);
+                         loadStoreIr.data.simm19.data.immediate,
+                         nBits);
             }
             break;
     }
