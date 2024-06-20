@@ -20,8 +20,8 @@ static const char *mnemonics[] = {
         "movk", "movn", "movz",
         "msub", "mul",  "mvn",
         "neg",  "negs", "orn",
-        "orr",  "str",  "subs",
-        "tst"
+        "orr",  "str",  "sub",
+        "subs", "tst"
 };
 
 /// Compare pointers to strings by the strings to which they point.
@@ -98,19 +98,27 @@ void wPrintLine(WINDOW *window, char *string) {
             // The first char of the token.
             char first = string[scannedIndex];
 
-            // Ensure other flags check only after a special first char.
-            if (
+
+            if (first == '0' && string[scannedIndex+1] == 'x') {
+                // Detect hexadecimal literal (0x...).
+                hexStart = true;
+                scannedIndex += 2;
+            } else if (
+                // Detect hexadecimal literal (#0x...).
+                first == '#' &&
+                string[scannedIndex+1] == '0' &&
+                string[scannedIndex+2] == 'x'
+            ) {
+                hexStart = true;
+                scannedIndex += 3;
+
+            } else if (
+                // Ensure other flags check only after a special first char.
                 first == '#' || // Decimal literals.
                 tolower(first) == 'x' || // Register name.
                 tolower(first) == 'w'    // Register name.
             ) {
                 scannedIndex++;
-            }
-
-            // Detect hexadecimal literal.
-            if (first == '0' && string[scannedIndex+1] == 'x') {
-                hexStart = true;
-                scannedIndex += 2;
             }
 
             // Scan through to a space, comma, square bracket, or end of
