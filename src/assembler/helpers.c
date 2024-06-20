@@ -168,7 +168,7 @@ uint8_t parseRegisterStr(const char *name, bool *sf) {
         return result;
     } else {
         assertFatalWithArgs(!strcmp(name + 1, "sp") || !strcmp(name + 1, "zr"),
-                            "Invalid register named <%s>!", name + 1);
+                            "Invalid register named <%s>!", name);
         return 0x1F;
     }
 }
