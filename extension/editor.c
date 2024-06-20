@@ -268,6 +268,9 @@ static void initialise(const char *path) {
     // fatalError is "realloc"ed elsewhere.
     fatalError = malloc(0);
 
+    // Initialise the saved registered for difference highlighting.
+    clearLastRegs();
+
     // Initialise <ncurses>.
     initscr();       // ncurses setup.
     raw();           // Pass raw input to our code.
