@@ -2,7 +2,6 @@ from manim import *
 
 from const import *
 
-
 class Introduction(Scene):
     """
     Animated topics that are going to be discussed in the video.
@@ -20,8 +19,7 @@ class Introduction(Scene):
             "GRIM (Extension)"
         ]
 
-        
-        texts = [Text(topic, font_size = FONT_SIZE_LARGE) for topic in topics]
+        texts = [Text(topic, font_size = FONT_SIZE_MEDIUM) for topic in topics]
 
         width, height = (config.frame_width - PADDING - 1) / 4, texts[0].height + 0.2
         boxes = [
