@@ -242,7 +242,9 @@ bool saveFile(File *file) {
 /// Updates the contents of one line, with corresponding line number.
 /// @param line The [Line] to be updated on screen.
 /// @param index The 0-based index of the line to update.
-void rerenderLine(Line *line, int index, bool errored) {
+/// @param errored Whether the line contains an error.
+/// @param currentDebug Whether the line is currently being debugged.
+void rerenderLine(Line *line, int index, bool errored, bool currentDebug) {
     // Don't render line below screen.
     if (index >= file->windowY + CONTENT_HEIGHT) return;
 
@@ -256,16 +258,26 @@ void rerenderLine(Line *line, int index, bool errored) {
     wclrtoeol(lineNumbers);
 
     if (!errored || file->lineNumber == index) {
-        // Display editor line with syntax highlighting.
+
         if (file->lineNumber == index) {
+            // Display editor line with highlighting if the cursor is on that line.
             wattron(lineNumbers, COLOR_PAIR(SELECTED_SCHEME));
             mvwprintw(lineNumbers, index - file->windowY, padding, "%d", index + 1);
             wattroff(lineNumbers, COLOR_PAIR(SELECTED_SCHEME));
         } else {
+            // Display the line number normally.
             mvwprintw(lineNumbers, index - file->windowY, padding, "%d", index + 1);
         }
 
-        wPrintLine(editor, getLine(line));
+        if (currentDebug) {
+            // Highlight the line in black and white if it's currently being debugged.
+            wattron(editor, COLOR_PAIR(I_DEFAULT_SCHEME));
+            waddstr(editor, getLine(line));
+            wattroff(editor, COLOR_PAIR(I_DEFAULT_SCHEME));
+        } else {
+            // Syntax highlight the line
+            wPrintLine(editor, getLine(line));
+        }
     } else {
         // Print the line number in red.
         wattron(lineNumbers, COLOR_PAIR(ERROR_SCHEME));
