@@ -91,6 +91,8 @@ int main(int argc, char *argv[]) {
                 freeMem(memory);
                 destroyState(state);
 
+                clearLastRegs();
+
                 justRan = true;
             }
 
