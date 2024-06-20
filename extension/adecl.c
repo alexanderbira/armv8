@@ -57,7 +57,6 @@ static char *adeclImmediate(Immediate_IR immediateIR) {
     char *format;
     int shiftVal;
 
-    // TODO Edit shifts, just describe
     switch (immediateIR.opi) {
         case IMMEDIATE_ARITHMETIC: {
 
@@ -315,11 +314,19 @@ static char *adeclLoadStore(LoadStore_IR loadStoreIr) {
 
         // Transfer Address: PC + simm19 ∗ 4
         case LOAD_LITERAL:
-            asprintf(&str,
-                     "%s R%d = M[PC + 4 * %d]",
-                     nBits,
-                     loadStoreIr.rt,
-                     loadStoreIr.data.simm19.data.immediate);
+            if (loadStoreIr.data.simm19.isLabel) {
+                asprintf(&str,
+                         "%s R%d = M[PC + 4 * %s]",
+                         nBits,
+                         loadStoreIr.rt,
+                         loadStoreIr.data.simm19.data.label);
+            } else {
+                asprintf(&str,
+                         "%s R%d = M[PC + 4 * %d]",
+                         nBits,
+                         loadStoreIr.rt,
+                         loadStoreIr.data.simm19.data.immediate);
+            }
             break;
     }
     return str;
@@ -335,9 +342,15 @@ static char *adeclBranch(Branch_IR branchIr) {
 
         // PC := PC + offset
         case BRANCH_UNCONDITIONAL:
-            asprintf(&str,
-                     "Jump %d lines",
-                     branchIr.data.simm26.data.immediate);
+            if (branchIr.data.simm26.isLabel) {
+                asprintf(&str,
+                         "Jump to %s",
+                         branchIr.data.simm26.data.label);
+            } else {
+                asprintf(&str,
+                         "Jump %d lines",
+                         branchIr.data.simm26.data.immediate);
+            }
             break;
 
         // PC := Xn
@@ -349,10 +362,17 @@ static char *adeclBranch(Branch_IR branchIr) {
 
         // If cond, PC := PC + offset
         case BRANCH_CONDITIONAL:
-            asprintf(&str,
-                     "If %s, jump %d lines",
-                     getBranchCondition(branchIr.data.conditional.condition),
-                     branchIr.data.conditional.simm19.data.immediate);
+            if (branchIr.data.conditional.simm19.isLabel) {
+                asprintf(&str,
+                         "If %s, jump to %s",
+                         getBranchCondition(branchIr.data.conditional.condition),
+                         branchIr.data.conditional.simm19.data.label);
+            } else {
+                asprintf(&str,
+                         "If %s, jump %d lines",
+                         getBranchCondition(branchIr.data.conditional.condition),
+                         branchIr.data.conditional.simm19.data.immediate);
+            }
             break;
     }
     return str;
