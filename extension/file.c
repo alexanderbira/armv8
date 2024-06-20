@@ -272,7 +272,7 @@ void rerenderLine(Line *line, int index, bool errored, bool currentDebug) {
         if (currentDebug) {
             // Highlight the line in black and white if it's currently being debugged.
             wattron(editor, COLOR_PAIR(I_DEFAULT_SCHEME));
-            wprintw(editor, getLine(line));
+            waddstr(editor, getLine(line));
             wattroff(editor, COLOR_PAIR(I_DEFAULT_SCHEME));
         } else {
             // Syntax highlight the line
