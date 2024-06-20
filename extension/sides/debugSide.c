@@ -21,13 +21,17 @@ void updateDebug(Registers regs) {
     int width = getmaxx(side);
 
     int currLine = 0;
-    for (; currLine < NO_GPRS / 2; currLine++) {
+    for (; currLine < (NO_GPRS + 1) / 2; currLine++) {
         printMaybeSelected(side, getReg(regs, currLine) != getReg(&lastRegs, currLine), currLine, 0,
                            "X%02d = 0x%016" PRIx64, currLine, getReg(regs, currLine));
 
-        int otherLine = currLine + NO_GPRS / 2;
-        printMaybeSelected(side, getReg(regs, otherLine) != getReg(&lastRegs, otherLine), 
-                           currLine, width / 2, "X%02d = 0x%016" PRIx64, otherLine, getReg(regs, otherLine));
+
+        int otherLine = currLine + (NO_GPRS + 1) / 2;
+        // GPR 31 (0-indexed) does not exist.
+        if (otherLine < 31) {
+            printMaybeSelected(side, getReg(regs, otherLine) != getReg(&lastRegs, otherLine),
+                               currLine, width / 2, "X%02d = 0x%016" PRIx64, otherLine, getReg(regs, otherLine));
+        }
     }
 
     currLine++;
