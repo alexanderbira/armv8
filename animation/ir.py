@@ -1,7 +1,7 @@
 from manim import *
 
+from components import TextAnnotation
 from const import *
-from TextAnnotation import TextAnnotation
 
 class IR(Scene):
     """
@@ -34,8 +34,6 @@ class IR(Scene):
         self.remove(binary)
         binaryGroup.add(splitBinary)
         self.wait(2)
-
-        
 
         # Make space for and show IR.
         ir = Code(
