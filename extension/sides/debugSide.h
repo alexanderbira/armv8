@@ -38,4 +38,6 @@ extern char *fatalError;
 
 void updateDebug(Registers regs);
 
+void clearLastRegs(void);
+
 #endif // EXTENSION_DEBUG_SIDE_H

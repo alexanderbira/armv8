@@ -10,15 +10,11 @@
 /// The last state of the registers.
 static Registers_s lastRegs;
 
-static void rerenderLineWrapper(Line *line, int index);
-
 static void printMaybeSelected(WINDOW *win, bool selected, int row, int col, const char *fmt, ...);
 
 /// Updates the debug side panel with the current state of the registers.
 /// @param regs The current state of the registers to be displayed.
 void updateDebug(Registers regs) {
-    // Print out all lines in current window.
-    iterateLinesInWindow(file, &rerenderLineWrapper);
 
     werase(side);
     wmove(side, 0, 0);
@@ -60,13 +56,6 @@ void updateDebug(Registers regs) {
     lastRegs = *regs;
 }
 
-/// Wrapper around [rerenderLine] where the line is always presumed to be correct.
-/// @param line The line to rerender.
-/// @param index The index of the line in the window.
-static void rerenderLineWrapper(Line *line, int index) {
-    rerenderLine(line, index, false);
-}
-
 /// Prints the given formatted string to the window, highlighting if the value has changed.
 /// @param win The window to print to.
 /// @param selected Whether the value has changed.
@@ -82,4 +71,10 @@ static void printMaybeSelected(WINDOW *win, bool selected, int row, int col, con
     vw_printw(win, fmt, args);
     wattroff(win, selected ? COLOR_PAIR(SELECTED_SCHEME) : A_NORMAL);
     va_end(args);
+}
+
+/// Forget the last register state in the debug viewer.
+/// @remark This is so that if the debugger is run again it doesn't mark any lines as changed.
+void clearLastRegs(void) {
+    lastRegs = createRegs();
 }

@@ -48,5 +48,5 @@ static void updateEditLine(Line *line, int index) {
     destroyState(state);
 
     wclrtoeol(side);
-    rerenderLine(line, index, lineErrored);
+    rerenderLine(line, index, lineErrored, false);
 }

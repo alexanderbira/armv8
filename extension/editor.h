@@ -78,6 +78,23 @@ EditorStatus status;
 /// Info about the lines after attempt to assemble.
 LineInfo *lineInfo;
 
+/// Current PC value for debug mode.
+BitData pcValue;
+
+/// The registers for debug mode.
+Registers_s debugRegistersStruct;
+
+/// Associate instruction memory address with the line number it corresponds to.
+typedef struct {
+    /// The address of the instruction in memory.
+    BitData address;
+    /// The index of the line whose binary instruction is stored at the address.
+    size_t line;
+} AddrLine;
+
+/// List of memory addresses and line numbers they correspond to, for debug mode.
+AddrLine *addrLines;
+
 /// The flag signifying whether the current line has errored.
 bool lineErrored = false;
 

@@ -123,7 +123,7 @@ static void updateBinaryLine(unused Line *line, int index) {
 
     wclrtoeol(side);
 
-    rerenderLine(line, index, lineErrored);
+    rerenderLine(line, index, lineErrored, false);
 }
 
 /// Convert an instruction to a binary string representation.

@@ -19,6 +19,12 @@ int main(int argc, char *argv[]) {
     // Was the last keypress ^R?
     bool justRan = false;
 
+    // Has the debug mode terminated execution?
+    bool finishedExecuting = false;
+
+    // The memory for debug mode.
+    Memory debugMemory;
+
     int key = -1;
     while (key != QUIT_KEY) {
         // Don't update the UI if we just ran the code.
@@ -91,8 +97,83 @@ int main(int argc, char *argv[]) {
                 break;
 
             case DEBUG_KEY:
-                mode = (mode == DEBUG) ? EDIT : DEBUG;
-                status = (mode == DEBUG) ? READ_ONLY : UNSAVED;
+                finishedExecuting = false;
+
+                // Toggle debug mode.
+                if (mode == DEBUG) {
+                    // If manually exiting debug, terminate the execution.
+                    mode = EDIT;
+                    status = UNSAVED;
+                    freeMem(debugMemory);
+                    free(addrLines);
+                    clearLastRegs();
+                    break;
+                } else {
+                    mode = DEBUG;
+                    status = READ_ONLY;
+                }
+
+                // Initialise the addrLines array.
+                addrLines = malloc(file->size * sizeof(AddrLine));
+
+                // The index of the current instruction
+                int instructionIndex = 0;
+
+                // Initialise registers, memory, and assembler state.
+                debugRegistersStruct = createRegs();
+                debugMemory = allocMem();
+                AssemblerState state = createState();
+
+                // Initialise error string.
+                fatalError[0] = '\0';
+
+                if (!setjmp(fatalBuffer)) {
+
+                    // Perform the first assembly pass.
+                    for (int currentLine = 0; currentLine < file->size; currentLine++) {
+                        size_t irCount = state.irCount;
+
+                        parse(getLine(file->lines[currentLine]), &state);
+
+                        if (irCount != state.irCount) {
+                            // Add a new addrLine if the line compiles.
+                            // This will remember the association between the line number
+                            // and the memory address of its compiled instruction.
+                            AddrLine addrLine;
+                            addrLine.line = currentLine;
+                            addrLine.address = instructionIndex * 4;
+                            addrLines[instructionIndex] = addrLine;
+
+                            instructionIndex++;
+                        }
+                    }
+
+                    state.address = 0x0;
+
+                    // Perform the second pass and write the instruction to memory.
+                    for (size_t i = 0; i < state.irCount; i++) {
+                        IR ir = state.irList[i];
+                        Instruction instruction = getTranslator(&ir.type)(&ir, &state);
+                        writeMem(debugMemory, false, state.address, instruction);
+                        state.address += 0x4;
+                    }
+
+                    destroyState(state);
+
+                    pcValue = 0x0;
+                } else {
+                    // Fatal error encountered during execution
+
+                    // Update the side window.
+                    updateDebug(&debugRegistersStruct);
+
+                    // Free the memory
+                    freeMem(debugMemory);
+                    free(addrLines);
+
+                    finishedExecuting = true;
+                }
+
                 break;
 
             case BINARY_KEY:
@@ -101,7 +182,49 @@ int main(int argc, char *argv[]) {
                 break;
 
             default:
+                if (mode == DEBUG && key == '\n') {
+                    if (finishedExecuting) {
+                        // If the program finished execution because of a fatal error.
+                        mode = EDIT;
+                        status = UNSAVED;
+                        clearLastRegs();
+                        break;
+                    }
+                    // Run the current instruction.
+
+                    // Fetch instruction.
+                    Instruction instruction = readMem(debugMemory, false, getRegPC(&debugRegistersStruct));
+
+                    // Go back to edit mode if the instruction was a halt.
+                    if (instruction == HALT) {
+                        mode = EDIT;
+                        status = UNSAVED;
+                        freeMem(debugMemory);
+                        free(addrLines);
+                        clearLastRegs();
+                        break;
+                    }
+
+                    // Execute the instruction.
+                    execute(&instruction, &debugRegistersStruct, debugMemory);
+                    finishedExecuting = false;
+
+                    pcValue = getRegPC(&debugRegistersStruct);
+
+                    // Scroll to the line now being executed.
+                    for (int addrLineIndex = 0; addrLineIndex < file->size; addrLineIndex++) {
+                        AddrLine currAddrLine = addrLines[addrLineIndex];
+                        if (currAddrLine.address == pcValue) {
+                            file->lineNumber = currAddrLine.line;
+                            break;
+                        }
+                    }
+
+                    break;
+                }
+
                 if (status == READ_ONLY) break;
+
                 status = handleFileAction(file, key) ? UNSAVED : status;
                 break;
         }
@@ -118,6 +241,23 @@ int main(int argc, char *argv[]) {
     endwin();
 
     return 0;
+}
+
+/// Wrapper around [rerenderLine] where the line is always presumed to be correct.
+/// @param line The line to rerender.
+/// @param index The index of the line in the window.
+static void rerenderLineWrapper(Line *line, int index) {
+    bool currentDebugLine = false;
+    // Determine if the current line is the one being debugged.
+    for (int addrLineIndex = 0; addrLineIndex < file->size; addrLineIndex++) {
+        AddrLine currAddrLine = addrLines[addrLineIndex];
+        if (currAddrLine.line == (size_t) index && currAddrLine.address == pcValue) {
+            currentDebugLine = true;
+            break;
+        }
+        if (currAddrLine.line > (size_t) index) break;
+    }
+    rerenderLine(line, index, false, currentDebugLine);
 }
 
 /// Initialises the editor.
@@ -280,8 +420,11 @@ static void updateUI(void) {
             break;
 
         case DEBUG:
-//            Registers_s regs = createRegs();
-//            updateDebug(&regs);
+            // Print out all lines in current window.
+            iterateLinesInWindow(file, &rerenderLineWrapper);
+
+            // Update the side window.
+            updateDebug(&debugRegistersStruct);
             break;
     }
 

@@ -64,6 +64,6 @@ bool handleFileAction(File *file, int key);
 
 bool saveFile(File *file);
 
-void rerenderLine(Line *line, int index, bool errored);
+void rerenderLine(Line *line, int index, bool errored, bool currentDebug);
 
 #endif // EXTENSION_FILE_H
