@@ -258,7 +258,6 @@ static char *adeclRegister(Register_IR registerIr) {
 static char *adeclLoadStore(LoadStore_IR loadStoreIr) {
     char *str;
     char *nBits = loadStoreIr.sf ? "(64b)" : "(32b)";
-    char *format;
 
     switch (loadStoreIr.type) {
 
@@ -268,59 +267,88 @@ static char *adeclLoadStore(LoadStore_IR loadStoreIr) {
 
                 // Transfer Address: Xn + uoffset
                 case UNSIGNED_OFFSET:
-                    format = loadStoreIr.data.sdt.l
-                            ? "%s R%d = M[R%d + %d]"
-                            : "%s M[R%d + %d] = R%d";
-                    asprintf(&str,
-                             format,
-                             nBits,
-                             loadStoreIr.rt,
-                             loadStoreIr.data.sdt.xn,
-                             loadStoreIr.data.sdt.offset.uoffset);
+                    if (loadStoreIr.data.sdt.l) {
+                        asprintf(&str,
+                                 "%s R%d = M[R%d + %d]",
+                                 nBits,
+                                 loadStoreIr.rt,
+                                 loadStoreIr.data.sdt.xn,
+                                 loadStoreIr.data.sdt.offset.uoffset);
+                    } else {
+                        asprintf(&str,
+                                 "%s M[R%d + %d] = R%d",
+                                 nBits,
+                                 loadStoreIr.data.sdt.xn,
+                                 loadStoreIr.data.sdt.offset.uoffset,
+                                 loadStoreIr.rt);
+                    }
                     break;
 
                 // Xn := Xn + simm9; Transfer Address: Xn + simm9
                 case PRE_INDEXED:
-                    format = loadStoreIr.data.sdt.l
-                            ? "%s R%d = R%d + %d; R%d = M[R%d + %d]"
-                            : "%s R%d = R%d + %d; M[R%d + %d] = R%d";
-                    asprintf(&str,
-                             format,
-                             nBits,
-                             loadStoreIr.data.sdt.xn,
-                             loadStoreIr.data.sdt.xn,
-                             loadStoreIr.data.sdt.offset.prePostIndex.simm9,
-                             loadStoreIr.rt,
-                             loadStoreIr.data.sdt.xn,
-                             loadStoreIr.data.sdt.offset.prePostIndex.simm9);
+                    if (loadStoreIr.data.sdt.l) {
+                        asprintf(&str,
+                                 "%s R%d = R%d + %d; R%d = M[R%d + %d]",
+                                 nBits,
+                                 loadStoreIr.data.sdt.xn,
+                                 loadStoreIr.data.sdt.xn,
+                                 loadStoreIr.data.sdt.offset.prePostIndex.simm9,
+                                 loadStoreIr.rt,
+                                 loadStoreIr.data.sdt.xn,
+                                 loadStoreIr.data.sdt.offset.prePostIndex.simm9);
+                    } else {
+                        asprintf(&str,
+                                 "%s R%d = R%d + %d; M[R%d + %d] = R%d",
+                                 nBits,
+                                 loadStoreIr.data.sdt.xn,
+                                 loadStoreIr.data.sdt.xn,
+                                 loadStoreIr.data.sdt.offset.prePostIndex.simm9,
+                                 loadStoreIr.data.sdt.xn,
+                                 loadStoreIr.data.sdt.offset.prePostIndex.simm9,
+                                 loadStoreIr.rt);
+                    }
                     break;
 
                 // Transfer Address: Xn; Xn := Xn + simm9
                 case POST_INDEXED:
-                    format = loadStoreIr.data.sdt.l
-                             ? "%s R%d = M[R%d]; R%d = R%d + %d"
-                             : "%s M[R%d] = R%d; R%d = R%d + %d";
-                    asprintf(&str,
-                             format,
-                             nBits,
-                             loadStoreIr.rt,
-                             loadStoreIr.data.sdt.xn,
-                             loadStoreIr.data.sdt.xn,
-                             loadStoreIr.data.sdt.xn,
-                             loadStoreIr.data.sdt.offset.prePostIndex.simm9);
+                    if (loadStoreIr.data.sdt.l) {
+                        asprintf(&str,
+                                 "%s R%d = M[R%d]; R%d = R%d + %d",
+                                 nBits,
+                                 loadStoreIr.rt,
+                                 loadStoreIr.data.sdt.xn,
+                                 loadStoreIr.data.sdt.xn,
+                                 loadStoreIr.data.sdt.xn,
+                                 loadStoreIr.data.sdt.offset.prePostIndex.simm9);
+                    } else {
+                        asprintf(&str,
+                                 "%s M[R%d] = R%d; R%d = R%d + %d",
+                                 nBits,
+                                 loadStoreIr.data.sdt.xn,
+                                 loadStoreIr.rt,
+                                 loadStoreIr.data.sdt.xn,
+                                 loadStoreIr.data.sdt.xn,
+                                 loadStoreIr.data.sdt.offset.prePostIndex.simm9);
+                    }
                     break;
 
                 // Transfer Address: Xn + Xm
                 case REGISTER_OFFSET:
-                    format = loadStoreIr.data.sdt.l
-                             ? "%s R%d = M[R%d + R%d]"
-                             : "%s M[R%d + R%d] = R%d]";
-                    asprintf(&str,
-                             format,
-                             nBits,
-                             loadStoreIr.rt,
-                             loadStoreIr.data.sdt.xn,
-                             loadStoreIr.data.sdt.offset.xm);
+                    if (loadStoreIr.data.sdt.l) {
+                        asprintf(&str,
+                                 "%s R%d = M[R%d + R%d]",
+                                 nBits,
+                                 loadStoreIr.rt,
+                                 loadStoreIr.data.sdt.xn,
+                                 loadStoreIr.data.sdt.offset.xm);
+                    } else {
+                        asprintf(&str,
+                                 "%s M[R%d + R%d] = R%d]",
+                                 nBits,
+                                 loadStoreIr.data.sdt.xn,
+                                 loadStoreIr.data.sdt.offset.xm,
+                                 loadStoreIr.rt);
+                    }
                     break;
             }
             break;
