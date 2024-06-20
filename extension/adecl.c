@@ -329,7 +329,7 @@ static char *adeclLoadStore(LoadStore_IR loadStoreIr) {
         case LOAD_LITERAL:
             if (loadStoreIr.data.simm19.isLabel) {
                 asprintf(&str,
-                         "%s R%d = M[PC + 4 * %s]",
+                         "%s R%d = M[PC + 4 * '%s']",
                          nBits,
                          loadStoreIr.rt,
                          loadStoreIr.data.simm19.data.label);
@@ -357,7 +357,7 @@ static char *adeclBranch(Branch_IR branchIr) {
         case BRANCH_UNCONDITIONAL:
             if (branchIr.data.simm26.isLabel) {
                 asprintf(&str,
-                         "Jump to %s",
+                         "Jump to '%s'",
                          branchIr.data.simm26.data.label);
             } else {
                 asprintf(&str,
@@ -377,7 +377,7 @@ static char *adeclBranch(Branch_IR branchIr) {
         case BRANCH_CONDITIONAL:
             if (branchIr.data.conditional.simm19.isLabel) {
                 asprintf(&str,
-                         "If %s, jump to %s",
+                         "If %s, jump to '%s'",
                          getBranchCondition(branchIr.data.conditional.condition),
                          branchIr.data.conditional.simm19.data.label);
             } else {
