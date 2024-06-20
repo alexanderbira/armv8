@@ -181,12 +181,12 @@ uint64_t parseImmediateStr(const char *operand, size_t width) {
     int64_t value;
 
     // Scan for hex immediate; if failure, scan for decimal.
-    bool matched = sscanf(operand, "#0x%" SCNx64, &value) == 1;
-    if (!matched) matched = sscanf(operand, "#%" SCNu64, &value) == 1;
+    bool matched = sscanf(operand, "#0x%" SCNx64, (uint64_t *) &value) == 1;
+    if (!matched) matched = sscanf(operand, "#%" SCNd64, &value) == 1;
 
     assertFatalWithArgs(matched, "Invalid immediate value <%s>!", operand);
 
-    int64_t maxValue = width == 64 ? UINT64_MAX : (1LL << width) - 1;
+    int64_t maxValue = width == 64 ? INT64_MAX : (1ULL << width) - 1;
     assertFatalWithArgs(value <= maxValue,
                         "Immediate value <%s> exceeds width %zu bits!", operand, width);
 

@@ -8,9 +8,11 @@
 #ifndef EXTENSION_ADECL_H
 #define EXTENSION_ADECL_H
 
+#include <inttypes.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "ir.h"
 
 char *adecl(IR *irObject);
