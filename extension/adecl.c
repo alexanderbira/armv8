@@ -36,7 +36,7 @@ char *adecl(IR *irObject) {
         case DIRECTIVE: {
             char *str;
             asprintf(&str,
-                     "Load 0x%08lx",
+                     "Load 0x%08llx",
                      irObject->ir.memoryData);
             return str;
         }
