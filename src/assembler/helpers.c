@@ -19,7 +19,7 @@ char *trim(char *str, const char *except) {
 
     // Trim trailing space.
     char *end = str + strlen(str) - 1;
-    for (; end > str && strchr(except, *end) != NULL; end--);
+    for (; end > start && strchr(except, *end) != NULL; end--);
 
     // (Possibly) shift, terminate and return string.
     // Calculate the new length of the trimmed string.
@@ -135,8 +135,10 @@ void destroyTokenisedLine(TokenisedLine *line) {
 Literal parseLiteral(const char *literal) {
     if (strchr(literal, '#')) {
         uint32_t result;
-        assertFatal(sscanf(literal, "#0x%" SCNx32, &result) == 1,
-                    "Unable to parse immediate!");
+        bool matched = sscanf(literal, "#0x%" SCNx32, &result) == 1;
+        if (!matched) matched = sscanf(literal, "#%" SCNu32, &result) == 1;
+        assertFatalWithArgs(matched,
+                            "Unable to parse immediate <%s>!", literal);
         return (Literal) { .isLabel = false, .data.immediate = result };
     } else {
         char *label = strdup(literal);
@@ -155,32 +157,38 @@ uint8_t parseRegisterStr(const char *name, bool *sf) {
     char prefix = 0;
 
     int success = sscanf(name, "%c%" SCNu8, &prefix, &result);
-    assertFatal(success > 0, "Unable to parse register!");
+    assertFatalWithArgs(success > 0, "Unable to parse register named <%s>!", name);
 
     if (sf != NULL) {
         *sf = (prefix == 'x');
     }
 
     if (success > 1) {
+        assertFatalWithArgs(result < 32, "Register <%d> out of bounds!", result);
         return result;
     } else {
-        assertFatal(!strcmp(name + 1, "sp") || !strcmp(name + 1, "zr"),
-                    "Invalid register name!");
+        assertFatalWithArgs(!strcmp(name + 1, "sp") || !strcmp(name + 1, "zr"),
+                            "Invalid register named <%s>!", name);
         return 0x1F;
     }
 }
 
 /// Parses an immediate value from a string (0X... for hex, #... for dec) to a uint64_t
-/// @param operand The string to parse the immediate value from
-/// @returns The literal extracted from the string
-uint64_t parseImmediateStr(const char *operand) {
-    uint64_t value;
+/// @param operand The string to parse the immediate value from.
+/// @param width The maximum bit-width of the resulting value.
+/// @returns The literal extracted from the string.
+uint64_t parseImmediateStr(const char *operand, size_t width) {
+    int64_t value;
 
     // Scan for hex immediate; if failure, scan for decimal.
-    bool matched = sscanf(operand, "#0x%" SCNx64, &value) == 1;
-    if (!matched) matched = sscanf(operand, "#%" SCNu64, &value) == 1;
+    bool matched = sscanf(operand, "#0x%" SCNx64, (uint64_t *) &value) == 1;
+    if (!matched) matched = sscanf(operand, "#%" SCNd64, &value) == 1;
 
-    assertFatal(matched, "Invalid immediate value!");
+    assertFatalWithArgs(matched, "Invalid immediate value <%s>!", operand);
+
+    int64_t maxValue = width == 64 ? INT64_MAX : (1ULL << width) - 1;
+    assertFatalWithArgs(value <= maxValue,
+                        "Immediate value <%s> exceeds width %zu bits!", operand, width);
 
     return value;
 }
@@ -191,7 +199,7 @@ uint64_t parseImmediateStr(const char *operand) {
 void parseOffset(union LiteralData *data, AssemblerState *state) {
     // Calculate offset, then divide by 4 to encode.
     BitData *immediate = getMapping(state, data->label);
-    assertFatalNotNull(immediate, "No mapping for label!");
+    assertFatalNotNullWithArgs(immediate, "No mapping for label named <%s>!", data->label);
 
     data->immediate = *immediate;
     data->immediate -= state->address;

@@ -14,7 +14,7 @@
 /// @pre The [line]'s mnemonic is that of a data processing (immediate) instruction.
 IR parseImmediate(TokenisedLine *line, unused AssemblerState *state) {
     assertFatal(line->operandCount >= 2 && line->operandCount <= 4,
-                "Incorrect number of operands!");
+                "Incorrect number of operands; data processing (immediate) instructions need 2, 3, or 4!");
     Immediate_IR immediateIR;
 
     bool sf;
@@ -40,7 +40,7 @@ IR parseImmediate(TokenisedLine *line, unused AssemblerState *state) {
         }
 
         struct WideMove wideMove;
-        wideMove.imm16 = parseImmediateStr(line->operands[1]);
+        wideMove.imm16 = parseImmediateStr(line->operands[1], IMMEDIATE_WIDE_MOVE_IMM16_N);
 
         // Get shift is <lsl> is present.
         wideMove.hw = 0x0;
@@ -51,8 +51,8 @@ IR parseImmediate(TokenisedLine *line, unused AssemblerState *state) {
             assertFatal(!strcmp(shiftAndValue[0], "lsl"), "Wide move received shift other than logical left!");
 
             // The "hw" in assembly is actually 16 times the value in the binary instruction.
-            uint8_t hwTemp = parseImmediateStr(shiftAndValue[1]);
-            assertFatal(hwTemp % 16 == 0, "Wide move shift is not multiple of 16!");
+            uint8_t hwTemp = parseImmediateStr(shiftAndValue[1], IMMEDIATE_WIDE_MOVE_HW_N + 4);
+            assertFatalWithArgs(hwTemp % 16 == 0, "Wide move shift <%s> is not a multiple of 16!", shiftAndValue[1]);
 
             // The maximum value [hw] can be is 0b11, i.e., 3. (3 * 16 = 48)
             assertFatal(hwTemp <= 48, "Wide move shift value is too high!");
@@ -64,11 +64,11 @@ IR parseImmediate(TokenisedLine *line, unused AssemblerState *state) {
         }
 
         immediateIR = (Immediate_IR) {
-                .sf = sf,
-                .opc.wideMoveType = type,
-                .opi = IMMEDIATE_WIDE_MOVE,
-                .operand.wideMove = wideMove,
-                .rd = reg
+            .sf = sf,
+            .opc.wideMoveType = type,
+            .opi = IMMEDIATE_WIDE_MOVE,
+            .operand.wideMove = wideMove,
+            .rd = reg
         };
     } else {
         // Must be arithmetic instruction: see precondition.
@@ -80,7 +80,7 @@ IR parseImmediate(TokenisedLine *line, unused AssemblerState *state) {
         struct Arithmetic arithmetic;
 
         arithmetic.rn = parseRegisterStr(line->operands[1], &sf);
-        arithmetic.imm12 = parseImmediateStr(line->operands[2]);
+        arithmetic.imm12 = parseImmediateStr(line->operands[2], IMMEDIATE_ARITHMETIC_IMM12_N);
 
         // Get shift is <lsl> is present.
         arithmetic.sh = false;
@@ -91,7 +91,7 @@ IR parseImmediate(TokenisedLine *line, unused AssemblerState *state) {
             assertFatal(!strcmp(shiftAndValue[0], "lsl"), "Wide move received shift other than logical left!");
 
             // The "hw" in assembly is actually 16 times the value in the binary instruction.
-            uint8_t shiftAmount = parseImmediateStr(shiftAndValue[1]);
+            uint8_t shiftAmount = parseImmediateStr(shiftAndValue[1], IMMEDIATE_WIDE_MOVE_HW_N + 4);
             assertFatal(shiftAmount == 0 || shiftAmount == 0xC, "Arithmetic shift is not 0x0 or 0xC!");
             arithmetic.sh = shiftAmount == 0xC;
 
@@ -101,11 +101,11 @@ IR parseImmediate(TokenisedLine *line, unused AssemblerState *state) {
         }
 
         immediateIR = (Immediate_IR) {
-                .sf = sf,
-                .opc.arithmeticType = type,
-                .opi = IMMEDIATE_ARITHMETIC,
-                .operand.arithmetic = arithmetic,
-                .rd = reg
+            .sf = sf,
+            .opc.arithmeticType = type,
+            .opi = IMMEDIATE_ARITHMETIC,
+            .operand.arithmetic = arithmetic,
+            .rd = reg
         };
     }
 

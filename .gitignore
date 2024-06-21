@@ -17,6 +17,7 @@
 *.o
 emulate
 assemble
+editor
 
 #ignore junk files from compiling Haskell code
 *.hi
@@ -35,6 +36,8 @@ assemble
 
 # Compilation Remnants
 src/obj
+ncurses
+testsuite
 
 # === Generated Files ===
 *.bin
@@ -46,3 +49,4 @@ src/obj
 
 # === macOS Files ===
 .DS_Store
+.vscode/settings.json

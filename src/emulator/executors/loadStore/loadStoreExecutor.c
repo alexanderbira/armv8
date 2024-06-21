@@ -14,7 +14,7 @@
 void executeLoadStore(IR *irObject, Registers registers, Memory memory) {
 
     assertFatal(irObject->type == LOAD_STORE,
-                "[executeImmediate] Received non-immediate instruction!");
+                "Received non-immediate instruction!");
 
     LoadStore_IR *loadStoreIR = &irObject->ir.loadStoreIR;
 

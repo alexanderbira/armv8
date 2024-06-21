@@ -13,7 +13,7 @@
 /// @returns 32-bit binary word of the instruction.
 Instruction translateLoadStore(IR *irObject, AssemblerState *state) {
     assertFatal(irObject->type == LOAD_STORE,
-                "[translateLoadStore] Received non-single data transfer IR!");
+                "Received non-single data transfer IR!");
     LoadStore_IR *loadStore = &irObject->ir.loadStoreIR;
     Instruction result;
 
@@ -36,7 +36,7 @@ Instruction translateLoadStore(IR *irObject, AssemblerState *state) {
                     result |= LOAD_STORE_DATA_PRE_POST_INDEX_B;
                     result |= loadStore->data.sdt.offset.prePostIndex.i << LOAD_STORE_DATA_I_INDEXED_S;
                     result |= truncater(loadStore->data.sdt.offset.prePostIndex.simm9, LOAD_STORE_DATA_SIMM9_INDEXED_N)
-                            << LOAD_STORE_DATA_SIMM9_INDEXED_S;
+                        << LOAD_STORE_DATA_SIMM9_INDEXED_S;
                     break;
 
                 case REGISTER_OFFSET:
@@ -59,7 +59,7 @@ Instruction translateLoadStore(IR *irObject, AssemblerState *state) {
             }
 
             result |= truncater(simm19->data.immediate, LOAD_STORE_LITERAL_SIMM19_N)
-                    << LOAD_STORE_LITERAL_SIMM19_S;
+                << LOAD_STORE_LITERAL_SIMM19_S;
             result |= truncater(loadStore->rt, LOAD_STORE_RT_N);
             break;
     }
