@@ -14,7 +14,7 @@
 /// @pre The [line]'s mnemonic is that of a load/store instruction.
 IR parseLoadStore(TokenisedLine *line, unused AssemblerState *state) {
     assertFatal(line->operandCount == 2 || line->operandCount == 3,
-                "[parseLoadStore] Incorrect number of operands!");
+                "Incorrect number of operands; load-store instructions need 2 or 3!");
     LoadStore_IR loadStoreIR;
 
     bool sf;
@@ -41,7 +41,7 @@ IR parseLoadStore(TokenisedLine *line, unused AssemblerState *state) {
                     // Pre-Index
                     mode = PRE_INDEXED;
                     offset.prePostIndex.i = true;
-                    offset.prePostIndex.simm9 = parseImmediateStr(line->operands[2]);
+                    offset.prePostIndex.simm9 = parseImmediateStr(line->operands[2], LOAD_STORE_DATA_SIMM9_INDEXED_N);
                     break;
 
                 case ']':
@@ -49,7 +49,7 @@ IR parseLoadStore(TokenisedLine *line, unused AssemblerState *state) {
                         // Unsigned Offset
                         mode = UNSIGNED_OFFSET;
                         u = true;
-                        offset.uoffset = parseImmediateStr(line->operands[2]);
+                        offset.uoffset = parseImmediateStr(line->operands[2], LOAD_STORE_DATA_OFFSET_N);
                     } else {
                         //Register Offset
                         mode = REGISTER_OFFSET;
@@ -61,21 +61,21 @@ IR parseLoadStore(TokenisedLine *line, unused AssemblerState *state) {
                     // Post-Index
                     mode = POST_INDEXED;
                     offset.prePostIndex.i = false;
-                    offset.prePostIndex.simm9 = parseImmediateStr(line->operands[2]);
+                    offset.prePostIndex.simm9 = parseImmediateStr(line->operands[2], LOAD_STORE_DATA_SIMM9_INDEXED_N);
             }
         }
 
         loadStoreIR = (LoadStore_IR) {
-                .sf = sf,
-                .type = SINGLE_DATA_TRANSFER,
-                .data.sdt = {
-                        .u = u,
-                        .l = !strcmp(line->mnemonic, "ldr"),
-                        .addressingMode = mode,
-                        .offset = offset,
-                        .xn = xn
-                },
-                .rt = reg
+            .sf = sf,
+            .type = SINGLE_DATA_TRANSFER,
+            .data.sdt = {
+                .u = u,
+                .l = !strcmp(line->mnemonic, "ldr"),
+                .addressingMode = mode,
+                .offset = offset,
+                .xn = xn
+            },
+            .rt = reg
         };
     } else {
         // Load literal

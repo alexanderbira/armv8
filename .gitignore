@@ -17,6 +17,7 @@
 *.o
 emulate
 assemble
+editor
 
 #ignore junk files from compiling Haskell code
 *.hi
@@ -48,3 +49,4 @@ testsuite
 
 # === macOS Files ===
 .DS_Store
+.vscode/settings.json

@@ -57,7 +57,9 @@ static void freeIR(IR *irObject) {
 
         case LOAD_STORE:
             if (irObject->ir.loadStoreIR.type == LOAD_LITERAL) {
-                free(irObject->ir.loadStoreIR.data.simm19.data.label);
+                if (irObject->ir.loadStoreIR.data.simm19.isLabel) {
+                    free(irObject->ir.loadStoreIR.data.simm19.data.label);
+                }
             }
 
         default:

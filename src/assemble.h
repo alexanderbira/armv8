@@ -18,4 +18,10 @@
 
 int main(int argc, char **argv);
 
-#endif //ASSEMBLER_ASSEMBLE_H
+void handleAssembly(char *assembly, AssemblerState *state);
+
+bool JUMP_ON_ERROR = false;
+jmp_buf fatalBuffer;
+char *fatalError;
+
+#endif // ASSEMBLER_ASSEMBLE_H

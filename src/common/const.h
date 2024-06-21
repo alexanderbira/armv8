@@ -9,19 +9,47 @@
 #define COMMON_CONST_H
 
 #include <limits.h>
+#include <math.h>
 #include <stdint.h>
 
 /// The virtual memory size of the emulated machine.
-#define MEMORY_SIZE (2 << 20)
+#define MEMORY_SIZE      (2 << 20)
 
 /// All considered whitespace characters.
-#define WHITESPACE  " \n\t\r"
+#define WHITESPACE       " \n\t\r"
 
 /// The number of general purpose registers in the virtual machine.
-#define NO_GPRS 31
+#define NO_GPRS          31
 
 /// The encoding of the zero register.
-#define ZERO_REGISTER 31
+#define ZERO_REGISTER    31
+
+/// ID of the colour scheme for the menu window.
+#define MENU_SCHEME      7
+
+/// ID of the default colour scheme.
+#define DEFAULT_SCHEME   8
+
+/// ID of the inverted default colour scheme.
+#define I_DEFAULT_SCHEME 9
+
+/// ID of the colour scheme for selected content.
+#define SELECTED_SCHEME  10
+
+/// ID of the colour scheme for errored content.
+#define ERROR_SCHEME     11
+
+/// ID of the colour scheme for inverted errored content.
+#define I_ERROR_SCHEME   12
+
+/// The height (in characters) of GRIM's title.
+#define TITLE_HEIGHT      1
+
+/// The height (in characters) of GRIM's help menu.
+#define MENU_HEIGHT       1
+
+/// The height (in characters) of the main content.
+#define CONTENT_HEIGHT    ((int) rows - TITLE_HEIGHT - MENU_HEIGHT)
 
 /// Alias for a chunk of data passed to and from the virtual registers or memory.
 typedef uint64_t BitData;
@@ -35,6 +63,47 @@ typedef uint32_t Mask;
 /// Alias for a sub-component of an [Instruction].
 typedef uint32_t Component;
 
+/// The mode that GRIM is in.
+typedef enum {
+    EDIT,   ///< Standard editing mode.
+    DEBUG,  ///< Read-only, debugging.
+    BINARY, ///< Read-only view of compiled binary.
+} EditorMode;
+
+/// The status of the editor.
+typedef enum {
+    READ_ONLY, ///< File is read-only.
+    UNSAVED,   ///< File has unsaved changes.
+    SAVED      ///< File has no pending changes.
+} EditorStatus;
+
+/// The status of the line after going through the assembler.
+typedef enum {
+    /// If the line was successfully assembled.
+    ASSEMBLED,
+
+    /// If an error was encountered during the line assembly.
+    ERRORED,
+
+    /// If the line didn't need to be assembled (e.g. comments, labels, ...).
+    NONE,
+} LineStatus;
+
+/// Contains data about the line after it goes through the assembler.
+typedef struct {
+    /// The status of the line after going through the assembler.
+    LineStatus lineStatus;
+
+    /// Data about the line after it goes through the assembler.
+    union {
+        /// The assembled instruction.
+        Instruction instruction;
+
+        /// A string containing the error message.
+        char *error;
+    } data;
+} LineInfo;
+
 /// Shorthand to mark an input parameter is unused. This is usually because a type signature
 /// has to be followed for a group of functions.
 #define unused __attribute__((unused))
@@ -45,6 +114,7 @@ typedef uint32_t Component;
 /// @example \code b(1010_0101) = 0xA5 \endcode
 /// @warning May not be optimised at compile - do not abuse!
 #define b(__LITERAL__) toBinary(#__LITERAL__)
+
 static inline uint64_t toBinary(const char *str) {
     uint64_t result = 0;
     while (*str) {
@@ -102,6 +172,7 @@ static inline uint64_t toBinary(const char *str) {
 /// @example \code decompose(10111, 11100) == 00101 \endcode
 /// @authors Billy Highley and Alexander Biraben-Renard
 #define decompose(__WORD__, __MASK__) decompose(__WORD__, __MASK__)
+
 static inline Component decompose(Instruction word, Mask mask) {
     uint32_t bits = word & mask;
     while (!(mask & 1) && (mask >>= 1)) bits >>= 1;
@@ -116,5 +187,11 @@ static inline Component decompose(Instruction word, Mask mask) {
 #define signExtend(__VALUE__, __ACTUAL_WIDTH__) \
     ((__typeof__(__VALUE__))((__VALUE__) << (8 * sizeof(__VALUE__) - (__ACTUAL_WIDTH__))) >> \
     (8 * sizeof(__VALUE__) - (__ACTUAL_WIDTH__)))
+
+/// Counts the number of digits in [__VALUE__] if it were printed in decimal.
+/// @param __VALUE__ The value to count digits for.
+/// @returns The number of digits in [__VALUE__].
+#define countDigits(__VALUE__) \
+    ((__VALUE__ == 0) ? 1 : (int) floor(log10((double) __VALUE__)) + 1)
 
 #endif // COMMON_CONST_H
