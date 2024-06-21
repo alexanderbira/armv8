@@ -36,7 +36,7 @@ void updateDebug(Registers regs) {
 
     currLine++;
     printMaybeSelected(side, getRegPC(regs) != getRegPC(&lastRegs), currLine++, 0, 
-                       "PC = %016" PRIx64 "\n", getRegPC(regs));
+                       "PC = 0x%016" PRIx64 "\n", getRegPC(regs));
 
     wprintw(side, "PSTATE : ");
 
