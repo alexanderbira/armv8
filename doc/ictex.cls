@@ -24,7 +24,6 @@
 \RequirePackage{siunitx}      % Units.
 \RequirePackage{enumitem}     % Better enumerate.
 \RequirePackage{fontspec}     % Custom fonts.
-\RequirePackage{pxfonts}      % Weird symbols, e.g. \lrtimes for RA.
 
 \usetikzlibrary{shapes.geometric,fit} % Function diagrams.
 
@@ -38,6 +37,7 @@
 \RequirePackage{subcaption}   % Subfigure captions.
 \RequirePackage{caption}      % Figure captions.
 \RequirePackage{wrapfig}      % Wrapped figures.
+\RequirePackage{float}        % Figures in multicols.
 
 % == Custom Environment Packages == %
 \RequirePackage{mdframed}     % Needed for `problem` and `context`.
@@ -85,15 +85,12 @@
 % == Page and Header/Footer Setup == %
 \geometry{
     a4paper,
-    top=10mm,
-    left=10mm,
-    right=10mm,
-    bottom=10mm
+    top=19mm,
+    left=12.925mm,
+    right=12.925mm,
+    bottom=19mm
 }
 
-\setmainfont{JetBrains Mono}[
-    SizeFeatures={Size=10},
-]
 \setmonofont{JetBrains Mono}[
     Contextuals = Alternate,
     Ligatures = TeX,
@@ -104,24 +101,8 @@
 \fancyhf{}
 
 \renewcommand{\headrulewidth}{0pt}
-\fancyhead[L]{%
-  \begin{tikzpicture}[remember picture, overlay]
-    \fill[teal] (current page.north west) rectangle (\paperwidth, -0.5cm);
-    \node[anchor=west, text=white] at (-1cm, -0.25cm) {\cCourse: \cAssignName};
-    \node[anchor=east, text=white] at (\paperwidth-1cm, -0.25cm) {\cName};
-  \end{tikzpicture}
-}
-
 \newdateformat{monthyeardate}{\monthname[\THEMONTH], \THEYEAR}
-
 \renewcommand{\footrulewidth}{0pt}
-\fancyfoot[L]{%
-  \begin{tikzpicture}[remember picture, overlay]
-    \fill[teal] (current page.south west) rectangle (\paperwidth, 0.5cm);
-    \node[anchor=west, text=white] at (-1cm, 0.28cm) {\monthyeardate\today};
-    \node[anchor=east, text=white] at (\paperwidth-1cm, 0.28cm) {\thepage $\ /$ \pageref{LastPage}};
-  \end{tikzpicture}
-}
 
 % == Commands: Color == %
 \definecolor{cDarkBlue}{HTML}{00008B}

@@ -1,21 +1,239 @@
-\documentclass[11pt]{article}
+\documentclass{ictex}
+\ictexConf{}{}{}
 
-\usepackage{fullpage}
+\usepackage{hyperref}
 
 \begin{document}
 
-\title{Our Extension...}
-\author{TODO}
+\begin{center}
+    { \huge C Project Final Report } \\
+    \vspace{3mm}
+    { Alexander Biraben-Renard, Billy Highley, Jack Wong, Lancelot Liu }
+\end{center} \vspace{1em}
 
-\maketitle
+\section{Overview}
 
-\section{Introduction}
+We discuss here the architectural design and implementation of the assembler (Part II), the execution of RPi LED Flashing (Part III), as well as our extension (Part IV), a terminal-based IDE specifically designed for AArch64 assembly.
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
-incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
-nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-culpa qui officia deserunt mollit anim id est laborum.
+\section{Part II: Assembler}
+
+As mentioned in our checkpoint report, we have chosen to develop a shared framework of intermediate representations (IRs) for both the emulator and the assembler. Hence, while the emulator has decoders and executors to decode binary instructions and execute them, the assembler has parsers and translators to parse each type of assembly instruction and translate them into binary. They have respective signatures:
+
+\begin{code}
+    /// assembler/assemblerDelegate.h
+    typedef IR (*Parser)(TokenisedLine *line, AssemblerState *state);
+    typedef Instruction (*Translator)(IR *irObject, AssemblerState *state);
+\end{code}
+
+Our assembler is two-pass, with the first pass parsing instructions into their IR forms and gathering label-address pairs, and the second translating the IRs into binary.
+
+For each line of assembly we:
+
+\begin{enumerate}
+    \item Trim to remove leading and trailing whitespace.
+    \item Check for comments (``//") and labels (``:").
+    \item \texttt{Tokenise} into a mnemonic (e.g. "add"), possibly a sub-mnemonic (e.g. ``eq" in ``b.eq", or ``int" in ``.int"), and a list of operands (e.g. the list of ``w12", ``w13", ``lsl \#12").
+    \item Pass it to the corresponding parser to generate its IR form.
+\end{enumerate}
+
+Then in the second pass, we:
+
+\begin{enumerate}
+    \item[5.] Pass it to the corresponding translator to convert into binary.
+    \item[6.] Increment the program counter.
+\end{enumerate}
+
+We use a custom struct to keep track of the program counter, list of label-address pairs, and the IRs computed.
+
+\begin{code}
+/// assembler/state.h
+typedef struct {
+    BitData address;
+
+    struct SymbolPair {
+        BitData address;
+        char *label;
+    }
+    size_t symbolCount, symbolMaxCount;
+
+    IR *irList;
+    size_t irCount, irMaxCount;
+} AssemblerState;
+\end{code}
+
+We have abstracted as much common logic out as possible, and have helper functions to deal with many common tasks such as parsing immediate values and truncating values to size before constructing instructions with them. These functions include the following:
+
+\begin{code}
+    /// Parses a register and returns its binary representation and whether its 64-bit or not.
+    uint8_t parseRegisterStr(const char *name, bool *sf)
+
+    /// Sign extends the given [__VALUE__] given that only [__DESIRED_WIDTH__] bits are wanted.
+    #define signExtend(__VALUE__, __ACTUAL_WIDTH__)
+\end{code}
+
+\section{Part III: RPi LED Flashing}
+
+There are special memory addresses in the Raspberry PI, termed \texttt{GPSETx} and \texttt{GPCLRx}, where each bit corresponds to one of the GPIO pins.
+
+To flash the onboard LED, we first configure \texttt{GPIO2} to act as an output by setting \texttt{FSEL2} to $0\text{x}001$, then turn it on by setting \texttt{GPSET2} to $0\text{x}1$.
+
+To achieve the delay between turning on/off, we initialise a register to $0$, and increment it in a loop until it reaches a threshold value, at which point we exit the loop.
+
+Similarly to turning on the LED, we turn it off by setting \texttt{GPCLR2} to $0\text{x}1$.
+
+This process of turning on/off then delaying is repeated forever.
+
+Special values in the assembly code are kept using \texttt{.int} directives, since they can be named with labels and makes the assembly code more readable.
+
+We assemble the \texttt{.s} file with our assembler and transfer it to a micro SD card with some other config files, and place it into the Raspberry Pi which is wired with \texttt{GPIO2} to the positive end of an LED with a $220\Omega$ resistor in series, then back to \texttt{GND} on the Pi.
+
+\section{Part IV: \textbf{GRIM} (Extension)}
+
+\textbf{GRIM} is a terminal-based IDE which targets AArch64 assembly, and comes with syntax highlighting, contextual
+ code explanations (like \texttt{cdecl}), on-the-fly compilation, error detection, line-by-line debugging, a binary view mode, { \color{purple} and the best (and only) colour scheme any assembly programmer will ever need. }
+
+Under the hood, it is based on the popular TUI library \texttt{ncurses}, and depends on our emulator and assembler for all of its functionality. It is compiled into a self-contained binary (which you are welcome to add to your \$PATH), and can be run like any other editor.
+
+\begin{code}
+    grim your_assembly.s
+\end{code}
+
+We list a few screenshots of its operation on the last page, which may be helpful to refer to when reading the descriptions below.
+
+At the top of the screen there is a title bar informing the user which mode they are in, whether their file is saved or not, the path to save to, and their current cursor position. At the bottom of the screen, there is a helpful selection of commands available to the user, such as for entering debug and binary mode, saving, and exiting.
+
+The entire interface is made to be responsive and withstand changes to the size of the terminal; for example, the line numbers reserve space dynamically as the user scrolls, and the entire interface will temporarily block itself if the size of the terminal is insufficient for normal use.
+
+During operation, the IDE displays file contents using a "moving window" method, and the left-hand editor panel essentially shows all text within the window.
+
+\begin{code}
+    /// extension/file.h
+    typedef struct {
+        /// The line and column of the cursor.
+        int lineNumber, cursor;
+
+        /// The top-left corner of the window currently being rendered.
+        int windowX, windowY;
+        ...
+    } File;
+\end{code}
+
+The individual lines of text are stored in gap buffer structures, which are more efficient for inserting and removing characters around a particular point.
+
+\begin{code}
+    typedef struct{
+        char *buffer;
+
+        int size, gapStart, gapEnd;
+    } Line;
+\end{code}
+
+Syntax highlighting, contextual code explanations (which we term \texttt{adecl}), and on-the-fly compilation are constructed as separate modules which all modify the global windows created using ncurses:
+
+\textbf{Syntax Highlighting} is done by iterating over the tokenised instruction, and for each token iterating over every character to set flags which determine what kind of highlighting should be applied. For example, if the whole token is alphanumeric and the last character is `:', its \texttt{HighlightType} is set to \texttt{LABEL}.
+
+During highlighting, mnemonics are detected using binary search over a sorted list of all mnemonics, which is another example of our modular design, making it easy to extend this feature in the future.
+
+\textbf{Contexual Code Explanations}, or \texttt{adecl} as we term it, is similar in structure to the modularised emulator and assembler. Given a well-formed intermediate representation, various helper functions (e.g. \texttt{adeclRegister}) parses its contents and returns a human-readable string that describes the side-effect of the instruction. For example:
+
+\vspace{-1em} \begin{center} \begin{textAlign}[ll]
+    \inline{add w1, w2, \#1, lsl \#12} & \texttt{(32b) R1 = R2 + 1 w/ LSL 12} \\
+    \inline{b somewhere} & \texttt{Jump to ``somewhere"} \\
+\end{textAlign} \end{center} \vspace{-1em}
+
+Where the human-readable description is roughly: \\
+
+{ \vspace{-1.2em} \small \phantom{    } (\texttt{<width>}) \texttt{<dest>} = \texttt{<expression>} \{w/ \texttt{<shift>} \texttt{<amount>}\} }
+
+This process is relatively straightforward since the IRs contain all possible information about the instructions they represent.
+
+In order to add \textbf{error detection} to \textbf{GRIM}, our assembler and emulator had to be modified so that program execution can continue when a fatal error is encountered. We achieved this by adding a global jump buffer, `fatalBuffer`, and a global string, `fatalError`. When the assembler/emulator encounters an error, it calls our `generateFatal` function, which only when compiled and executed with our IDE program, will set the appropriate error string in `fatalError`, and then jump to where the `fatalBuffer` was set.
+
+Hence, a common pattern found in \textbf{GRIM} is as follows:
+\begin{code}
+    fatalError[0] = '\0';
+    if (!setjmp(fatalBuffer)) {
+        // Error-prone code
+    } else {
+        // Handle the error (if any)
+    }
+\end{code}
+
+We first set the jump buffer to be the line of the conditional.
+\inline{setjmp(fatalBuffer)} will return false when it is run for the first time, so initially the program will enter the `if` block. If a fatal error is then encountered, the program will jump back to the line of the conditional. Since `setjmp` is not being called for the first time, it will return true, so the `else` block will be entered and the error can identified using the `fatalError` string.
+
+In the normal \textbf{edit mode}, error detection using the first pass of the assembler is performed. The assembly line is converted to its IR. If an error occurs during this assembly, the error message is displayed on the line. If no error occurs, the IR is used to generate a contextual code explanation which is then displayed.
+
+Since our assembler was written with the assumption that instructions would be well-formed, some assembly inputs would cause it to crash. Consequently, we went back to our assembler and re-wrote some parts for stricter error detection with richer error messages. This made \textbf{GRIM} more useful as an IDE.
+
+In \textbf{binary mode}, error detection using the first and second pass of the assembler is performed. Since both passes need to be performed to generate the binary, the lines cannot be rendered one at a time like in the edit mode. Instead, before displaying any lines, both passes of the assembler are performed. The generated line of binary is then displayed on the line which its corresponding assembly instruction is on.
+
+Since not every line of assembly results in a generated line of binary (e.g. labels, lines with errors), we assign every line of assembly a \texttt{LineStatus}, which is either \texttt{ASSEMBLED} if the line successfully went through both assembly passes, \texttt{ERRORED} if the line resulted in an error during assembly, or \texttt{NONE} if the line did not need to be assembled. We have an array which, for every line of assembly, keeps track of its status, and either the assembled binary or the error string.
+
+When \textbf{debug mode} is entered, a two-pass assembly of the AArch64 code is performed, much like in the binary mode. To allow for the currently executing line to be highlighted, we need to know which address in the virtual memory each assembly line corresponds to. Hence for each line in the assembly, we store its line number and the memory address that line's instruction is stored in. By comparing the current values of PC and each line's index, we can properly highlight the current line being executed.
+
+Similarly, we display the current state of the virtual registers, and keep track of its previous state to highlight any changes that have occured to enable easy debugging of assembly programs.
+
+\section{Testing \& Challenges}
+
+Given the relatively short time allotted for our extension, we felt that full UI testing was not an achievable goal. Instead, we utilised a combination of existing tests given for the emulator and assembler, and carefully planned manual tests of the UI.
+
+The manual tests consisted of differing methods of resizing the screen, exhaustively enumerating testing all possible input keys and observing their behaviour, and some other situational testing.
+
+The provided tests helped us to ensure that \textbf{GRIM} and correctly run and/or debug assembly code, while the manual tests helped us discover previously unknown failure cases, such as incomplete lines of assembly causing segfaults in the assembly parser.
+
+Our tests were run on different platforms (Linux, macOS) and in different terminal environments. An unexpected and significant challenge was to correctly resize the ncurses windows on the screen when the size of the terminal changed, which caused extreme amounts of flickering at first. We eventually optimised the number of refreshes to reduce the flickering effect.
+
+Overall, making a TUI with ncurses gave us many big and small issues to deal with, and their solutions were often down to mundane things like refreshing one window before the other, or reordering our code to resolve dependencies between the various parts of the main loop. We believe we have overcome these issues and with our testing, have gotten our extension to a presentable state.
+
+\section{Group Reflections}
+
+We believe that our communication and division of labour was, if not perfect, sufficiently well-distributed to allow us to finish the project. Our mix of online and in-person work allowed us flexibility in when and how we work, while our clear but non-restrictive goals for each person allowed us to quickly and dynamically allocate tasks without hiderance.
+
+\section{Invididual Reflections}
+
+\textbf{Alexander Biraben-Renard}: I initially focused on working independently but soon realised that collaborating with others was one of my strengths, despite it being something I anticipated being bad at. Towards the end of the project, I helped out in organisation of tasks,  which I also didn't initially think I would be good at. I felt well-integrated in the group, since I worked closely with everyone at one point or another, and was generally aware of what everyone was working on. We used Gitlab to create and manage issues for the extension, which I found very useful and would like to use in future projects. I think having a discussion about project style and task management would have been useful to do before starting, since there were some points in the project where we disagreed on the way we implemented things, for example, naming conventions.
+
+\textbf{Billy Highley}: During the initial phase of the project I worked on my tasks as an individual, waiting until I had completed them before reviewing them with my group. I learned quickly that it was much more efficient to periodically ask for suggestions from my team while implementing features, as they often provided me with great ideas which significantly improved the overall quality of my code. I was very pleased with everybody’s contributions to the project, and how we were all willing to accept constructive feedback from others and act on it. I believe this was the reason why we were able to finish everything with adequate time remaining at the end for documentation and submission. In future group projects, I hope to collaborate even more with other members when working on tasks, as I have witnessed how this can prevent issues arising later on when combining everyone’s work.
+
+\textbf{Lancelot Liu}: It has been a surreal experience, collaborating with group-mates who don't always concur on everything, but nevertheless share a common and unified goal. I confess I did not fully understand the \textit{group} in group project until I sat down with all my colleagues, around the same computer, debugging the same piece of code.
+
+I feel well-integrated in the group, even though I've had my moments of frustration. The dedication and enthusiasm of my teammates have been truly inspiring. Despite my occasional less-than-ideal behavior, my friends have been patient and supportive. Perhaps greater than learning how to resolve merge conflicts, they’ve taught me the true value of teamwork.
+
+As others have said, there are small points that retrospectively I would've liked to discuss before starting work (such as task management and naming/documentation conventions), but overall, I believe our group has succeeded in creating a positive and productive environment. This project has improved my technical skills but also deepened my appreciation for collaboration. I am grateful for the opportunity to learn and grow with such a dedicated team.
+
+\textbf{Jack Wong}: As my first group programming project, one of the things I had not expected was just how fast and numerous changes would come. This felt motivating and I found it especially productive to come to the labs to work on the project with the group.
+
+I had a few issues with the C language, for example: I forgot that you have to \texttt{malloc} memory to a string in order for it to remain existing after a function returns. But as the project went on, my proficiency improved and simple issues like this became a non-issue.
+
+One thing that I liked doing was debugging, I found it immensely satisfying to fix problems like segmentation faults. Additionally, I realised the importance of comments, something I honestly did very little of before when I coded alone. They helped me understand the code which let me know where to look when issues came up and to also be aware of the overall project structure.
+
+What I’d like to maintain in the future is the high degree of communication between the group. This was great for gathering suggestions, asking for help or advice, reviewing and planning. It also gave the whole project a very enjoyable and supportive atmosphere.
+
+I feel that at the beginning, I was still getting used to working in a group and as such was a little behind. But as time went on, I believe that I integrated well with the group and began contributing far more. As mentioned above, the supportive atmosphere around the project definitely helped with this. By myself, I do not think I’d be able to learn and improve as much as I did and I appreciated being able to work with such capable and encouraging friends.
+
+\newpage
+
+\begin{figure*}[h!]
+    \centering
+    \includegraphics[width=0.7\textwidth]{grimEdit.png}
+    \caption{\textbf{GRIM} in edit mode, giving contextual explanations of the assembly code.}
+    \label{fig:grimEdit}
+\end{figure*}
+
+\begin{figure*}[h!]
+    \centering
+    \includegraphics[width=0.7\textwidth]{grimDebug.png}
+    \caption{\textbf{GRIM} in debug mode, stepping over each line of assembly code, and highlighting changes to the registers.}
+    \label{fig:grimDebug}
+\end{figure*}
+
+\begin{figure*}[h!]
+    \centering
+    \includegraphics[width=0.7\textwidth]{grimBinary.png}
+    \caption{\textbf{GRIM} in binary mode, alerting the user to an incorrect instruction.}
+    \label{fig:grimBinary}
+\end{figure*}
+
 
 \end{document}

@@ -1,6 +1,36 @@
 \documentclass{ictex}
 \ictexConf{Group 5 (ab1223, bh1123, jw4723, ll4923)}{COMP40009}{CProject Checkpoint}
 
+\usepackage{pxfonts}
+
+\geometry{
+    a4paper,
+    top=10mm,
+    left=10mm,
+    right=10mm,
+    bottom=10mm
+}
+
+\setmainfont{JetBrains Mono}[
+    SizeFeatures={Size=10},
+]
+
+\fancyfoot[L]{%
+  \begin{tikzpicture}[remember picture, overlay]
+    % \fill[teal] (current page.south west) rectangle (\paperwidth, 0.5cm);
+    % \node[anchor=west, text=white] at (-1cm, 0.28cm) {\monthyeardate\today};
+    \node[anchor=east, text=white] at (\paperwidth-1cm, 0.28cm) {\thepage $\ /$ \pageref{LastPage}};
+  \end{tikzpicture}
+}
+
+\fancyhead[L]{%
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[teal] (current page.north west) rectangle (\paperwidth, -0.5cm);
+    \node[anchor=west, text=white] at (-1cm, -0.25cm) {\cCourse: \cAssignName};
+    \node[anchor=east, text=white] at (\paperwidth-1cm, -0.25cm) {\cName};
+  \end{tikzpicture}
+}
+
 \begin{document}
 
 \section{Overview} \vspace{-1em}
