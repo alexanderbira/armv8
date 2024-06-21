@@ -100,8 +100,11 @@ void parse(char *line, AssemblerState *state) {
     // Check if line is blank.
     if (strlen(trimmedLine) == 0) return;
 
-    // Check if line is a comment.
-    if (strncmp(trimmedLine, "//", 2) == 0) return;
+    // End the line where a comment starts.
+    char *commentStart = strstr(trimmedLine, "//");
+    if (commentStart != NULL) {
+        *commentStart = '\0';
+    }
 
     // Check if line is a label.
     char *colon = strchr(line, ':');
