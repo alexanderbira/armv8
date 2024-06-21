@@ -13,9 +13,9 @@ class Introduction(Scene):
     def construct(self):
         # Create titles.
         topics = [
-            "Architecture",
             "Emulator",
             "Assembler",
+            "Run Tests",
             "GRIM (Extension)"
         ]
 

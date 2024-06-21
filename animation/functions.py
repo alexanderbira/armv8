@@ -246,18 +246,18 @@ class Functions(Scene):
         self.wait(1)
 
         # Play the assembler functions.
-        self.play(FadeIn(parser), FadeIn(translator))
-        self.wait(2)
+        self.play(FadeIn(parser), FadeIn(translator), run_time = 1)
+        self.wait(3.5)
 
         assembly = Text("add x0, x0, x0", font_size = FONT_SIZE_MEDIUM).move_to(LEFT * 4 + DOWN * 2.5)
         ir = Text("(IR) { ... }", font_size = FONT_SIZE_MEDIUM).move_to(DOWN * 2.5)
         binary = Text("0b...", font_size = FONT_SIZE_MEDIUM).move_to(RIGHT * 4 + DOWN * 2.5)
 
         self.play(Write(assembly))
-        self.wait(0.7)
+        self.wait(2)
 
         self.play(ReplacementTransform(assembly, ir))
-        self.wait(0.7)
+        self.wait(2)
 
         state = Code(
             code = """
@@ -274,8 +274,8 @@ class Functions(Scene):
             language = "C",
             font_size = FONT_SIZE_SMALL,
         ).move_to(UP * 1.5)
-
         self.play(Write(state))
+        self.wait(0.7)
 
         self.play(ReplacementTransform(ir, binary))
         self.wait(2)
