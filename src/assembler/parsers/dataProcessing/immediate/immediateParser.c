@@ -88,7 +88,7 @@ IR parseImmediate(TokenisedLine *line, unused AssemblerState *state) {
             int matched;
             char **shiftAndValue = split(line->operands[3], " ", &matched);
             assertFatal(matched == 2, "Incorrect shift parameter!");
-            assertFatal(!strcmp(shiftAndValue[0], "lsl"), "Wide move received shift other than logical left!");
+            assertFatal(!strcmp(shiftAndValue[0], "lsl"), "Immediate arithmetic received shift other than logical left!");
 
             // The "hw" in assembly is actually 16 times the value in the binary instruction.
             uint8_t shiftAmount = parseImmediateStr(shiftAndValue[1], IMMEDIATE_WIDE_MOVE_HW_N + 4);
