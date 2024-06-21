@@ -47,9 +47,6 @@ class IR(Scene):
                 };""",
             language = "C"
         ).center()
-
-        
-
         
         self.play(
             assembly.animate.move_to(UP * 3),
@@ -60,7 +57,6 @@ class IR(Scene):
         self.wait(2)
 
         # Animate binary and assembly to IR.
-
         irStageOne = Code(
             code = """
                 branchIR = (Branch_IR) {
