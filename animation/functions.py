@@ -1,5 +1,3 @@
-from fnmatch import translate
-from functools import reduce
 from manim import *
 
 from components import BoxedText, TextAnnotation

@@ -115,4 +115,4 @@ class IR(Scene):
             Transform(irStageTwo, irComplete),
         )
 
-        self.wait(1)
+        self.wait(2)
