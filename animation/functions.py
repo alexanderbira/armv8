@@ -1,3 +1,4 @@
+from fnmatch import translate
 from functools import reduce
 from manim import *
 
@@ -52,8 +53,8 @@ class Functions(Scene):
 
         # Show assembler functions.
         parser = BoxedText("Parser").move_to(LEFT * 2 + DOWN * 2.5)
-        assembler = BoxedText("Translator").move_to(RIGHT * 2 + DOWN * 2.5)
-        self.play(Write(parser), Write(assembler))
+        translator = BoxedText("Translator").move_to(RIGHT * 2 + DOWN * 2.5)
+        self.play(Write(parser), Write(translator))
 
         self.wait(2)
 
@@ -74,7 +75,7 @@ class Functions(Scene):
         emulator = VGroup(decoder, executor)
         self.play(
             FadeOut(parser), 
-            FadeOut(assembler),
+            FadeOut(translator),
             FadeOut(binary),
             emulator.animate.move_to(ORIGIN)
         )
@@ -221,7 +222,7 @@ class Functions(Scene):
 
         self.play(
             FadeOut(finalCodes),
-            Transform(executor.copy(), executors),
+            ReplacementTransform(executor.copy(), executors),
             op0s.animate.move_to(UP * 1.5 + LEFT * 5),
             decoders.animate.move_to(UP * 1.5 + LEFT * 2.5),
         )
@@ -241,4 +242,42 @@ class Functions(Scene):
             FadeIn(system, links)
         )
 
+        self.wait(2)
+
+        self.play(FadeOut(system), FadeOut(links), FadeOut(decoders), FadeOut(executors), FadeOut(decoder), FadeOut(executor))
+        self.wait(1)
+
+        # Play the assembler functions.
+        self.play(FadeIn(parser), FadeIn(translator))
+        self.wait(2)
+
+        assembly = Text("add x0, x0, x0", font_size = FONT_SIZE_MEDIUM).move_to(LEFT * 4 + DOWN * 2.5)
+        ir = Text("(IR) { ... }", font_size = FONT_SIZE_MEDIUM).move_to(DOWN * 2.5)
+        binary = Text("0b...", font_size = FONT_SIZE_MEDIUM).move_to(RIGHT * 4 + DOWN * 2.5)
+
+        self.play(Write(assembly))
+        self.wait(0.7)
+
+        self.play(ReplacementTransform(assembly, ir))
+        self.wait(0.7)
+
+        state = Code(
+            code = """
+            typedef struct {
+                ...
+            
+                struct SymbolPair {
+                    BitData address;
+                    char *label;
+                } *symbolTable;
+
+                size_t symbolCount, symbolMaxCount;
+            } AssemblerState; """,
+            language = "C",
+            font_size = FONT_SIZE_SMALL,
+        ).move_to(UP * 1.5)
+
+        self.play(Write(state))
+
+        self.play(ReplacementTransform(ir, binary))
         self.wait(2)
