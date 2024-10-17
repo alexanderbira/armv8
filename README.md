@@ -1,6 +1,22 @@
 This is <b>Group 5</b>'s repository for the Arm-v8 Emulator/Assembler/Extended project.
 
-[TOC]
+# Table of Contents
+- [Core Section Quick-Start](#core-section-quick-start)
+  * [Emulator](#emulator)
+  * [Assembler](#assembler)
+  * [Blinking the RPi](#blinking-the-rpi)
+- [GRIM](#grim)
+  * [Running GRIM](#running-grim)
+  * [The Interface](#the-interface)
+    + [The Editor Window](#the-editor-window)
+  * [Modes](#modes)
+    + [Edit Mode](#edit-mode)
+    + [Binary Mode](#binary-mode)
+    + [Debug Mode](#debug-mode)
+  * [Running](#running)
+  * [Saving](#saving)
+- [Generating the Reports](#generating-the-reports)
+- [Help](#help)
 
 # Core Section Quick-Start
 
@@ -99,7 +115,7 @@ Debug mode is used for step-by-step execution of the assembly code. Debug mode c
 
 The editor window is not editable in debug mode. The line which is about to be executed will be highlighted in the editor window. The right-half of the content will display the contents of all the registers at the current point in execution. Press <kbd>Enter</kbd> to execute the line which is highlighted in the editor window. The right-half of the content will display the registers which were modified by the previously executed instruction in green. If a fatal runtime error is encountered, the error will be displayed.
 
-![GRIM debug mode](extension/img/debugMode.mp4)
+[![GRIM debug mode](extension/img/debugMode.mp4)](https://github.com/user-attachments/assets/24940323-6be4-4e6f-8089-b8e92d694881)
 
 ## Running
 The entire code can be run in one go with <kbd>Ctrl+R</kbd>. The right-half of the content will display the registers and their states after the code execution in a similar way to debug mode.
